@@ -1,0 +1,37 @@
+[debug] [2019-06-11T08:14:04.891Z] ----------------------------------------------------------------------
+[debug] [2019-06-11T08:14:04.894Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2019-06-11T08:14:04.895Z] CLI Version:   6.11.0
+[debug] [2019-06-11T08:14:04.895Z] Platform:      linux
+[debug] [2019-06-11T08:14:04.895Z] Node Version:  v10.16.0
+[debug] [2019-06-11T08:14:04.895Z] Time:          Tue Jun 11 2019 13:44:04 GMT+0530 (India Standard Time)
+[debug] [2019-06-11T08:14:04.895Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-06-11T08:14:04.905Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-06-11T08:14:04.905Z] > authorizing via signed-in user
+[debug] [2019-06-11T08:14:04.905Z] [iam] checking project daily-eats-dev for permissions ["firebase.projects.get"]
+[debug] [2019-06-11T08:14:04.908Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/daily-eats-dev:testIamPermissions  
+
+[debug] [2019-06-11T08:14:06.789Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-11T08:14:06.793Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/daily-eats-dev  
+ 
+[debug] [2019-06-11T08:14:08.523Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/home/jatin/Documents/dailyEats'...
+[info] 
+[warn] ⚠  Your requested "node" version "8" doesn't match your global version "10"
+[debug] [2019-06-11T08:14:08.542Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/1040994783048:getServerAppConfig  
+ 
+[debug] [2019-06-11T08:14:09.130Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: Emulator started at http://localhost:5000
+[info] i  functions: Watching "/home/jatin/Documents/dailyEats/functions" for Cloud Functions...
+[debug] [2019-06-11T08:14:09.157Z] Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Function.listen (/usr/local/lib/node_modules/firebase-tools/node_modules/express/lib/application.js:618:24)
+    at FunctionsEmulator.<anonymous> (/usr/local/lib/node_modules/firebase-tools/lib/emulator/functionsEmulator.js:250:99)
+    at Generator.next (<anonymous>)
+    at fulfilled (/usr/local/lib/node_modules/firebase-tools/lib/emulator/functionsEmulator.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[error] 
+[error] Error: An unexpected error has occurred.
