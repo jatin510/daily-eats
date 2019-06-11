@@ -80,7 +80,7 @@ const validateFirebaseIdToken = (req, res, next) => {
 };
 
 app.use(cookieParser);
-// app.use(validateFirebaseIdToken);
+app.use(validateFirebaseIdToken);
 app.use("/", require("./routes/api"));
 
 app.get("/hello", (req, res) => {

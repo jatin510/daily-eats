@@ -24,6 +24,7 @@ route.post("/", (req, res) => {
     area: Joi.string(),
     city: Joi.string()
   });
+
   let addressSchema = Joi.object({
     id: Joi.string,
     address: detailedAddressCoordinates
