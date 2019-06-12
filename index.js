@@ -11,6 +11,7 @@ const app = express();
 const cookieParser = require("cookie-parser")();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const validateFirebaseIdToken = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
@@ -26,7 +27,7 @@ const validateFirebaseIdToken = (req, res, next) => {
       "Authorization: Bearer <Firebase ID Token>",
       'or by passing a "__session" cookie.'
     );
-    res.status(403).send("Unauthorized");
+    res.status(403).send("UnAuthorized");
     return;
   }
 
@@ -46,7 +47,7 @@ const validateFirebaseIdToken = (req, res, next) => {
   } else {
     //No cookie
     console.log("no cookie");
-    res.status(403).send("Unauthorized");
+    res.status(403).send("UnAauthorized");
   }
 
   admin
@@ -80,7 +81,7 @@ const validateFirebaseIdToken = (req, res, next) => {
 };
 
 app.use(cookieParser);
-app.use(validateFirebaseIdToken);
+// app.use(validateFirebaseIdToken);
 app.use("/", require("./routes/api"));
 
 app.get("/hello", (req, res) => {

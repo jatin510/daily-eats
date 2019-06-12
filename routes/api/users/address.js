@@ -12,21 +12,21 @@ route.post("/", (req, res) => {
   //Code to add Address
 
   let nestedCoordinates = Joi.object({
-    latitude: Joi.string(),
-    longitude: Joi.string()
+    latitude: Joi.string().required(),
+    longitude: Joi.string().required()
   });
 
   let detailedAddressCoordinates = Joi.object({
-    tag: Joi.string(),
+    tag: Joi.string().required(),
     coordinates: nestedCoordinates,
-    address1: Joi.string(),
-    address2: Joi.string(),
-    area: Joi.string(),
-    city: Joi.string()
+    address1: Joi.string().required(),
+    address2: Joi.string().required(),
+    area: Joi.string().required(),
+    city: Joi.string().required()
   });
 
   let addressSchema = Joi.object({
-    id: Joi.string,
+    id: Joi.string(),
     address: detailedAddressCoordinates
   });
 
@@ -38,7 +38,8 @@ route.post("/", (req, res) => {
   } else {
     return db
       .collection("users")
-      .doc(req.body.id)
+      .doc(req.params.userId)
+      .collection("address")
       .set(value)
       .then(val => {
         value.id = val.id;
@@ -50,6 +51,55 @@ route.post("/", (req, res) => {
       .catch(e => {
         console.log("Add Address error ", e);
         return res.status(400).json({ error: "Add address error" });
+      });
+  }
+});
+
+route.put("/", (req, res) => {
+  //Code to add Address
+
+  let nestedCoordinates = Joi.object({
+    latitude: Joi.string().required(),
+    longitude: Joi.string().required()
+  });
+
+  let detailedAddressCoordinates = Joi.object({
+    tag: Joi.string().required(),
+    coordinates: nestedCoordinates,
+    address1: Joi.string().required(),
+    address2: Joi.string().required(),
+    area: Joi.string().required(),
+    city: Joi.string().required()
+  });
+
+  let addressSchema = Joi.object({
+    id: Joi.string(),
+    address: detailedAddressCoordinates
+  });
+
+  const { error, value } = Joi.validate(req.body, addressSchema);
+
+  if (error) {
+    console.log("Put Edit Address,error", error);
+    return res
+      .status(400)
+      .json({ error: { message: "Error editing address" } });
+  } else {
+    return db
+      .collection("users")
+      .doc(req.params.userId)
+      .collection("address")
+      .update(value)
+      .then(val => {
+        value.id = val.id;
+        console.log("Address edited successfully");
+        return res.status(200).json({
+          res: { message: "Address edited successfully", address: value }
+        });
+      })
+      .catch(e => {
+        console.log("Edit Address error ", e);
+        return res.status(400).json({ error: "Edit address error" });
       });
   }
 });

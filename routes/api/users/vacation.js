@@ -7,6 +7,7 @@ const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
 route.use(express.json());
+
 route.post("/", (req, res) => {
   //Code to add vacation
 
@@ -27,10 +28,46 @@ route.post("/", (req, res) => {
       .status(400)
       .json({ error: { message: "Error post add vacation " } });
   } else {
-    return db
+    let batch = db.batch();
+
+    // user calender
+    let userCalenderRef = db
       .collection("users")
-      .doc(req.body.id)
-      .update({});
+      .doc(req.params.userId)
+      .collection("calender");
+
+    batch.set(userCalenderRef, {}, { merge: true });
+
+    // user subscription
+    let userSubRef = db
+      .collection("users")
+      .doc(req.params.userId)
+      .collection("subscription")
+      .doc();
+
+    batch.set(userSubRef, {}, { merge: true });
+
+    // order
+
+    let orderRef = db.collection("orders").doc();
+    batch.set(orderRef, {}, { merge: true });
+
+    // kitchen
+    let orderRef = db.collection("orders").doc();
+    batch.set(orderRef, {}, { merge: true });
+
+    batch
+      .commit()
+      .then(() => {
+        console.log("Successfully batched vacation");
+        return res
+          .status(400)
+          .send({ message: "Successfully batched vacation" });
+      })
+      .catch(e => {
+        console.log("error adding vacation", e);
+        return res.status(400).send("Error adding vacation");
+      });
   }
 });
 

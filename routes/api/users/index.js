@@ -32,8 +32,8 @@ route.use("/address", require("./address"));
 route.use("/subscribe", require("./subscribe"));
 route.use("/unsubscribe", require("./unSubscribe"));
 route.use("/vacation", require("./vacation"));
-route.use("/ensubscribe", require("./endVacation"));
-route.use("/wallet", require("./wallet"));
+route.use("/endvacation", require("./endVacation"));
+// route.use("/wallet", require("./wallet"));
 
 route.get("/", (req, res) => {
   res.send("users api index");

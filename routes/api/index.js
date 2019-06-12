@@ -9,7 +9,7 @@ const Joi = require("@hapi/joi");
 function createUserDb(data) {
   userSchema = Joi.object().keys({
     name: Joi.string().required(),
-    phone: Joi.number().required,
+    phone: Joi.number().required(),
     email: Joi.string(),
     referralCode: Joi.string()
   });
@@ -22,18 +22,18 @@ function createUserDb(data) {
   } else {
     return db
       .collection("users")
-      .doc(req.body.id)
+      .doc(data.body.id)
       .set(value)
       .then(val => {
         value.id = val.id;
-        console.log("Address successfully added");
+        console.log("User successfully added");
         return res.status(200).json({
-          res: { message: "Address successfully added", user: value }
+          res: { message: "User successfully added", user: value }
         });
       })
       .catch(e => {
         console.log("Add User error ", e);
-        return res.status(400).json({ error: "Add address error" });
+        return res.status(400).json({ error: "Error adding User" });
       });
   }
 }
@@ -47,16 +47,17 @@ route.post("/users/:userId", (req, res) => {
     .then(doc => {
       if (!doc.exists) {
         console.log("No document found");
-        return createUserDb(req);
+        return createUserDb(req); //should I return or not
       } else {
         console.log("User already exist");
-        return { message: "user already exist" };
+        return res.status(104).json({ message: "User already exist" });
       }
     })
     .catch(error => console.log("error", error));
 });
 
-route.use("/users/", require("./users/index.js"));
+route.use("/users/:userId", require("./users/index.js"));
+
 route.use("/admin", require("./admin"));
 
 route.get("/", (req, res) => {

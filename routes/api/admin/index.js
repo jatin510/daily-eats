@@ -1,4 +1,4 @@
-const route = require("express");
+const route = require("express").Router();
 
 route.get("/", (req, res) => {
   res.get("admin api index");
