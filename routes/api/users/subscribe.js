@@ -149,4 +149,16 @@ route.put("/", (req, res) => {
   }
 });
 
+function getSubcriptions(value) {
+  var subSchema = {};
+  // subSchema.id="";
+  if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.address = {};
+    subSchema.breakfast.address.address1 = "";
+  }
+
+  return subSchema;
+}
+
 exports = module.exports = route;

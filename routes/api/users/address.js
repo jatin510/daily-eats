@@ -30,7 +30,9 @@ route.post("/", (req, res) => {
     address: detailedAddressCoordinates
   });
 
-  const { error, value } = Joi.validate(req.body, addressSchema);
+  const { error, value } = Joi.validate(req.body.users, addressSchema);
+  console.log("inside address");
+  console.log(req.params.userId);
 
   if (error) {
     console.log("Post Add Address,error", error);
@@ -56,7 +58,7 @@ route.post("/", (req, res) => {
 });
 
 route.put("/", (req, res) => {
-  //Code to add Address
+  //Code to Edit Address
 
   let nestedCoordinates = Joi.object({
     latitude: Joi.string().required(),

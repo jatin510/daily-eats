@@ -56,8 +56,8 @@ route.post("/", (req, res) => {
     batch.set(orderRef, {}, { merge: true });
 
     // kitchen
-    let orderRef = db.collection("orders").doc();
-    batch.set(orderRef, {}, { merge: true });
+    let kitchenRef = db.collection("orders").doc();
+    batch.set(kitchenRef, {}, { merge: true });
 
     batch
       .commit()
