@@ -49,7 +49,10 @@ route.post("/", (req, res) => {
 
     // order
 
-    let orderRef = db.collection("orders").doc();
+    let orderRef = db
+      .collection("orders")
+      .doc()
+      .collection("users");
     batch.set(orderRef, {}, { merge: true });
 
     // kitchen

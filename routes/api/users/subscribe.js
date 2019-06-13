@@ -107,30 +107,45 @@ route.put("/", (req, res) => {
       .collection("users")
       .doc(req.params.userId)
       .collection("subscription")
-      .doc(subDocSub)
-      .set({}, { merge: true });
+      .doc(subDocSub);
 
     batch.set(userSubRef, {}, { merge: true });
+
     //user calender
 
     let userCalenderRef = db
       .collection("users")
       .doc(req.params.userId)
       .collection("calender")
-      .doc(subDocCalender)
-      .set({}, { merge: true });
+      .doc(subDocCalender);
 
     batch.set(userCalenderRef, {}, { merge: true });
 
     // order
 
     let orderRef = db.collection("orders").doc(doc);
+
     batch.set(orderRef, {}, { merge: true });
 
     //kitchen Manager
 
     let kitchenRef = db.collection("kitchen").doc();
+
     batch.set(kitchenRef, {}, { merge: true });
+
+    //batch commit
+    return batch
+      .commit()
+      .then(() => {
+        console.log("Successfully batched subscribed");
+        return res
+          .status(400)
+          .send({ message: "Successfully batched subscribed" });
+      })
+      .catch(error => {
+        console.log("subscribe batch error");
+        res.status(403).send({ error: { message: "subscribe batch error" } });
+      });
   }
 });
 

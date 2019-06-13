@@ -36,25 +36,51 @@ route.put("/", (req, res) => {
     //
     // logic for date
 
-    return db
+    let batch = db.batch();
+
+    //calender Ref
+    let userCalenderRef = db
       .collection("users")
-      .doc(req.body.id)
+      .doc(req.params.userId)
+      .collection("calender")
+      .doc();
+
+    batch.set(userCalenderRef, {}, { merge: true });
+
+    // subscription Ref
+
+    let userSubRef = db
+      .collection("users")
+      .doc(req.params.userId)
       .collection("subscription")
-      .update
-      //login
-      //to
-      //update
-      //the endVacation Table
-      ()
-      .then(val => {
-        console.log("Ended vacation successfully");
-        return res.status(200).json({
-          res: { address: value, message: "Address successfully added" }
-        });
+      .doc();
+
+    batch.set(userSubRef, {}, { merge: true });
+
+    //order Ref
+
+    let orderRef = db.collection("orders").doc();
+
+    batch.set(orderRef, {}, { merge: true });
+
+    // kitchen Ref
+
+    let kitchenRef = db.collection("kitchen").doc();
+
+    batch.set(kitchenRef, {}, { merge: true });
+
+    // batch commit
+    return batch
+      .commit()
+      .then(() => {
+        console.log("Successfully batched endvacation");
+        return res
+          .status(400)
+          .send({ message: "Successfully batched endvacation" });
       })
-      .catch(e => {
-        console.log("Add Address error ", e);
-        return res.status(400).json({ error: "Add address error" });
+      .catch(error => {
+        console.log("endvacation batch error");
+        res.status(403).send({ error: { message: "endvacation batch error" } });
       });
   }
 });

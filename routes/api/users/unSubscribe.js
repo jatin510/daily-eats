@@ -58,6 +58,7 @@ route.put("/", (req, res) => {
 
     batch.set(kitchenRef, {}, { merge: true });
 
+    //batch commit
     return batch
       .commit()
       .then(() => {
