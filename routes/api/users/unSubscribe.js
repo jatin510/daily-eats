@@ -22,7 +22,6 @@ function getSubscription(value) {
   return subSchema;
 }
 
-//problem with calender
 function getCalender(value) {
   subSchema = {};
 
@@ -55,7 +54,13 @@ function getOrder(value) {
   return subSchema;
 }
 
-function getKitchen(value) {}
+function getKitchen(value) {
+  let subSchema = {};
+
+  subSchema.status.pending = false;
+
+  return subSchema;
+}
 
 route.put("/", (req, res) => {
   const dateSchema = Joi.object({
@@ -74,45 +79,96 @@ route.put("/", (req, res) => {
     console.log("Post unsubscribe meal error", error);
     res.status(400).json({ error: { message: "Post unsubscribe meal error" } });
   } else {
+    let fromDate = req.body.date.from.split("-")[2];
+    let toDate = req.body.date.to.split("-")[2];
+    let month = req.body.date.from.split("-")[1];
+    let year = req.body.date.from.split("-")[0];
+
     let batch = db.batch();
 
-    // subscription
+    // subscription/////////////////////////////////////////
 
-    subDoc = req.body.date.from; // incomplete
+    let subscriptionData = getSubscription(req.body.users);
 
-    getSubscription(req.body.users);
-
-    let subRef = db
+    let userSubscriptionRef = db
       .collection("users")
-      .doc(req.params.userId)
-      .collection("subscription")
-      .doc(subdoc)
-      .get();
+      .doc(req.body.users.id)
+      .collection("subscription");
 
-    subRef.forEach(() => {});
+    let date = {};
+    for (date = fromDate; date <= toDate; date++) {
+      let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
+
+      batch.set(userSubRefDoc, { subscriptionData }, { merge: true });
+    }
 
     //calender
+
+    calenderData = getCalender(req.body.users);
     calenderRef = db
       .collection("users")
-      .doc(req.params.userId)
-      .collection("calender");
+      .doc(req.body.users.id)
+      .collection("calender")
+      .doc(month);
 
-    batch.set(calenderRef, {}, { merge: true });
+    let date = {};
+    for (date = fromDate; date <= toDate; date++) {
+      date = { ...date, ...calenderData };
+      batch.update(userCalenderDocRef, { calenderData });
+    }
 
-    // order
-    orderRef = db
-      .collection("users")
-      .doc(req.params.userId)
-      .collection("calender");
+    // order ////////////////////////////////////////////////
+
+    let orderData = getOrder(req.body.users);
+
+    let orderRef = db.collection("orders").doc(`${month}${year}`);
 
     batch.set(orderRef, {}, { merge: true });
 
-    //kitchen
-    sectorHandling = kitchenRef = db
-      .collection("kitchen")
-      .where("areaHandling.sector");
+    for (date = fromDate; date <= toDate; date++) {
+      let orderDocRef = orderRef
+        .collection(`${date}${month}${year}`)
+        .doc(req.body.users.id);
 
-    batch.set(kitchenRef, {}, { merge: true });
+      batch.update(orderDocRef, { orderData });
+    }
+    //kitchen////////////////////////////////////////
+    userSector = req.body.users.address.area;
+
+    kitchenData = getKitchen(req.body.users);
+
+    let kitchenManagerDocRef = db
+      .collection("kitchen")
+      .where(`areaHandling.${userSector}`, "==", true);
+
+    kitchenManagerDocRef.get().then(snapshot => {
+      snapshot.forEach(doc => {
+        let deliveryRef = doc.collection("deliveries");
+        date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let breakfast = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("breakfast")
+            .doc(req.body.users.id);
+
+          batch.update(breakfast, { kitchenData });
+
+          let lunch = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("lunch")
+            .doc(req.body.users.id);
+
+          batch.update(lunch, { kitchenData });
+
+          let dinner = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("dinner")
+            .doc(req.body.users.id);
+
+          batch.update(dinner, { kitchenData });
+        }
+      });
+    });
 
     //batch commit
     return batch

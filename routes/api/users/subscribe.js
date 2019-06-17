@@ -197,6 +197,10 @@ function getOrder(value) {
 
 function getKitchen(value) {
   let subSchema = {};
+
+  subSchema.status.pending = true;
+
+  return subSchema;
 }
 
 route.put("/", (req, res) => {
@@ -277,7 +281,7 @@ route.put("/", (req, res) => {
   });
 
   const value = 1;
-  const error = 1;
+  const error = false;
   //till here is the validation
   //of the data
 
@@ -299,7 +303,7 @@ route.put("/", (req, res) => {
     // user subscription ////////////////////////////////////////////////////////
     let userSubscriptionRef = db
       .collection("users")
-      .doc(req.params.userId)
+      .doc(req.body.users.id)
       .collection("subscription");
 
     let date = {};
@@ -318,7 +322,7 @@ route.put("/", (req, res) => {
 
     //user calender//////////////////////////////////////////////////////////////
 
-    let calenderData = getCalender(req.body);
+    let calenderData = getCalender(req.body.users.subscription);
 
     let userCalenderDocRef = db
       .collection("users")
@@ -327,7 +331,7 @@ route.put("/", (req, res) => {
       .doc(month);
 
     let date = {};
-    for (date = fromDate; (date = toDate); date++) {
+    for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${day}`).split("-")[0];
 
       if (req.body.users.subscription.ignore.day) continue;
@@ -338,18 +342,18 @@ route.put("/", (req, res) => {
 
     // order///////////////////////////////////////////////////////////
 
-    let orderData = getOrder(req.body);
+    let orderData = getOrder(req.body.users.subscription);
 
     let orderRef = db.collection("orders").doc(`${month}${year}`);
 
     for (date = fromDate; date <= toDate; date++) {
-      let orderDocRef = orderRef
-        .collection(`${date}${month}${year}`)
-        .doc(req.body.users.id);
-
       let day = new Date(`${year}-${month}-${day}`).split("-")[0];
 
       if (req.body.users.subscription.ignore.day) continue;
+
+      let orderDocRef = orderRef
+        .collection(`${date}${month}${year}`)
+        .doc(req.body.users.id);
 
       date = { ...date, ...calenderData };
       batch.update(orderDocRef, { date });
@@ -358,13 +362,44 @@ route.put("/", (req, res) => {
     //kitchen Manager////////////////////////////////////////////////////
 
     //user sector
-    userSector = req.body.user.address.area;
+    userSector = req.body.users.address.area;
 
-    let kitchenManagerRef = db
+    kitchenData = getKitchen(req.body.users);
+
+    let kitchenManagerDocRef = db
       .collection("kitchen")
-      .where(`${areaHandling.userSector}`, "==", true);
+      .where(`areaHandling.${userSector}`, "==", true);
 
-    batch.set(kitchenRef, {}, { merge: true });
+    kitchenManagerDocRef.get().then(snapshot => {
+      snapshot.forEach(doc => {
+        let deliveryRef = doc.collection("deliveries");
+        date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let breakfast = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("breakfast")
+            .doc(req.body.users.id);
+
+          batch.update(breakfast, { kitchenData });
+
+          let lunch = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("lunch")
+            .doc(req.body.users.id);
+
+          batch.update(lunch, { kitchenData });
+
+          let dinner = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("dinner")
+            .doc(req.body.users.id);
+
+          batch.update(dinner, { kitchenData });
+        }
+      });
+    });
+
+    // batch.set(kitchenRef, {}, { merge: true });
 
     //batch commit
     return batch

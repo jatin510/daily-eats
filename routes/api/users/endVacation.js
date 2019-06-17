@@ -8,6 +8,42 @@ const Joi = require("@hapi/joi");
 
 route.use(express.json());
 
+function getCalenderData(value) {
+  let subSchema = {};
+
+  subSchema.breakfast.status.vacation = false;
+  subSchema.lunch.status.vacation = false;
+  subSchema.dinner.status.vacation = false;
+
+  return subSchema;
+}
+
+function getSubscriptionData(value) {
+  let subSchema = {};
+
+  subSchema.breakfast.status.vacation = false;
+  subSchema.lunch.status.vacation = false;
+  subSchema.dinner.status.vacation = false;
+
+  return subSchema;
+}
+
+function getOrderData(value) {
+  let subSchema = {};
+  subSchema.breakfast.status.upcoming = true;
+  subSchema.lunch.status.upcoming = true;
+  subSchema.dinner.status.upcoming = true;
+  return subSchema;
+}
+
+function getKitchenData(value) {
+  let subSchema = {};
+
+  subSchema.status.pending = true;
+
+  return subSchema;
+}
+
 route.get("/", (req, res) => {
   res.send("End Vacation");
 });
@@ -25,49 +61,103 @@ route.put("/", (req, res) => {
     date: nestedDateSchema
   });
 
-  const { error, value } = Joi.validate(req.body, endVacationSchema);
+  const { error, value } = Joi.validate(req.body.users, endVacationSchema);
 
   if (error) {
     console.log("Put End Vacation, Error", error);
-    return res.status(400).json({ error: { message: "Error adding address" } });
+    return res
+      .status(400)
+      .json({ error: { message: "Error adding address", code: "" } });
   } else {
-    // logic for date
-    //
-    //
-    // logic for date
+    let fromDate = req.body.date.from.split("-")[2];
+    let toDate = req.body.date.to.split("-")[2];
+    let month = req.body.date.from.split("-")[1];
+    let year = req.body.date.from.split("-")[0];
 
     let batch = db.batch();
 
-    //calender Ref
-    let userCalenderRef = db
+    // user calender /////////////////////////////////////////////////
+    let calenderData = getCalenderData(req.body.users);
+
+    let userCalenderDocRef = db
       .collection("users")
-      .doc(req.params.userId)
+      .doc(req.body.users.id)
       .collection("calender")
-      .doc();
+      .doc(`${month}${year}`);
+    let date = {};
 
-    batch.set(userCalenderRef, {}, { merge: true });
+    for (date = fromDate; date <= toDate; i++) {
+      date = { ...date, ...calenderData };
+      batch.update(userCalenderDocRef, { date });
+    }
+    // user subscription /////////////////////////////////
 
-    // subscription Ref
-
-    let userSubRef = db
+    let subscriptionData = getSubscriptionData(req.body.users);
+    let userSubCollectionRef = db
       .collection("users")
-      .doc(req.params.userId)
-      .collection("subscription")
-      .doc();
+      .doc(req.body.users.id)
+      .collection("subscription");
 
-    batch.set(userSubRef, {}, { merge: true });
+    let date = {};
+
+    for (date = fromDate; date <= toDate; date++) {
+      let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
+
+      batch.update(userSubDocRef, { subscriptionData });
+    }
 
     //order Ref
 
-    let orderRef = db.collection("orders").doc();
+    let orderData = getOrderData(req.body.users);
 
-    batch.set(orderRef, {}, { merge: true });
+    let orderRef = db.collection("orders").doc(`${month}${year}`);
+
+    for (date = fromDate; date <= toDate; date++) {
+      let orderDocRef = orderRef
+        .collection(`${date}${month}${year}`)
+        .doc(req.body.users.id);
+
+      batch.update(orderDocRef, { orderData });
+    }
 
     // kitchen Ref
 
-    let kitchenRef = db.collection("kitchen").doc();
+    userSector = req.body.users.address.area;
 
-    batch.set(kitchenRef, {}, { merge: true });
+    kitchenData = getKitchen(req.body.users);
+
+    let kitchenManagerDocRef = db
+      .collection("kitchen")
+      .where(`areaHandling.${userSector}`, "==", true);
+
+    kitchenManagerDocRef.get().then(snapshot => {
+      snapshot.forEach(doc => {
+        let deliveryRef = doc.collection("deliveries");
+        date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let breakfast = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("breakfast")
+            .doc(req.body.users.id);
+
+          batch.update(breakfast, { kitchenData });
+
+          let lunch = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("lunch")
+            .doc(req.body.users.id);
+
+          batch.update(lunch, { kitchenData });
+
+          let dinner = deliveryRef
+            .doc(`${day}${month}${year}`)
+            .collection("dinner")
+            .doc(req.body.users.id);
+
+          batch.update(dinner, { kitchenData });
+        }
+      });
+    });
 
     // batch commit
     return batch
