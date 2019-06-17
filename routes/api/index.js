@@ -27,7 +27,9 @@ function createUserDb(req, res) {
 
   if (error) {
     console.log("Post Add User,error", error);
-    return res.status(400).json({ error: { message: "Error adding address" } });
+    return res.status(400).json({
+      error: { message: `Error adding user, ${error.details[0]}` }
+    });
   } else {
     return db
       .collection("users")
@@ -49,16 +51,19 @@ function createUserDb(req, res) {
 route.post("/users/", (req, res) => {
   //if already exist
 
-  db.collection("users")
+  return db
+    .collection("users")
     .doc(req.body.users.id)
     .get()
     .then(doc => {
       if (!doc.exists) {
         console.log("No document found");
-        return createUserDb(req, res); //should I return or not
+        return createUserDb(req, res);
       } else {
         console.log("User already exist");
-        return res.status(104).json({ message: "User already exist" });
+        return res
+          .status(400)
+          .json({ error: { message: "User already exist", code: 104 } });
       }
     })
     .catch(error => console.log("error", error));

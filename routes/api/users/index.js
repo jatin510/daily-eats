@@ -8,25 +8,25 @@ const Joi = require("@hapi/joi");
 
 const validateUser = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
-  console.log(req.params);
-  console.log(req.params.userId);
+  console.log(req.body.users.id);
+  console.log(req.body.users);
   return db
     .collection("users")
-    .doc(req.params.userId)
+    .doc(req.body.users.id + "")
     .get()
     .then(userDoc => {
       if (!userDoc.exists) {
-        console.log("User does not exist", req.params.userId);
+        console.log("User does not exist", req.body.users.id);
         return res
           .status(404)
-          .json({ error: { message: "User does not exist" } });
+          .json({ error: { message: "User does not exist", code: "" } });
       }
 
       return next();
     })
     .catch(error => {
       console.error("Error while verifying Firebase ID token:", error);
-      res.status(403).json({ error: { message: "Unauthorized" } });
+      res.status(403).json({ error: { message: "Unauthorized", code: "" } });
     });
 };
 

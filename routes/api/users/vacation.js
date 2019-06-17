@@ -8,6 +8,38 @@ const Joi = require("@hapi/joi");
 
 route.use(express.json());
 
+function getCalenderData(value) {
+  let subSchema = {};
+
+  subSchema.status.vacation = true;
+
+  return subSchema;
+}
+
+function getSubscriptionData(value) {
+  let subSchema = {};
+
+  subSchema.breakfast.status.upcoming = false;
+  subSchema.lunch.status.upcoming = false;
+  subSchema.dinner.status.upcoming = false;
+
+  return subSchema;
+}
+
+function getOrderData(value) {
+  let subSchema = {};
+  subSchema.breakfast.status.upcoming = false;
+  subSchema.lunch.status.upcoming = false;
+  subSchema.dinner.status.upcoming = false;
+  return subSchema;
+}
+
+function getKitchenData(value) {
+  let subSchema = {};
+
+  subSchema;
+}
+
 route.post("/", (req, res) => {
   //Code to add vacation
 
@@ -20,7 +52,7 @@ route.post("/", (req, res) => {
     date: nestedDates
   });
 
-  const { error, value } = Joi.validate(req.body, vacationSchema);
+  const { error, value } = Joi.validate(req.body.users, vacationSchema);
 
   if (error) {
     console.log("Post Add Vacation error", error);
@@ -30,35 +62,73 @@ route.post("/", (req, res) => {
   } else {
     let batch = db.batch();
 
-    // user calender
-    let userCalenderRef = db
+    /////////// user calender /////////////////////////////////////////////////////////////////////////////////////
+
+    let calenderData = getCalenderData(req.body);
+
+    let year = req.body.users.date.from.split("-")[0];
+    let month = req.body.users.date.from.split("-")[1];
+    let monthYear = [...month, ...year].join("");
+    let fromDate = req.body.users.date.from.split("-")[2];
+    let toDate = req.body.users.date.from.split("-")[2];
+
+    //have to correct date
+    let userCalenderDocRef = db
+      .collection("users")
+      .doc(req.body.users.id)
+      .collection("calender")
+      .doc(monthYear);
+    let date = {};
+
+    for (date = fromDate; date <= toDate; i++) {
+      date = { ...date, ...calenderData };
+
+      batch.update(userCalenderDocRef, { temp });
+    }
+
+    // user subscription ///////////////////////////////////////////////////////
+    let subscriptionData = getSubscriptionData(req.body);
+    let userSubCollectionRef = db
       .collection("users")
       .doc(req.params.userId)
-      .collection("calender");
+      .collection("subscription");
 
-    batch.set(userCalenderRef, {}, { merge: true });
+    let fromDateMonthYear = req.body.users.date.from.split("-");
+    let toDateMonthYear = req.body.users.date.from.split("-");
 
-    // user subscription
-    let userSubRef = db
-      .collection("users")
-      .doc(req.params.userId)
-      .collection("subscription")
-      .doc();
+    let date = {};
+    //have to correct date
+    for (date = fromDateMonthYear; date <= toDateMonthYear; date++) {
+      let userSubDocRef = userSubCollectionRef.doc(date);
+      batch.update(userSubDocRef, { subscriptionData });
+    }
 
-    batch.set(userSubRef, {}, { merge: true });
+    // order /////////////////////////////////////////////////
 
-    // order
+    //have to correct date
+    let orderData = getOrderData(req.body);
 
-    let orderRef = db
-      .collection("orders")
-      .doc()
-      .collection("users");
-    batch.set(orderRef, {}, { merge: true });
+    let orderRef = db.collection("orders");
 
-    // kitchen
-    let kitchenRef = db.collection("orders").doc();
-    batch.set(kitchenRef, {}, { merge: true });
+    for (date = fromDateMonthYear; (date = toDateMonthYear); date++) {
+      orderRef
+        .doc(date)
+        .collection("users")
+        .doc(req.body.users.id);
 
+      // let data = `breakfast.${orderData}`;
+      batch.update(orderRef, { data });
+      let data = `lunch.${orderData}`;
+      batch.update(orderRef, { data });
+      let data = `dinner.${orderData}`;
+      batch.update(orderRef, { data });
+    }
+
+    // kitchen /////////////////////////////////////////////
+    let userSector = db.collection('users').doc(req.body.users.id).collection('address')
+    let kitchenRef = db.collection("kitchen").where(`areaHandling.${}`,"==",true).get()
+
+    kitchenRef.
     batch
       .commit()
       .then(() => {

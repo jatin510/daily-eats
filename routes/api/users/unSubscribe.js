@@ -6,6 +6,57 @@ const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+function getSubscription(value) {
+  subSchema = {};
+
+  if (value.breakfast) {
+    subSchema.breakfast.status.upcoming = false;
+  }
+  if (value.lunch) {
+    subSchema.lunch.status.upcoming = false;
+  }
+  if (value.dinner) {
+    subSchema.dinner.status.upcoming = false;
+  }
+
+  return subSchema;
+}
+
+//problem with calender
+function getCalender(value) {
+  subSchema = {};
+
+  if (value.breakfast) {
+    subSchema.breakfast.status.upcoming = false;
+  }
+  if (value.lunch) {
+    subSchema.lunch.status.upcoming = false;
+  }
+  if (value.dinner) {
+    subSchema.dinner.status.upcoming = false;
+  }
+
+  return subSchema;
+}
+
+function getOrder(value) {
+  subSchema = {};
+
+  if (value.breakfast) {
+    subSchema.breakfast.status.upcoming = false;
+  }
+  if (value.lunch) {
+    subSchema.lunch.status.upcoming = false;
+  }
+  if (value.dinner) {
+    subSchema.dinner.status.upcoming = false;
+  }
+
+  return subSchema;
+}
+
+function getKitchen(value) {}
+
 route.put("/", (req, res) => {
   const dateSchema = Joi.object({
     from: Joi.string(),
@@ -13,10 +64,11 @@ route.put("/", (req, res) => {
   });
 
   const schema = Joi.object().keys({
+    id: Joi.string(),
     date: dateSchema
   });
 
-  const { error, value } = Joi.validate(req.body, schema);
+  const { error, value } = Joi.validate(req.body.users, schema);
 
   if (error) {
     console.log("Post unsubscribe meal error", error);
@@ -27,6 +79,8 @@ route.put("/", (req, res) => {
     // subscription
 
     subDoc = req.body.date.from; // incomplete
+
+    getSubscription(req.body.users);
 
     let subRef = db
       .collection("users")
@@ -54,7 +108,9 @@ route.put("/", (req, res) => {
     batch.set(orderRef, {}, { merge: true });
 
     //kitchen
-    kitchenRef = db.collection("kitchen");
+    sectorHandling = kitchenRef = db
+      .collection("kitchen")
+      .where("areaHandling.sector");
 
     batch.set(kitchenRef, {}, { merge: true });
 
