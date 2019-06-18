@@ -10,9 +10,14 @@ route.use(express.json());
 
 function getCalenderData(value) {
   let subSchema = {};
-
+  subSchema.breakfast = {};
+  subSchema.breakfast.status = {};
   subSchema.breakfast.status.vacation = false;
+  subSchema.lunch = {};
+  subSchema.lunch.status = {};
   subSchema.lunch.status.vacation = false;
+  subSchema.dinner = {};
+  subSchema.dinner.status = {};
   subSchema.dinner.status.vacation = false;
 
   return subSchema;
@@ -20,9 +25,14 @@ function getCalenderData(value) {
 
 function getSubscriptionData(value) {
   let subSchema = {};
-
+  subSchema.breakfast = {};
+  subSchema.breakfast.status = {};
   subSchema.breakfast.status.vacation = false;
+  subSchema.lunch = {};
+  subSchema.lunch.status = {};
   subSchema.lunch.status.vacation = false;
+  subSchema.dinner = {};
+  subSchema.dinner.status = {};
   subSchema.dinner.status.vacation = false;
 
   return subSchema;
@@ -30,15 +40,21 @@ function getSubscriptionData(value) {
 
 function getOrderData(value) {
   let subSchema = {};
+  subSchema.breakfast = {};
+  subSchema.breakfast.status = {};
   subSchema.breakfast.status.upcoming = true;
+  subSchema.lunch = {};
+  subSchema.lunch.status = {};
   subSchema.lunch.status.upcoming = true;
+  subSchema.dinner = {};
+  subSchema.dinner.status = {};
   subSchema.dinner.status.upcoming = true;
   return subSchema;
 }
 
 function getKitchenData(value) {
   let subSchema = {};
-
+  subSchema.status = {};
   subSchema.status.pending = true;
 
   return subSchema;
@@ -48,7 +64,7 @@ route.get("/", (req, res) => {
   res.send("End Vacation");
 });
 
-route.put("/", (req, res) => {
+route.put("/", async (req, res) => {
   //Code to end vacation
 
   nestedDateSchema = Joi.object().keys({
@@ -77,6 +93,8 @@ route.put("/", (req, res) => {
     let batch = db.batch();
 
     // user calender /////////////////////////////////////////////////
+
+    console.log("calender endvacation starting");
     let calenderData = getCalenderData(req.body.users);
 
     let userCalenderDocRef = db
@@ -89,9 +107,13 @@ route.put("/", (req, res) => {
     for (date = fromDate; date <= toDate; i++) {
       // date = { ...date, ...calenderData };
       temp = `${date}.${calenderData}`;
-      batch.update(userCalenderDocRef, { temp });
+      batch.set(userCalenderDocRef, { [date]: calenderData }, { merge: true });
     }
+
+    console.log("calender endvacation ending");
+
     // user subscription /////////////////////////////////
+    console.log("subscription endvacation starting");
 
     let subscriptionData = getSubscriptionData(req.body.users);
     let userSubCollectionRef = db
@@ -104,10 +126,13 @@ route.put("/", (req, res) => {
     for (date = fromDate; date <= toDate; date++) {
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
 
-      batch.update(userSubDocRef, { subscriptionData });
+      batch.set(userSubDocRef, subscriptionData, { merge: true });
     }
 
+    console.log("subscription endvacation ended");
+
     //order Ref
+    console.log("order endvacation starting");
 
     let orderData = getOrderData(req.body.users);
 
@@ -121,49 +146,51 @@ route.put("/", (req, res) => {
       batch.update(orderDocRef, { orderData });
     }
 
-    // kitchen Ref
+    console.log("order endvacation ended");
 
-    userSector = req.body.users.address.area;
+    // kitchen Ref
+    console.log("kitchen endvacation starting");
+
+    userSector = db
+      .collection("users")
+      .doc(req.body.users)
+      .get();
 
     kitchenData = getKitchen(req.body.users);
 
-    let kitchenManagerDocRef = db
+    let kitchenManagerDocRef = await db
       .collection("kitchen")
-      .where(`areaHandling.${userSector}`, "==", true);
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
 
-    kitchenManagerDocRef
-      .get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          let deliveryRef = doc.collection("deliveries");
-          date = {};
-          for (date = fromDate; date <= toDate; date++) {
-            let breakfast = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("breakfast")
-              .doc(req.body.users.id);
+    kitchenManagerDocRef.forEach(doc => {
+      let deliveryRef = doc.collection("deliveries");
+      date = {};
+      for (date = fromDate; date <= toDate; date++) {
+        let breakfast = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("breakfast")
+          .doc(req.body.users.id);
 
-            batch.update(breakfast, { kitchenData });
+        batch.update(breakfast, { kitchenData });
 
-            let lunch = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("lunch")
-              .doc(req.body.users.id);
+        let lunch = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("lunch")
+          .doc(req.body.users.id);
 
-            batch.update(lunch, { kitchenData });
+        batch.update(lunch, { kitchenData });
 
-            let dinner = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("dinner")
-              .doc(req.body.users.id);
+        let dinner = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("dinner")
+          .doc(req.body.users.id);
 
-            batch.update(dinner, { kitchenData });
-          }
-        });
+        batch.update(dinner, { kitchenData });
+      }
+    });
 
-        return;
-      })
-      .catch(e => console.log("error in endvacation kitchen", e));
+    console.log("kitchen endvacation ended");
 
     // batch commit
     return batch

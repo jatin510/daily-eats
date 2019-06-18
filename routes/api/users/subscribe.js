@@ -402,7 +402,6 @@ route.put("/", async (req, res) => {
       .doc(`${month}${year}`);
 
     console.log("able to open document");
-    // let date = {};
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 

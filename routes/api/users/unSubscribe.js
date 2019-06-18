@@ -10,12 +10,18 @@ function getSubscription(value) {
   subSchema = {};
 
   if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.status = {};
     subSchema.breakfast.status.upcoming = false;
   }
   if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.status = {};
     subSchema.lunch.status.upcoming = false;
   }
   if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.status = {};
     subSchema.dinner.status.upcoming = false;
   }
 
@@ -26,12 +32,18 @@ function getCalender(value) {
   subSchema = {};
 
   if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.status = {};
     subSchema.breakfast.status.upcoming = false;
   }
   if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.status = {};
     subSchema.lunch.status.upcoming = false;
   }
   if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.status = {};
     subSchema.dinner.status.upcoming = false;
   }
 
@@ -42,12 +54,18 @@ function getOrder(value) {
   subSchema = {};
 
   if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.status = {};
     subSchema.breakfast.status.upcoming = false;
   }
   if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.status = {};
     subSchema.lunch.status.upcoming = false;
   }
   if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.status = {};
     subSchema.dinner.status.upcoming = false;
   }
 
@@ -56,13 +74,13 @@ function getOrder(value) {
 
 function getKitchen(value) {
   let subSchema = {};
-
+  subSchema.status = {};
   subSchema.status.pending = false;
 
   return subSchema;
 }
 
-route.put("/", (req, res) => {
+route.put("/", async (req, res) => {
   const dateSchema = Joi.object({
     from: Joi.string(),
     to: Joi.string()
@@ -87,7 +105,7 @@ route.put("/", (req, res) => {
     let batch = db.batch();
 
     // subscription/////////////////////////////////////////
-
+    console.log("user unsubscribing collection starting");
     let subscriptionData = getSubscription(req.body.users);
 
     let userSubscriptionRef = db
@@ -99,90 +117,96 @@ route.put("/", (req, res) => {
     for (date = fromDate; date <= toDate; date++) {
       let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
 
-      batch.set(userSubRefDoc, { subscriptionData }, { merge: true });
+      batch.set(userSubRefDoc, subscriptionData, { merge: true });
     }
+    console.log("user unsubscribing collection ending");
 
-    //calender
+    //calender/////////////////////////////////////////////////////////////////////
+    console.log("user calender unsubscribing starting");
 
     calenderData = getCalender(req.body.users);
     calenderRef = db
       .collection("users")
       .doc(req.body.users.id)
       .collection("calender")
-      .doc(month);
+      .doc(`${month}${year}`);
 
-    // let date = {};
     for (date = fromDate; date <= toDate; date++) {
-      // date = { ...date, ...calenderData };
-      // batch.update(userCalenderDocRef, { calenderData });
+      // temp = `${date}.${calenderData}`;
+      // batch.update(userCalenderDocRef, { temp });
 
-      temp = `${date}.${calenderData}`;
-      batch.update(userCalenderDocRef, { temp });
+      batch.set(calenderRef, { [date]: calenderData }, { merge: true });
     }
 
+    console.log("user calender unsubscribing ending");
+
     // order ////////////////////////////////////////////////
+
+    console.log("order unsubscribing starting");
 
     let orderData = getOrder(req.body.users);
 
     let orderRef = db.collection("orders").doc(`${month}${year}`);
-
-    batch.set(orderRef, {}, { merge: true });
 
     for (date = fromDate; date <= toDate; date++) {
       let orderDocRef = orderRef
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      batch.update(orderDocRef, { orderData });
+      batch.set(orderDocRef, { [date]: orderData }, { merge: true });
     }
-    //kitchen////////////////////////////////////////
-    userSector = req.body.users.address.area;
+
+    console.log("order unsubscribing ending");
+
+    //kitchen/////////////////////////////////////////////////
+
+    console.log("kitchen unsubscribing starting");
 
     kitchenData = getKitchen(req.body.users);
 
-    let kitchenManagerDocRef = db
-      .collection("kitchen")
-      .where(`areaHandling.${userSector}`, "==", true);
+    userSector;
 
-    kitchenManagerDocRef
-      .get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          let deliveryRef = doc.collection("deliveries");
-          date = {};
-          for (date = fromDate; date <= toDate; date++) {
-            let breakfast = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("breakfast")
-              .doc(req.body.users.id);
+    let kitchenManagerDocRef = await db
+      .collection("kitchens")
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
 
-            batch.update(breakfast, { kitchenData });
+    kitchenManagerDocRef;
+    forEach(doc => {
+      id = doc.id;
 
-            let lunch = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("lunch")
-              .doc(req.body.users.id);
+      let deliveryRef = db
+        .collection("kitchens")
+        .doc(id)
+        .collection("deliveries");
 
-            batch.update(lunch, { kitchenData });
+      let date = {};
+      for (date = fromDate; date <= toDate; date++) {
+        let breakfast = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("breakfast")
+          .doc(req.body.users.id);
 
-            let dinner = deliveryRef
-              .doc(`${day}${month}${year}`)
-              .collection("dinner")
-              .doc(req.body.users.id);
+        batch.set(breakfast, { kitchenData }, { merge: true });
 
-            batch.update(dinner, { kitchenData });
-          }
-        });
-        return;
-      })
-      .catch(e => {
-        console.log("error in unsubscribe kitchen");
-        return res
-          .status(400)
-          .json({ error: { message: "error in unsubscribe kitchen " } });
-      });
+        let lunch = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("lunch")
+          .doc(req.body.users.id);
 
-    //batch commit
+        batch.set(lunch, { kitchenData }, { merge: true });
+
+        let dinner = deliveryRef
+          .doc(`${day}${month}${year}`)
+          .collection("dinner")
+          .doc(req.body.users.id);
+
+        batch.set(dinner, { kitchenData }, { merge: true });
+      }
+    });
+
+    console.log("kitchen unsubscribing finished");
+    //batch commit /////////////////////////////////////////////////////////
     return batch
       .commit()
       .then(() => {
