@@ -24,7 +24,7 @@ function getSubscriptions(value) {
     subSchema.breakfast.address.city = value.breakfast.city;
     subSchema.breakfast.price = value.breakfast.price;
     subSchema.breakfast.quantity = value.breakfast.quantity;
-    if (subSchema.breakfast.quantity != 0) {
+    if (subSchema.breakfast.quantity !== 0) {
       subSchema.breakfast.status.upcoming = true;
     } else {
       subSchema.breakfast.status.upcoming = false;
@@ -45,7 +45,7 @@ function getSubscriptions(value) {
     subSchema.lunch.address.city = value.lunch.city;
     subSchema.lunch.price = value.lunch.price;
     subSchema.lunch.quantity = value.lunch.quantity;
-    if (subSchema.lunch.quantity != 0) {
+    if (subSchema.lunch.quantity !== 0) {
       subSchema.lunch.status.upcoming = true;
     } else {
       subSchema.lunch.status.upcoming = false;
@@ -66,7 +66,7 @@ function getSubscriptions(value) {
     subSchema.dinner.address.city = value.dinner.city;
     subSchema.dinner.price = value.dinner.price;
     subSchema.dinner.quantity = value.dinner.quantity;
-    if (subSchema.dinner.quantity != 0) {
+    if (subSchema.dinner.quantity !== 0) {
       subSchema.dinner.status.upcoming = true;
     } else {
       subSchema.dinner.status.upcoming = false;
@@ -87,7 +87,7 @@ function getCalender(value) {
     address += `,${value.breakfast.city}`;
 
     calenderSchema.fullAddress = address;
-    if (value.breakfast.quantity != 0)
+    if (value.breakfast.quantity !== 0)
       calenderSchema.breakfast.status.upcoming = false;
     else calenderSchema.breakfast.status.upcoming = true;
 
@@ -104,7 +104,8 @@ function getCalender(value) {
     address += `,${value.lunch.city}`;
 
     calenderSchema.fullAddress = address;
-    if (value.lunch.quantity != 0) calenderSchema.lunch.status.upcoming = false;
+    if (value.lunch.quantity !== 0)
+      calenderSchema.lunch.status.upcoming = false;
     else calenderSchema.lunch.status.upcoming = true;
 
     calenderSchema.price = value.subscription.lunch.price;
@@ -120,7 +121,7 @@ function getCalender(value) {
     address += `,${value.dinner.city}`;
 
     calenderSchema.fullAddress = address;
-    if (value.dinner.quantity != 0)
+    if (value.dinner.quantity !== 0)
       calenderSchema.dinner.status.upcoming = false;
     else calenderSchema.dinner.status.upcoming = true;
 
@@ -147,7 +148,7 @@ function getOrder(value) {
     orderSchema.breakfast.address.area = value.breakfast.address.area;
     orderSchema.breakfast.address.city = value.breakfast.city;
 
-    if (value.breakfast.quantity != 0)
+    if (value.breakfast.quantity !== 0)
       orderSchema.breakfast.status.upcoming = true;
     else orderSchema.breakfast.status.upcoming = false;
 
@@ -166,7 +167,7 @@ function getOrder(value) {
     orderSchema.lunch.address.area = value.lunch.address.area;
     orderSchema.lunch.address.city = value.lunch.city;
 
-    if (value.lunch.quantity != 0) orderSchema.lunch.status.upcoming = true;
+    if (value.lunch.quantity !== 0) orderSchema.lunch.status.upcoming = true;
     else orderSchema.lunch.status.upcoming = false;
 
     orderSchema.lunch.price = value.subscription.price;
@@ -184,7 +185,7 @@ function getOrder(value) {
     orderSchema.dinner.address.area = value.dinner.address.area;
     orderSchema.dinner.address.city = value.dinner.city;
 
-    if (value.dinner.quantity != 0) orderSchema.dinner.status.upcoming = true;
+    if (value.dinner.quantity !== 0) orderSchema.dinner.status.upcoming = true;
     else orderSchema.dinner.status.upcoming = false;
 
     orderSchema.dinner.price = value.subscription.price;
@@ -330,14 +331,17 @@ route.put("/", (req, res) => {
       .collection("calender")
       .doc(month);
 
-    let date = {};
+    // let date = {};
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${day}`).split("-")[0];
 
       if (req.body.users.subscription.ignore.day) continue;
 
-      date = { ...date, ...calenderData };
-      batch.update(userCalenderDocRef, { date });
+      temp = `${date}.${calenderData}`;
+      batch.update(userCalenderDocRef, { temp });
+
+      // date = { ...date, ...calenderData };
+      // batch.update(userCalenderDocRef, { date });
     }
 
     // order///////////////////////////////////////////////////////////
@@ -355,8 +359,11 @@ route.put("/", (req, res) => {
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      date = { ...date, ...calenderData };
-      batch.update(orderDocRef, { date });
+      // date = { ...date, ...calenderData };
+      // batch.update(orderDocRef, { date });
+
+      temp = `${date}.${orderData}`;
+      batch.update(userCalenderDocRef, { temp });
     }
 
     //kitchen Manager////////////////////////////////////////////////////
@@ -370,34 +377,43 @@ route.put("/", (req, res) => {
       .collection("kitchen")
       .where(`areaHandling.${userSector}`, "==", true);
 
-    kitchenManagerDocRef.get().then(snapshot => {
-      snapshot.forEach(doc => {
-        let deliveryRef = doc.collection("deliveries");
-        date = {};
-        for (date = fromDate; date <= toDate; date++) {
-          let breakfast = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("breakfast")
-            .doc(req.body.users.id);
+    kitchenManagerDocRef
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          let deliveryRef = doc.collection("deliveries");
+          let date = {};
+          for (date = fromDate; date <= toDate; date++) {
+            let breakfast = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("breakfast")
+              .doc(req.body.users.id);
 
-          batch.update(breakfast, { kitchenData });
+            batch.update(breakfast, { kitchenData });
 
-          let lunch = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("lunch")
-            .doc(req.body.users.id);
+            let lunch = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("lunch")
+              .doc(req.body.users.id);
 
-          batch.update(lunch, { kitchenData });
+            batch.update(lunch, { kitchenData });
 
-          let dinner = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("dinner")
-            .doc(req.body.users.id);
+            let dinner = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("dinner")
+              .doc(req.body.users.id);
 
-          batch.update(dinner, { kitchenData });
-        }
+            batch.update(dinner, { kitchenData });
+          }
+        });
+        return console.log("Successful subscribe kitchen");
+      })
+      .catch(e => {
+        console.log("error in subscribe kitchen ", e);
+        return res.status(400).json({
+          error: { message: "error in subscription kitchen", code: "" }
+        });
       });
-    });
 
     // batch.set(kitchenRef, {}, { merge: true });
 

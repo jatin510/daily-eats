@@ -95,7 +95,7 @@ route.post("/", (req, res) => {
       .doc(req.body.users.id)
       .collection("subscription");
 
-    let date = {};
+    // let date = {};
 
     for (date = fromDate; date <= toDate; date++) {
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
@@ -125,34 +125,44 @@ route.post("/", (req, res) => {
       .collection("kitchen")
       .where(`areaHandling.${userSector}`, "==", true);
 
-    kitchenManagerDocRef.get().then(snapshot => {
-      snapshot.forEach(doc => {
-        let deliveryRef = doc.collection("deliveries");
-        date = {};
-        for (date = fromDate; date <= toDate; date++) {
-          let breakfast = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("breakfast")
-            .doc(req.body.users.id);
+    kitchenManagerDocRef
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          let deliveryRef = doc.collection("deliveries");
+          date = {};
+          for (date = fromDate; date <= toDate; date++) {
+            let breakfast = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("breakfast")
+              .doc(req.body.users.id);
 
-          batch.update(breakfast, { kitchenData });
+            batch.update(breakfast, { kitchenData });
 
-          let lunch = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("lunch")
-            .doc(req.body.users.id);
+            let lunch = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("lunch")
+              .doc(req.body.users.id);
 
-          batch.update(lunch, { kitchenData });
+            batch.update(lunch, { kitchenData });
 
-          let dinner = deliveryRef
-            .doc(`${day}${month}${year}`)
-            .collection("dinner")
-            .doc(req.body.users.id);
+            let dinner = deliveryRef
+              .doc(`${day}${month}${year}`)
+              .collection("dinner")
+              .doc(req.body.users.id);
 
-          batch.update(dinner, { kitchenData });
-        }
+            batch.update(dinner, { kitchenData });
+          }
+        });
+
+        return;
+      })
+      .catch(e => {
+        console.log("Error handling kitchen vacation", e);
+        res
+          .status(400)
+          .send({ error: { message: "error handling kitchen vacation" } });
       });
-    });
 
     batch
       .commit()
