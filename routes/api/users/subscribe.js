@@ -257,7 +257,7 @@ function getKitchen(value) {
   return subSchema;
 }
 
-route.put("/", (req, res) => {
+route.put("/", async (req, res) => {
   //Code to add subscription
 
   let schema = new Validator({
@@ -452,115 +452,96 @@ route.put("/", (req, res) => {
 
       console.log(userSector);
 
-      let kitchenManagerDocRef = db
+      let kitchenManagerDocRef = await db
         .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true);
+        .where(`areaHandling.${userSector}`, "==", true)
+        .get();
 
-      kitchenManagerDocRef
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            console.log("kitchen checking the sector", doc.data());
-            let id = doc.id;
-            console.log(id);
-            let deliveryRef = db
-              .collection("kitchen")
-              .doc(id)
-              .collection("deliveries");
-            let date = {};
-            for (date = fromDate; date <= toDate; date++) {
-              let breakfast = deliveryRef
-                .doc(`${date}${month}${year}`)
-                .collection("breakfast")
-                .doc(req.body.users.id);
+      kitchenManagerDocRef.forEach(doc => {
+        console.log("kitchen checking the sector", doc.data());
+        let id = doc.id;
+        let deliveryRef = db
+          .collection("kitchen")
+          .doc(id)
+          .collection("deliveries");
 
-              batch.set(breakfast, { kitchenData }, { merge: true });
-            }
-          });
-          return console.log("Successful subscribe breakfast kitchen");
-        })
-        .catch(e => {
-          console.log("error in subscribe kitchen ", e);
-          return res.status(400).json({
-            error: { message: "error in subscription kitchen", code: "" }
-          });
-        });
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let breakfast = deliveryRef
+            .doc(`${date}${month}${year}`)
+            .collection("breakfast")
+            .doc(req.body.users.id);
+
+          batch.set(breakfast, kitchenData, { merge: true });
+        }
+        console.log("Successful subscribe breakfast kitchen");
+      });
     }
-
     // lunch
+
     if (req.body.users.subscription.lunch) {
       userSector = req.body.users.subscription.lunch.address.area;
 
-      let kitchenManagerDocRef = db
+      console.log(userSector);
+
+      let kitchenManagerDocRef = await db
         .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true);
+        .where(`areaHandling.${userSector}`, "==", true)
+        .get();
 
-      kitchenManagerDocRef
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            id = doc.id;
-            let deliveryRef = db
-              .collection("kitchen")
-              .doc(id)
-              .collection("deliveries");
-            let date = {};
-            for (date = fromDate; date <= toDate; date++) {
-              let lunch = deliveryRef
-                .doc(`${date}${month}${year}`)
-                .collection("lunch")
-                .doc(req.body.users.id);
+      kitchenManagerDocRef.forEach(doc => {
+        console.log("kitchen checking the sector", doc.data());
+        let id = doc.id;
+        let deliveryRef = db
+          .collection("kitchen")
+          .doc(id)
+          .collection("deliveries");
 
-              batch.set(lunch, { kitchenData }, { merge: true });
-            }
-          });
-          return console.log("Successful subscribe lunch kitchen");
-        })
-        .catch(e => {
-          console.log("error in subscribe kitchen ", e);
-          return res.status(400).json({
-            error: { message: "error in subscription kitchen", code: "" }
-          });
-        });
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let lunch = deliveryRef
+            .doc(`${date}${month}${year}`)
+            .collection("lunch")
+            .doc(req.body.users.id);
+
+          batch.set(lunch, kitchenData, { merge: true });
+        }
+        console.log("Successful subscribe lunch kitchen");
+      });
     }
 
     // dinner
+
     if (req.body.users.subscription.dinner) {
       userSector = req.body.users.subscription.dinner.address.area;
 
-      let kitchenManagerDocRef = db
+      console.log(userSector);
+
+      let kitchenManagerDocRef = await db
         .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true);
+        .where(`areaHandling.${userSector}`, "==", true)
+        .get();
 
-      kitchenManagerDocRef
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            let id = doc.id;
-            let deliveryRef = db
-              .collection("kitchen")
-              .doc(id)
-              .collection("deliveries");
-            let date = {};
-            for (date = fromDate; date <= toDate; date++) {
-              let dinner = deliveryRef
-                .doc(`${date}${month}${year}`)
-                .collection("dinner")
-                .doc(req.body.users.id);
+      kitchenManagerDocRef.forEach(doc => {
+        console.log("kitchen checking the sector", doc.data());
+        let id = doc.id;
+        let deliveryRef = db
+          .collection("kitchen")
+          .doc(id)
+          .collection("deliveries");
 
-              batch.set(dinner, { kitchenData }, { merge: true });
-            }
-          });
-          return console.log("Successful subscribe dinner kitchen");
-        })
-        .catch(e => {
-          console.log("error in subscribe kitchen ", e);
-          return res.status(400).json({
-            error: { message: "error in subscription kitchen", code: "" }
-          });
-        });
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let dinner = deliveryRef
+            .doc(`${date}${month}${year}`)
+            .collection("dinner")
+            .doc(req.body.users.id);
+
+          batch.set(dinner, kitchenData, { merge: true });
+        }
+        console.log("Successful subscribe dinner kitchen");
+      });
     }
-
     console.log("kitchen manager completed");
     //batch commit//////////////////////////////////////
     return batch

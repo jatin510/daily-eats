@@ -1,258 +1,147 @@
-[debug] [2019-06-18T08:53:41.217Z] ----------------------------------------------------------------------
-[debug] [2019-06-18T08:53:41.220Z] Command:       /usr/local/bin/node /usr/local/bin/firebase emulators:start
-[debug] [2019-06-18T08:53:41.221Z] CLI Version:   6.11.0
-[debug] [2019-06-18T08:53:41.221Z] Platform:      linux
-[debug] [2019-06-18T08:53:41.221Z] Node Version:  v10.16.0
-[debug] [2019-06-18T08:53:41.221Z] Time:          Tue Jun 18 2019 14:23:41 GMT+0530 (India Standard Time)
-[debug] [2019-06-18T08:53:41.221Z] ----------------------------------------------------------------------
+[debug] [2019-06-18T11:27:43.518Z] ----------------------------------------------------------------------
+[debug] [2019-06-18T11:27:43.521Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2019-06-18T11:27:43.521Z] CLI Version:   6.11.0
+[debug] [2019-06-18T11:27:43.521Z] Platform:      linux
+[debug] [2019-06-18T11:27:43.521Z] Node Version:  v10.16.0
+[debug] [2019-06-18T11:27:43.521Z] Time:          Tue Jun 18 2019 16:57:43 GMT+0530 (India Standard Time)
+[debug] [2019-06-18T11:27:43.522Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2019-06-18T08:53:41.231Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2019-06-18T08:53:41.231Z] > authorizing via signed-in user
-[debug] [2019-06-18T08:53:41.234Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/daily-eats-dev  
- 
-[debug] [2019-06-18T08:53:41.792Z] <<< HTTP RESPONSE 200
-[info] i  Starting emulators: ["functions"]
-[warn] ⚠  Your requested "node" version "8" doesn't match your global version "10"
-[debug] [2019-06-18T08:53:41.818Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/1040994783048:getServerAppConfig  
- 
-[debug] [2019-06-18T08:53:42.400Z] <<< HTTP RESPONSE 200
-[info] ✔  functions: Emulator started at http://localhost:5001
-[info] i  functions: Watching "/home/jatin/Documents/dailyEats/functions" for Cloud Functions...
-[debug] [2019-06-18T08:53:42.897Z] Functions runtime initialized.
-[debug] [2019-06-18T08:53:42.898Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:53:44.781Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:53:44.783Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:53:45.006Z] Checked functions.config()
-[debug] [2019-06-18T08:53:45.318Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[info] i  functions: HTTP trigger initialized at http://localhost:5001/daily-eats-dev/us-central1/api
-[info] Ignoring trigger "trialRedeem" because the Cloud Firestore emulator is not running.
-[info] Ignoring trigger "onUserCreation" because the Cloud Firestore emulator is not running.
-[debug] [2019-06-18T08:56:08.821Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:56:10.372Z] Functions runtime initialized.
-[debug] [2019-06-18T08:56:10.375Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:56:11.185Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:56:11.186Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:56:11.343Z] Checked functions.config()
-[debug] [2019-06-18T08:56:11.670Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T08:57:13.438Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:57:14.935Z] Functions runtime initialized.
-[debug] [2019-06-18T08:57:14.937Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:57:15.688Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:57:15.688Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:57:15.835Z] Checked functions.config()
-[debug] [2019-06-18T08:57:16.117Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T08:57:50.210Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:57:51.599Z] Functions runtime initialized.
-[debug] [2019-06-18T08:57:51.602Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:57:52.352Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:57:52.353Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:57:52.505Z] Checked functions.config()
-[debug] [2019-06-18T08:57:52.811Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T08:58:03.461Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:58:04.980Z] Functions runtime initialized.
-[debug] [2019-06-18T08:58:04.983Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:58:05.939Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:58:05.942Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:58:06.138Z] Checked functions.config()
-[debug] [2019-06-18T08:58:06.570Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T08:58:10.599Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:58:11.977Z] Functions runtime initialized.
-[debug] [2019-06-18T08:58:11.979Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:58:12.712Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:58:12.713Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:58:12.892Z] Checked functions.config()
-[debug] [2019-06-18T08:58:13.180Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T08:58:45.931Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T08:58:47.343Z] Functions runtime initialized.
-[debug] [2019-06-18T08:58:47.345Z] Disabled runtime features: undefined
-[debug] [2019-06-18T08:58:48.200Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T08:58:48.201Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T08:58:48.378Z] Checked functions.config()
-[debug] [2019-06-18T08:58:48.667Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:00:15.971Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:00:17.428Z] Functions runtime initialized.
-[debug] [2019-06-18T09:00:17.431Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:00:18.190Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:00:18.191Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:00:18.341Z] Checked functions.config()
-[debug] [2019-06-18T09:00:18.675Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:05:12.284Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:05:13.760Z] Functions runtime initialized.
-[debug] [2019-06-18T09:05:13.763Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:05:14.530Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:05:14.531Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:05:14.676Z] Checked functions.config()
-[debug] [2019-06-18T09:05:14.997Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:05:25.031Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:05:26.638Z] Functions runtime initialized.
-[debug] [2019-06-18T09:05:26.642Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:05:27.590Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:05:27.592Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:05:27.771Z] Checked functions.config()
-[debug] [2019-06-18T09:05:28.095Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:06:50.612Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:06:52.023Z] Functions runtime initialized.
-[debug] [2019-06-18T09:06:52.025Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:06:52.810Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:06:52.811Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:06:52.969Z] Checked functions.config()
-[debug] [2019-06-18T09:06:53.263Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:07:25.996Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:07:27.682Z] Functions runtime initialized.
-[debug] [2019-06-18T09:07:27.685Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:07:28.557Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:07:28.558Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:07:28.697Z] Checked functions.config()
-[debug] [2019-06-18T09:07:28.987Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:07:43.138Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:07:44.537Z] Functions runtime initialized.
-[debug] [2019-06-18T09:07:44.540Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:07:45.394Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:07:45.396Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:07:45.577Z] Checked functions.config()
-[debug] [2019-06-18T09:07:45.888Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:09:46.568Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:09:48.017Z] Functions runtime initialized.
-[debug] [2019-06-18T09:09:48.022Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:09:48.869Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:09:48.869Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:09:49.111Z] Checked functions.config()
-[debug] [2019-06-18T09:09:49.502Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:10:17.123Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:10:18.636Z] Functions runtime initialized.
-[debug] [2019-06-18T09:10:18.639Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:10:19.543Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:10:19.724Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:10:19.725Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:10:19.999Z] Checked functions.config()
-[debug] [2019-06-18T09:10:20.374Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:10:21.153Z] Functions runtime initialized.
-[debug] [2019-06-18T09:10:21.165Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:10:22.373Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:10:22.376Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:10:22.581Z] Checked functions.config()
-[debug] [2019-06-18T09:10:23.033Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:10:27.887Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:10:29.271Z] Functions runtime initialized.
-[debug] [2019-06-18T09:10:29.274Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:10:30.059Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:10:30.060Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:10:30.261Z] Checked functions.config()
-[debug] [2019-06-18T09:10:30.595Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:10:30.848Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:10:32.217Z] Functions runtime initialized.
-[debug] [2019-06-18T09:10:32.220Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:10:32.997Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:10:32.997Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:10:33.148Z] Checked functions.config()
-[debug] [2019-06-18T09:10:33.459Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:11:17.854Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:11:19.407Z] Functions runtime initialized.
-[debug] [2019-06-18T09:11:19.409Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:11:20.204Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:11:20.205Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:11:20.357Z] Checked functions.config()
-[debug] [2019-06-18T09:11:20.713Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:18:30.265Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:18:31.866Z] Functions runtime initialized.
-[debug] [2019-06-18T09:18:31.868Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:18:32.614Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:18:32.615Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:18:32.767Z] Checked functions.config()
-[debug] [2019-06-18T09:18:33.099Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[warn] ⚠  /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js:411
-      batch.set(userCalenderDocRef, { ${date}: calenderData }, { merge: true });
-                                       ^
+[debug] [2019-06-18T11:27:43.531Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-06-18T11:27:43.531Z] > authorizing via signed-in user
+[debug] [2019-06-18T11:27:43.531Z] [iam] checking project daily-eats-dev for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2019-06-18T11:27:43.534Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/daily-eats-dev:testIamPermissions  
 
-SyntaxError: Unexpected token {
-    at Module._compile (internal/modules/cjs/loader.js:721:23)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
-    at Module.load (internal/modules/cjs/loader.js:653:32)
-    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
-    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
-    at Module.require (internal/modules/cjs/loader.js:690:17)
-    at require (internal/modules/cjs/helpers.js:25:18)
-    at Object.<anonymous> (/home/jatin/Documents/dailyEats/functions/routes/api/users/index.js:35:25)
-    at Module._compile (internal/modules/cjs/loader.js:776:30)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
-[warn] ⚠  Your function was killed because it raised an unhandled error.
-[debug] [2019-06-18T09:18:41.172Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:18:42.596Z] Functions runtime initialized.
-[debug] [2019-06-18T09:18:42.599Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:18:43.375Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:18:43.376Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:18:43.515Z] Checked functions.config()
-[debug] [2019-06-18T09:18:43.797Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:18:49.447Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:18:50.935Z] Functions runtime initialized.
-[debug] [2019-06-18T09:18:50.937Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:18:51.703Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:18:51.704Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:18:51.944Z] Checked functions.config()
-[debug] [2019-06-18T09:18:52.238Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[warn] ⚠  /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js:411
-      batch.set(userCalenderDocRef, { ${date}: calenderData }, { merge: true });
-                                       ^
+[debug] [2019-06-18T11:27:45.404Z] <<< HTTP RESPONSE 200
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions.
+ Please upgrade using npm install --save firebase-functions@latest in your functions directory.
+[info] 
+[info] === Deploying to 'daily-eats-dev'...
+[info] 
+[info] i  deploying functions
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] ✔  functions: Finished running predeploy script.
+[debug] [2019-06-18T11:27:49.053Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "@hapi/joi": "^15.0.3",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "firebase-admin": "~7.0.0",
+    "firebase-functions": "^2.3.0",
+    "joi": "^14.3.1",
+    "validatorjs": "^3.15.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2019-06-18T11:27:49.054Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/daily-eats-dev?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-18T11:27:49.055Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/daily-eats-dev?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-18T11:27:51.586Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:27:51.825Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2019-06-18T11:27:51.828Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/daily-eats-dev  
+ 
+[debug] [2019-06-18T11:27:53.548Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:27:53.548Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/1040994783048:getServerAppConfig  
+ 
+[debug] [2019-06-18T11:27:54.100Z] <<< HTTP RESPONSE 200
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2019-06-18T11:27:54.107Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/daily-eats-dev/configs  
+ 
+[debug] [2019-06-18T11:27:54.748Z] <<< HTTP RESPONSE 200
+[info] i  functions: packaged functions (188.12 KB) for uploading
+[debug] [2019-06-18T11:27:55.605Z] >>> HTTP REQUEST POST https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/us-central1/functions:generateUploadUrl  
+ 
+[debug] [2019-06-18T11:27:56.602Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:27:56.604Z] >>> HTTP REQUEST PUT https://storage.googleapis.com/gcf-upload-us-central1-7255b70c-5820-4949-bb92-5f06538cbfea/7e6730b8-000d-4d4e-8614-6cdf86dc138b.zip?GoogleAccessId=service-1040994783048@gcf-admin-robot.iam.gserviceaccount.com&Expires=1560859076&Signature=rZEPd%2FOucGVR%2FCl4cqqbHswgr%2BfZs6xDbMaCefuZrKiStfjTSCfRcbQSob5xpOdUel4OAIaY1eG7gi%2FwXqu5073eHccPsmFmcRBuTd27qiBorgndLTEiD9lUerX%2BhEGasC9RRiKAtlF7kivFJqWiTorHLf6jUkpTk950ixjeWTyvZQnlJSiKFI4n%2Bn8FMYzEowQPHR%2FJVoR2U4eDG2g56sl%2F25DUs5jRoZC9iVdCmHMFdZE4pvK9vyTFqbiSWaJb6L7FPuC8BoNLVa0EEzjdTFoqzSY7Rj5b10A%2Fwv7gU2SQKG%2BcbJSh4e9NaziXIXZjsglskApVdE6EcJDetEzPGw%3D%3D  
 
-SyntaxError: Unexpected token {
-    at Module._compile (internal/modules/cjs/loader.js:721:23)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
-    at Module.load (internal/modules/cjs/loader.js:653:32)
-    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
-    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
-    at Module.require (internal/modules/cjs/loader.js:690:17)
-    at require (internal/modules/cjs/helpers.js:25:18)
-    at Object.<anonymous> (/home/jatin/Documents/dailyEats/functions/routes/api/users/index.js:35:25)
-    at Module._compile (internal/modules/cjs/loader.js:776:30)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
-[warn] ⚠  Your function was killed because it raised an unhandled error.
-[debug] [2019-06-18T09:18:56.151Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:18:57.786Z] Functions runtime initialized.
-[debug] [2019-06-18T09:18:57.788Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:18:58.528Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:18:58.530Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:18:58.678Z] Checked functions.config()
-[debug] [2019-06-18T09:18:58.966Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:20:04.791Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:20:06.293Z] Functions runtime initialized.
-[debug] [2019-06-18T09:20:06.296Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:20:07.105Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:20:07.106Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:20:07.245Z] Checked functions.config()
-[debug] [2019-06-18T09:20:07.540Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:26:38.600Z] File /home/jatin/Documents/dailyEats/functions/routes/api/users/subscribe.js changed, reloading triggers
-[debug] [2019-06-18T09:26:40.075Z] Functions runtime initialized.
-[debug] [2019-06-18T09:26:40.077Z] Disabled runtime features: undefined
-[debug] [2019-06-18T09:26:40.848Z] Found google-gax at /home/jatin/Documents/dailyEats/functions/node_modules/google-gax/build/src/index.js
-[debug] [2019-06-18T09:26:40.849Z] Outgoing network have been stubbed.
-[debug] [2019-06-18T09:26:40.995Z] Checked functions.config()
-[debug] [2019-06-18T09:26:41.314Z] firebase-admin has been stubbed.
-[info] i  Your code has been provided a "firebase-admin" instance.
-[debug] [2019-06-18T09:26:41.318Z] Error: write EIO
-    at WriteWrap.afterWrite [as oncomplete] (net.js:788:14)
-[error] 
-[error] Error: An unexpected error has occurred.
+[debug] [2019-06-18T11:27:57.692Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: functions folder uploaded successfully
+[debug] [2019-06-18T11:27:57.699Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/-/functions  
+ 
+[debug] [2019-06-18T11:27:58.299Z] <<< HTTP RESPONSE 200
+[info] i  functions: updating Node.js 8 function api(us-central1)...
+[debug] [2019-06-18T11:27:58.306Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function trialRedeem(us-central1)...
+[debug] [2019-06-18T11:27:58.307Z] Trigger is:  {"eventTrigger":{"resource":"projects/daily-eats-dev/databases/(default)/documents/users/{userId}/transaction/{transactionId}","eventType":"providers/cloud.firestore/eventTypes/document.create","service":"firestore.googleapis.com"}}
+[info] i  functions: updating Node.js 8 function onUserCreation(us-central1)...
+[debug] [2019-06-18T11:27:58.308Z] Trigger is:  {"eventTrigger":{"resource":"projects/daily-eats-dev/databases/(default)/documents/users/{userId}","eventType":"providers/cloud.firestore/eventTypes/document.create","service":"firestore.googleapis.com"}}
+[debug] [2019-06-18T11:27:58.310Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudscheduler.googleapis.com/projectSettings/daily-eats-dev?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-18T11:28:00.877Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:00.880Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/us-central1/functions/api {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-18T11:28:00.882Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/us-central1/functions/trialRedeem {"updateMask":"sourceUploadUrl,name,labels,runtime,eventTrigger.resource,eventTrigger.eventType,eventTrigger.service"} 
+
+[debug] [2019-06-18T11:28:00.884Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/us-central1/functions/onUserCreation {"updateMask":"sourceUploadUrl,name,labels,runtime,eventTrigger.resource,eventTrigger.eventType,eventTrigger.service"} 
+
+[debug] [2019-06-18T11:28:01.489Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:01.497Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:01.780Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:01.783Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/daily-eats-dev/locations/-/functions  
+ 
+[debug] [2019-06-18T11:28:02.735Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:02.737Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvYXBpL2J3ZlpiR2pfUmNV  
+ 
+[debug] [2019-06-18T11:28:02.738Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvdHJpYWxSZWRlZW0vdE5jQkkxai00OWs  
+ 
+[debug] [2019-06-18T11:28:02.738Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvb25Vc2VyQ3JlYXRpb24vcjVEcnJlOThFcnc  
+ 
+[debug] [2019-06-18T11:28:03.229Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:03.539Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:03.551Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:05.234Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvb25Vc2VyQ3JlYXRpb24vcjVEcnJlOThFcnc  
+ 
+[debug] [2019-06-18T11:28:05.541Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvdHJpYWxSZWRlZW0vdE5jQkkxai00OWs  
+ 
+[debug] [2019-06-18T11:28:05.551Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvYXBpL2J3ZlpiR2pfUmNV  
+ 
+[debug] [2019-06-18T11:28:05.979Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:05.981Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:06.297Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:07.983Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvdHJpYWxSZWRlZW0vdE5jQkkxai00OWs  
+ 
+[debug] [2019-06-18T11:28:07.985Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvb25Vc2VyQ3JlYXRpb24vcjVEcnJlOThFcnc  
+ 
+[debug] [2019-06-18T11:28:08.298Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvYXBpL2J3ZlpiR2pfUmNV  
+ 
+[debug] [2019-06-18T11:28:08.441Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:08.452Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:09.065Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:10.443Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvb25Vc2VyQ3JlYXRpb24vcjVEcnJlOThFcnc  
+ 
+[debug] [2019-06-18T11:28:10.453Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvdHJpYWxSZWRlZW0vdE5jQkkxai00OWs  
+ 
+[debug] [2019-06-18T11:28:10.894Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:10.927Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:11.066Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvYXBpL2J3ZlpiR2pfUmNV  
+ 
+[debug] [2019-06-18T11:28:11.519Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:12.895Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvdHJpYWxSZWRlZW0vdE5jQkkxai00OWs  
+ 
+[debug] [2019-06-18T11:28:12.929Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvb25Vc2VyQ3JlYXRpb24vcjVEcnJlOThFcnc  
+ 
+[debug] [2019-06-18T11:28:13.352Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:13.520Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGFpbHktZWF0cy1kZXYvdXMtY2VudHJhbDEvYXBpL2J3ZlpiR2pfUmNV  
+ 
+[debug] [2019-06-18T11:28:13.630Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-18T11:28:13.961Z] <<< HTTP RESPONSE 200
