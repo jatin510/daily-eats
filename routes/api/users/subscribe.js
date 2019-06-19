@@ -112,8 +112,8 @@ function getCalender(value) {
 
     calenderSchema.fullAddress = address;
     if (value.breakfast.quantity !== 0)
-      calenderSchema.breakfast.status.upcoming = false;
-    else calenderSchema.breakfast.status.upcoming = true;
+      calenderSchema.breakfast.status.upcoming = true;
+    else calenderSchema.breakfast.status.upcoming = false;
 
     calenderSchema.breakfast.price = value.breakfast.price;
 
@@ -133,9 +133,8 @@ function getCalender(value) {
     address += `,${value.lunch.address.city}`;
 
     calenderSchema.fullAddress = address;
-    if (value.lunch.quantity !== 0)
-      calenderSchema.lunch.status.upcoming = false;
-    else calenderSchema.lunch.status.upcoming = true;
+    if (value.lunch.quantity !== 0) calenderSchema.lunch.status.upcoming = true;
+    else calenderSchema.lunch.status.upcoming = false;
 
     calenderSchema.lunch.price = value.lunch.price;
 
@@ -156,8 +155,8 @@ function getCalender(value) {
 
     calenderSchema.fullAddress = address;
     if (value.dinner.quantity !== 0)
-      calenderSchema.dinner.status.upcoming = false;
-    else calenderSchema.dinner.status.upcoming = true;
+      calenderSchema.dinner.status.upcoming = true;
+    else calenderSchema.dinner.status.upcoming = false;
 
     calenderSchema.dinner.price = value.dinner.price;
 
@@ -266,7 +265,7 @@ route.put("/", async (req, res) => {
       to: "required"
     },
     users: {
-      subscription: {
+      subscriptions: {
         breakfast: {
           address: {
             tag: "string",
@@ -362,12 +361,12 @@ route.put("/", async (req, res) => {
     // user subscription ////////////////////////////////////////////////////////////////////////////////////
     console.log("starting batch of user subscription");
 
-    let subscriptionData = getSubscriptions(req.body.users.subscription);
+    let subscriptionData = getSubscriptions(req.body.users.subscriptions);
 
     let userSubscriptionRef = db
       .collection("users")
       .doc(req.body.users.id)
-      .collection("subscription");
+      .collection("subscriptions");
 
     let date = {};
     for (date = fromDate; date <= toDate; date++) {
@@ -375,13 +374,13 @@ route.put("/", async (req, res) => {
 
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscription.ignore) {
-        if (req.body.users.subscription.ignore.day) continue;
+      if (req.body.users.subscriptions.ignore) {
+        if (req.body.users.subscriptions.ignore.day) continue;
         console.log("ignore the day");
       }
 
       let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
-      console.log("subscription", subscriptionData);
+      console.log("subscriptions", subscriptionData);
       // console.log(`subscription", ${...subscriptionData}`);
 
       batch.set(userSubRefDoc, subscriptionData, { merge: true });
@@ -392,7 +391,7 @@ route.put("/", async (req, res) => {
     //user calender//////////////////////////////////////////////////////////////////////////////////////////////////
     console.log("starting batch of user calender");
 
-    let calenderData = getCalender(req.body.users.subscription);
+    let calenderData = getCalender(req.body.users.subscriptions);
 
     console.log(`${month}${year}`);
     let userCalenderDocRef = db
@@ -405,8 +404,8 @@ route.put("/", async (req, res) => {
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscription.ignore) {
-        if (req.body.users.subscription.ignore.day) continue;
+      if (req.body.users.subscriptions.ignore) {
+        if (req.body.users.subscriptions.ignore.day) continue;
         console.log("ignore the day");
       }
 
@@ -418,15 +417,15 @@ route.put("/", async (req, res) => {
     // order/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     console.log("starting batch of collection order");
 
-    let orderData = getOrder(req.body.users.subscription);
+    let orderData = getOrder(req.body.users.subscriptions);
 
     let orderRef = db.collection("orders").doc(`${month}${year}`);
 
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscription.ignore) {
-        if (req.body.users.subscription.ignore.day) continue;
+      if (req.body.users.subscriptions.ignore) {
+        if (req.body.users.subscriptions.ignore.day) continue;
         console.log("ignore the day");
       }
 
@@ -446,8 +445,8 @@ route.put("/", async (req, res) => {
 
     let kitchenData = getKitchen();
 
-    if (req.body.users.subscription.breakfast) {
-      userSector = req.body.users.subscription.breakfast.address.area;
+    if (req.body.users.subscriptions.breakfast) {
+      userSector = req.body.users.subscriptions.breakfast.address.area;
 
       console.log(userSector);
 
@@ -459,6 +458,16 @@ route.put("/", async (req, res) => {
       kitchenManagerDocRef.forEach(doc => {
         console.log("kitchen checking the sector", doc.data());
         let id = doc.id;
+
+        //writing kitchen details in each user collection
+
+        let UserRef = db
+          .collection("users")
+          .doc(req.body.users.id)
+          .collection("subscriptions");
+
+        for (date = fromDate; date <= toDate; date++) {}
+        //assignment of kitchen to user
         let deliveryRef = db
           .collection("kitchen")
           .doc(id)
@@ -478,8 +487,8 @@ route.put("/", async (req, res) => {
     }
     // lunch
 
-    if (req.body.users.subscription.lunch) {
-      userSector = req.body.users.subscription.lunch.address.area;
+    if (req.body.users.subscriptions.lunch) {
+      userSector = req.body.users.subscriptions.lunch.address.area;
 
       console.log(userSector);
 
@@ -511,8 +520,8 @@ route.put("/", async (req, res) => {
 
     // dinner
 
-    if (req.body.users.subscription.dinner) {
-      userSector = req.body.users.subscription.dinner.address.area;
+    if (req.body.users.subscriptions.dinner) {
+      userSector = req.body.users.subscriptions.dinner.address.area;
 
       console.log(userSector);
 

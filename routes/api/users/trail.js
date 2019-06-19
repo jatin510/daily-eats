@@ -17,3 +17,10 @@ let date = new Date("2019-06-18");
 let date2 = new Date("2016-06-05").toString().split(" ")[0];
 console.log(date);
 console.log(date2);
+
+/// kitchen ---> address
+/// kitchen ---> meal type
+/// kitchen ---> price
+/// kitchen ---> trial meal type
+
+///  total --->

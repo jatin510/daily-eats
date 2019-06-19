@@ -111,7 +111,7 @@ route.put("/", async (req, res) => {
     let userSubscriptionRef = db
       .collection("users")
       .doc(req.body.users.id)
-      .collection("subscription");
+      .collection("subscriptions");
 
     let date = {};
     for (date = fromDate; date <= toDate; date++) {
