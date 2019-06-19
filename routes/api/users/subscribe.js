@@ -7,6 +7,36 @@ const route = require("express").Router();
 const Joi = require("@hapi/joi");
 const Validator = require("validatorjs");
 
+function getKitchenAssignment(value, id, name) {
+  var subSchema = {};
+
+  //breakfast
+  if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.kitchen = {};
+    subSchema.breakfast.kitchen.id = id;
+    subSchema.breakfast.kitchen.name = name;
+  }
+
+  //lunch
+  if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.kitchen = {};
+    subSchema.lunch.kitchen.id = id;
+    subSchema.lunch.kitchen.name = name;
+  }
+
+  //dinner
+  if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.kitchen = {};
+    subSchema.dinner.kitchen.id = id;
+    subSchema.dinner.kitchen.name = name;
+  }
+
+  return subSchema;
+}
+
 function getSubscriptions(value) {
   var subSchema = {};
 
@@ -251,6 +281,8 @@ function getKitchen(value) {
   let subSchema = {};
   subSchema.status = {};
 
+  if (value.lite) subSchema.lite = true;
+  if (value.full) subSchema.full = true;
   subSchema.status.pending = true;
 
   return subSchema;
@@ -380,8 +412,6 @@ route.put("/", async (req, res) => {
       }
 
       let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
-      console.log("subscriptions", subscriptionData);
-      // console.log(`subscription", ${...subscriptionData}`);
 
       batch.set(userSubRefDoc, subscriptionData, { merge: true });
     }
@@ -405,7 +435,7 @@ route.put("/", async (req, res) => {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
       if (req.body.users.subscriptions.ignore) {
-        if (req.body.users.subscriptions.ignore.day) continue;
+        if (`req.body.users.subscriptions.ignore.${day}`) continue;
         console.log("ignore the day");
       }
 
@@ -425,7 +455,7 @@ route.put("/", async (req, res) => {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
       if (req.body.users.subscriptions.ignore) {
-        if (req.body.users.subscriptions.ignore.day) continue;
+        if (`req.body.users.subscriptions.ignore.${day}`) continue;
         console.log("ignore the day");
       }
 
@@ -433,19 +463,20 @@ route.put("/", async (req, res) => {
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      batch.set(orderDocRef, { [date]: orderData }, { merge: true });
+      batch.set(orderDocRef, orderData, { merge: true });
     }
 
     console.log("order schema is handled");
 
     //kitchen Manager///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     console.log("starting batch of collection kitchen");
 
-    // breakfast
-
-    let kitchenData = getKitchen();
+    // breakfast ////////////////////////
 
     if (req.body.users.subscriptions.breakfast) {
+      let kitchenData = getKitchen(req.body.users.subscriptions.breakfast);
+
       userSector = req.body.users.subscriptions.breakfast.address.area;
 
       console.log(userSector);
@@ -458,22 +489,36 @@ route.put("/", async (req, res) => {
       kitchenManagerDocRef.forEach(doc => {
         console.log("kitchen checking the sector", doc.data());
         let id = doc.id;
+        let kitchenName = doc.data().name;
+
+        console.log("kitchen name", kitchenName);
 
         //writing kitchen details in each user collection
 
-        let UserRef = db
+        let userRef = db
           .collection("users")
           .doc(req.body.users.id)
           .collection("subscriptions");
 
-        for (date = fromDate; date <= toDate; date++) {}
-        //assignment of kitchen to user
+        let kitchenAssignment = getKitchenAssignment(
+          req.body.users.subscriptions,
+          id,
+          kitchenName
+        );
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
+          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
+        }
+
+        // writing kitchen details is completed
+
+        //breakfast
         let deliveryRef = db
           .collection("kitchen")
           .doc(id)
           .collection("deliveries");
 
-        let date = {};
         for (date = fromDate; date <= toDate; date++) {
           let breakfast = deliveryRef
             .doc(`${date}${month}${year}`)
@@ -485,9 +530,12 @@ route.put("/", async (req, res) => {
         console.log("Successful subscribe breakfast kitchen");
       });
     }
-    // lunch
+
+    // lunch ///////////////////
 
     if (req.body.users.subscriptions.lunch) {
+      let kitchenData = getKitchen(req.body.users.subscriptions.lunch);
+
       userSector = req.body.users.subscriptions.lunch.address.area;
 
       console.log(userSector);
@@ -500,12 +548,33 @@ route.put("/", async (req, res) => {
       kitchenManagerDocRef.forEach(doc => {
         console.log("kitchen checking the sector", doc.data());
         let id = doc.id;
+        let kitchenName = doc.data().name;
+
+        //writing kitchen details in each user collection
+
+        let userRef = db
+          .collection("users")
+          .doc(req.body.users.id)
+          .collection("subscriptions");
+
+        let kitchenAssignment = getKitchenAssignment(
+          req.body.users.subscriptions,
+          id,
+          kitchenName
+        );
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
+          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
+        }
+
+        // writing kitchen details is completed
+
         let deliveryRef = db
           .collection("kitchen")
           .doc(id)
           .collection("deliveries");
 
-        let date = {};
         for (date = fromDate; date <= toDate; date++) {
           let lunch = deliveryRef
             .doc(`${date}${month}${year}`)
@@ -518,9 +587,11 @@ route.put("/", async (req, res) => {
       });
     }
 
-    // dinner
+    // dinner //////////////////
 
     if (req.body.users.subscriptions.dinner) {
+      let kitchenData = getKitchen(req.body.users.subscriptions.dinner);
+
       userSector = req.body.users.subscriptions.dinner.address.area;
 
       console.log(userSector);
@@ -533,12 +604,33 @@ route.put("/", async (req, res) => {
       kitchenManagerDocRef.forEach(doc => {
         console.log("kitchen checking the sector", doc.data());
         let id = doc.id;
+        let kitchenName = doc.data().name;
+
+        //writing kitchen details in each user collection
+
+        let userRef = db
+          .collection("users")
+          .doc(req.body.users.id)
+          .collection("subscriptions");
+
+        let kitchenAssignment = getKitchenAssignment(
+          req.body.users.subscriptions,
+          id,
+          kitchenName
+        );
+        let date = {};
+        for (date = fromDate; date <= toDate; date++) {
+          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
+          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
+        }
+
+        // writing kitchen details is completed
+
         let deliveryRef = db
           .collection("kitchen")
           .doc(id)
           .collection("deliveries");
 
-        let date = {};
         for (date = fromDate; date <= toDate; date++) {
           let dinner = deliveryRef
             .doc(`${date}${month}${year}`)
@@ -551,6 +643,7 @@ route.put("/", async (req, res) => {
       });
     }
     console.log("kitchen manager completed");
+
     //batch commit//////////////////////////////////////
     return batch
       .commit()
