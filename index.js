@@ -13,6 +13,26 @@ const cookieParser = require("cookie-parser")();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+function getReferralCode() {
+  let code = "DE";
+  let random = Math.random()
+    .toString(36)
+    .substr(2, 4);
+
+  code += random;
+  code = code.toUpperCase();
+
+  db.collection("referralCodes")
+    .doc(code)
+    .get()
+    .then(doc => {
+      if (!doc.exists) return;
+      return getReferralCode();
+    })
+    .catch(e => console.log("error in referral code generation", e));
+  return code;
+}
+
 const validateFirebaseIdToken = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
 
@@ -47,7 +67,7 @@ const validateFirebaseIdToken = (req, res, next) => {
   } else {
     //No cookie
     console.log("no cookie");
-    res.status(403).send("UnAauthorized");
+    res.status(403).send("Unauthorized");
   }
 
   admin
@@ -91,83 +111,61 @@ app.get("/hello", (req, res) => {
 
 exports.api = functions.https.onRequest(app);
 
-//handling trialpack
+//handling trialPack
 exports.trialRedeem = functions.firestore
   .document("users/{userId}/transaction/{transactionId}")
   .onCreate((snap, context) => {});
 
-//handling referal code
+//handling referral code
 exports.onUserCreation = functions.firestore
   .document("users/{userId}")
   .onCreate(async (snap, context) => {
-    // //newUserRef
-    // let userRef = db.collection("users").doc(context.params.userId);
-    // //Invitation code of the existing user
-    // let inviteUserCode = await userRef.get().then(doc => {
-    //   if (!doc.exists) return console.log("No Document Exist");
-    //   else {
-    //     console.log("Document data :", doc.data());
-    //     return doc.data().invitationCode;
-    //   }
-    // });
-    // //assigning invitation code of new users
-    // await userRef
-    //   .update({
-    //     refferalCode: ""
-    //   })
-    //   .then(res => {
-    //     return console.log("Successfully added referal code for new user");
-    //   })
-    //   .catch(e => {
-    //     console.log("Error adding referal code", e);
-    //   });
-    // //fetching data of the inviting user
-    // let inviteUserDocID = await db
-    //   .collection("users")
-    //   .doc(inviteUserCode)
-    //   .get()
-    //   .then(doc => {
-    //     if (!doc.exists) return console.log("Document does not exist");
-    //     else {
-    //       console.log("Document data : ", doc.data());
-    //       return doc.data().id;
-    //     }
-    //   })
-    //   .catch(e => console.log("error fetching the id of inviting user", e));
-    // //assignment in the inviting user
-    // // let dataUpdate = await db.collection('users').doc(inviteUserDocID).collection('refferal').doc().set()
-    // // })
-
-    //assignment of refferalCode to new User
-
     snap.data();
 
-    //invitation code of old user
     console.log(snap.data());
 
-    let existingUserRefferalCode;
+    //invitation code of old user
+    let existingUserReferralCode;
     if (snap.data().invitationCode) {
-      existingUserRefferalCode = snap.data().invitationCode;
+      existingUserReferralCode = snap.data().invitationCode;
+
+      // finding the existing user
+      let existingUserDocId = await db
+        .collection("referralCodes")
+        .doc(existingUserReferralCode)
+        .get();
+
+      existingUserDocId.forEach(doc => {
+        if (!doc.exists) return console.log("Document does not exist");
+        return doc.data().id;
+      });
+
+      // writing the data in the existing user
+      db.collection("users")
+        .doc(existingUserDocId)
+        .collection("referral")
+        .add({ id: newUserDocId, name: newUserName });
     }
 
+    //new user info
     let newUserDocId = snap.data().id;
     let newUserName = snap.data().name;
 
-    //refferal code generation is left
-    let refferalCode = "";
+    //referral code generation
+    let generatedReferralCode = getReferralCode();
 
-    let existingUserDocId = await db
-      .collection("refferalCodes")
-      .doc(existingUserRefferalCode)
-      .get()
-      .then(doc => {
-        if (!doc.exists) return console.log("Docuemnt does not exist");
-        return doc.data().id;
-      })
-      .catch(e => console.log("Error in fetching userId", e));
+    //referral code collection updation
 
-    db.collection("users")
-      .doc(existingUserDocId)
-      .collection("refferal")
-      .add({ id: newUserDocId, name: newUserName });
+    let referralDocRef = db
+      .collection("referralCodes")
+      .doc(generatedReferralCode);
+
+    referralDocRef.set(
+      { userId: newUserDocId, userName: newUserName },
+      { merge: true }
+    );
+
+    return snap.ref.set({
+      referralCode: generatedReferralCode
+    });
   });

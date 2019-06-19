@@ -106,6 +106,7 @@ route.put("/", async (req, res) => {
 
     // subscription/////////////////////////////////////////
     console.log("user unsubscribing collection starting");
+
     let subscriptionData = getSubscription(req.body.users);
 
     let userSubscriptionRef = db
@@ -124,7 +125,7 @@ route.put("/", async (req, res) => {
     //calender/////////////////////////////////////////////////////////////////////
     console.log("user calender unsubscribing starting");
 
-    calenderData = getCalender(req.body.users);
+    let calenderData = getCalender(req.body.users);
     calenderRef = db
       .collection("users")
       .doc(req.body.users.id)
@@ -153,7 +154,7 @@ route.put("/", async (req, res) => {
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      batch.set(orderDocRef, { [date]: orderData }, { merge: true });
+      batch.set(orderDocRef, orderData, { merge: true });
     }
 
     console.log("order unsubscribing ending");

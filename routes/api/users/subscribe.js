@@ -406,11 +406,24 @@ route.put("/", async (req, res) => {
 
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscriptions.ignore) {
-        if (req.body.users.subscriptions.ignore.day) continue;
-        console.log("ignore the day");
+      if (req.body.users.subscriptions.breakfast) {
+        if (req.body.users.subscriptions.breakfast.ignore) {
+          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
       }
-
+      if (req.body.users.subscriptions.lunch) {
+        if (req.body.users.subscriptions.lunch.ignore) {
+          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
+      if (req.body.users.subscriptions.dinner) {
+        if (req.body.users.subscriptions.dinner.ignore) {
+          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
       let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
 
       batch.set(userSubRefDoc, subscriptionData, { merge: true });
@@ -418,7 +431,7 @@ route.put("/", async (req, res) => {
 
     console.log("subscription schema is handled");
 
-    //user calender//////////////////////////////////////////////////////////////////////////////////////////////////
+    // user calender//////////////////////////////////////////////////////////////////////////////////////////////////
     console.log("starting batch of user calender");
 
     let calenderData = getCalender(req.body.users.subscriptions);
@@ -434,9 +447,24 @@ route.put("/", async (req, res) => {
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscriptions.ignore) {
-        if (`req.body.users.subscriptions.ignore.${day}`) continue;
-        console.log("ignore the day");
+      if (req.body.users.subscriptions.breakfast) {
+        if (req.body.users.subscriptions.breakfast.ignore) {
+          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
+
+      if (req.body.users.subscriptions.lunch) {
+        if (req.body.users.subscriptions.lunch.ignore) {
+          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
+      if (req.body.users.subscriptions.dinner) {
+        if (req.body.users.subscriptions.dinner.ignore) {
+          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
       }
 
       batch.set(userCalenderDocRef, { [date]: calenderData }, { merge: true });
@@ -444,7 +472,7 @@ route.put("/", async (req, res) => {
 
     console.log("calender schema is handled");
 
-    // order/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  order/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     console.log("starting batch of collection order");
 
     let orderData = getOrder(req.body.users.subscriptions);
@@ -454,11 +482,25 @@ route.put("/", async (req, res) => {
     for (date = fromDate; date <= toDate; date++) {
       let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
 
-      if (req.body.users.subscriptions.ignore) {
-        if (`req.body.users.subscriptions.ignore.${day}`) continue;
-        console.log("ignore the day");
+      console.log("day", day);
+      if (req.body.users.subscriptions.breakfast) {
+        if (req.body.users.subscriptions.breakfast.ignore) {
+          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
       }
-
+      if (req.body.users.subscriptions.lunch) {
+        if (req.body.users.subscriptions.lunch.ignore) {
+          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
+      if (req.body.users.subscriptions.dinner) {
+        if (req.body.users.subscriptions.dinner.ignore) {
+          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
+          console.log("ignore the day");
+        }
+      }
       let orderDocRef = orderRef
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
@@ -468,7 +510,7 @@ route.put("/", async (req, res) => {
 
     console.log("order schema is handled");
 
-    //kitchen Manager///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //   kitchen Manager///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     console.log("starting batch of collection kitchen");
 
@@ -644,6 +686,8 @@ route.put("/", async (req, res) => {
     }
     console.log("kitchen manager completed");
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+
     //batch commit//////////////////////////////////////
     return batch
       .commit()
@@ -661,3 +705,8 @@ route.put("/", async (req, res) => {
 });
 
 exports = module.exports = route;
+
+// two things are left
+// 1. kitchen total
+// 2. ignore not working
+// total is left

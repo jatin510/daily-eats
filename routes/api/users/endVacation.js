@@ -8,7 +8,7 @@ const Joi = require("@hapi/joi");
 
 route.use(express.json());
 
-function getCalenderData(value) {
+function getSubscriptionData(value) {
   let subSchema = {};
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
@@ -23,7 +23,7 @@ function getCalenderData(value) {
   return subSchema;
 }
 
-function getSubscriptionData(value) {
+function getCalenderData(value) {
   let subSchema = {};
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
@@ -94,7 +94,7 @@ route.put("/", async (req, res) => {
 
     // user calender /////////////////////////////////////////////////
 
-    console.log("calender endvacation starting");
+    console.log("calender endVacation starting");
     let calenderData = getCalenderData(req.body.users);
 
     let userCalenderDocRef = db
@@ -110,16 +110,16 @@ route.put("/", async (req, res) => {
       batch.set(userCalenderDocRef, { [date]: calenderData }, { merge: true });
     }
 
-    console.log("calender endvacation ending");
+    console.log("calender endVacation ending");
 
     // user subscription /////////////////////////////////
-    console.log("subscription endvacation starting");
+    console.log("subscription endVacation starting");
 
     let subscriptionData = getSubscriptionData(req.body.users);
     let userSubCollectionRef = db
       .collection("users")
       .doc(req.body.users.id)
-      .collection("subscription");
+      .collection("subscriptions");
 
     date = {};
 
@@ -129,7 +129,7 @@ route.put("/", async (req, res) => {
       batch.set(userSubDocRef, subscriptionData, { merge: true });
     }
 
-    console.log("subscription endvacation ended");
+    console.log("subscription endVacation ended");
 
     //order Ref
     console.log("order endvacation starting");
@@ -143,7 +143,7 @@ route.put("/", async (req, res) => {
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      batch.update(orderDocRef, { orderData });
+      batch.set(orderDocRef, orderData, { merge: true });
     }
 
     console.log("order endvacation ended");

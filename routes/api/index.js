@@ -43,11 +43,9 @@ function createUserDb(req, res) {
       })
       .catch(e => {
         console.log("Add User error ", e);
-        return res
-          .status(400)
-          .json({
-            error: { message: `Error adding User,${error.details[0]}` }
-          });
+        return res.status(400).json({
+          error: { message: `Error adding User,${error.details[0]}` }
+        });
       });
   }
 }

@@ -8,7 +8,7 @@ const Joi = require("@hapi/joi");
 
 route.use(express.json());
 
-function getCalenderData(value) {
+function getSubscriptionData(value) {
   let subSchema = {};
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
@@ -24,7 +24,7 @@ function getCalenderData(value) {
   return subSchema;
 }
 
-function getSubscriptionData(value) {
+function getCalenderData(value) {
   let subSchema = {};
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
@@ -101,6 +101,7 @@ route.post("/", async (req, res) => {
       .doc(req.body.users.id)
       .collection("calender")
       .doc(`${month}${year}`);
+
     let date = {};
 
     for (date = fromDate; date <= toDate; i++) {
@@ -116,7 +117,7 @@ route.post("/", async (req, res) => {
     let userSubCollectionRef = db
       .collection("users")
       .doc(req.body.users.id)
-      .collection("subscription");
+      .collection("subscriptions");
 
     for (date = fromDate; date <= toDate; date++) {
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
@@ -137,7 +138,7 @@ route.post("/", async (req, res) => {
         .collection(`${date}${month}${year}`)
         .doc(req.body.users.id);
 
-      batch.set(orderDocRef, { [date]: orderData }, { merge: true });
+      batch.set(orderDocRef, orderData, { merge: true });
     }
     console.log("vacation order ended");
 
@@ -177,6 +178,7 @@ route.post("/", async (req, res) => {
       }
     });
 
+    //// batch commit ////////////////////////////////
     batch
       .commit()
       .then(() => {
@@ -193,3 +195,5 @@ route.post("/", async (req, res) => {
 });
 
 exports = module.exports = route;
+
+//
