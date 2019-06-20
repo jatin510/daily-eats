@@ -218,14 +218,17 @@ exports.onUserCreation = functions.firestore
       console.log("test");
       console.log(existingUserDocId);
 
-      if (existingUserDocId.exists) {
-        existingUserDocId = existingUserDocId.data().userId;
-        // writing the data in the existing user
-        if (existingUserDocId) {
-          db.collection("users")
-            .doc(existingUserDocId)
-            .collection("refers")
-            .add({ id: newUserDocId, name: newUserName });
+      if (existingUserDocId) {
+        if (existingUserDocId.exists) {
+          existingUserDocId = existingUserDocId.data().userId;
+          console.log("document does exist inside the refers");
+          // writing the data in the existing user
+          if (existingUserDocId) {
+            db.collection("users")
+              .doc(existingUserDocId)
+              .collection("refers")
+              .add({ id: newUserDocId, name: newUserName });
+          }
         }
       }
       console.log("existing user doc id", existingUserDocId);

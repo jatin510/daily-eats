@@ -5,39 +5,8 @@ const db = admin.firestore();
 const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
-const Validator = require("validatorjs");
 
-function getKitchenAssignment(value, id, name) {
-  var subSchema = {};
-
-  //breakfast
-  if (value.breakfast) {
-    subSchema.breakfast = {};
-    subSchema.breakfast.kitchen = {};
-    subSchema.breakfast.kitchen.id = id;
-    subSchema.breakfast.kitchen.name = name;
-  }
-
-  //lunch
-  if (value.lunch) {
-    subSchema.lunch = {};
-    subSchema.lunch.kitchen = {};
-    subSchema.lunch.kitchen.id = id;
-    subSchema.lunch.kitchen.name = name;
-  }
-
-  //dinner
-  if (value.dinner) {
-    subSchema.dinner = {};
-    subSchema.dinner.kitchen = {};
-    subSchema.dinner.kitchen.id = id;
-    subSchema.dinner.kitchen.name = name;
-  }
-
-  return subSchema;
-}
-
-function getSubscriptions(value) {
+async function getSubscriptions(value) {
   var subSchema = {};
 
   if (value.breakfast) {
@@ -46,6 +15,25 @@ function getSubscriptions(value) {
     subSchema.breakfast.address = {};
     subSchema.breakfast.address.coordinates = {};
     subSchema.breakfast.status = {};
+
+    //// user sector ///////
+
+    let userSector = value.breakfast.address.area;
+
+    let kitchenManagerDocRef = await db
+      .collection("kitchen")
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
+
+    kitchenManagerDocRef.forEach(doc => {
+      console.log("kitchen breakfast getting sector", doc.data());
+      let id = doc.id;
+      let kitchenName = doc.data().name;
+
+      subSchema.breakfast.kitchen = {};
+      subSchema.breakfast.kitchen.id = id;
+      subSchema.breakfast.kitchen.name = kitchenName;
+    });
 
     if (value.breakfast.lite) subSchema.breakfast.lite = true;
     if (value.breakfast.full) subSchema.breakfast.full = true;
@@ -67,12 +55,31 @@ function getSubscriptions(value) {
       subSchema.breakfast.status.upcoming = false;
     }
   }
+
   if (value.lunch) {
     // lunch schema
     subSchema.lunch = {};
     subSchema.lunch.address = {};
     subSchema.lunch.address.coordinates = {};
     subSchema.lunch.status = {};
+
+    //user sector
+    let userSector = value.lunch.address.area;
+
+    let kitchenManagerDocRef = await db
+      .collection("kitchen")
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
+
+    kitchenManagerDocRef.forEach(doc => {
+      console.log("kitchen lunch getting sector", doc.data());
+      let id = doc.id;
+      let kitchenName = doc.data().name;
+
+      subSchema.lunch.kitchen = {};
+      subSchema.lunch.kitchen.id = id;
+      subSchema.lunch.kitchen.name = kitchenName;
+    });
 
     if (value.lunch.lite) subSchema.lunch.lite = true;
     if (value.lunch.full) subSchema.lunch.full = true;
@@ -94,12 +101,31 @@ function getSubscriptions(value) {
       subSchema.lunch.status.upcoming = false;
     }
   }
+
   if (value.dinner) {
     //dinner schema
     subSchema.dinner = {};
     subSchema.dinner.address = {};
     subSchema.dinner.address.coordinates = {};
     subSchema.dinner.status = {};
+
+    //user sector
+    let userSector = value.dinner.address.area;
+
+    let kitchenManagerDocRef = await db
+      .collection("kitchen")
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
+
+    kitchenManagerDocRef.forEach(doc => {
+      console.log("kitchen dinner getting sector", doc.data());
+      let id = doc.id;
+      let kitchenName = doc.data().name;
+
+      subSchema.dinner.kitchen = {};
+      subSchema.dinner.kitchen.id = id;
+      subSchema.dinner.kitchen.name = kitchenName;
+    });
 
     if (value.dinner.lite) subSchema.dinner.lite = true;
     if (value.dinner.full) subSchema.dinner.full = true;
@@ -125,7 +151,7 @@ function getSubscriptions(value) {
   return subSchema;
 }
 
-function getCalender(value) {
+function getCalendar(value) {
   var calenderSchema = {};
 
   //breakfast
@@ -197,520 +223,97 @@ function getCalender(value) {
   return calenderSchema;
 }
 
-function getOrder(value) {
-  var orderSchema = {};
-
-  if (value.breakfast) {
-    //breakfast
-    orderSchema.breakfast = {};
-    orderSchema.breakfast.address = {};
-    orderSchema.breakfast.address.coordinates = {};
-    orderSchema.breakfast.status = {};
-
-    orderSchema.breakfast.address.tag = value.breakfast.address.tag;
-    orderSchema.breakfast.address.coordinates.latitude =
-      value.breakfast.address.coordinates.latitude;
-    orderSchema.breakfast.address.coordinates.longitude =
-      value.breakfast.address.coordinates.longitude;
-    orderSchema.breakfast.address.address1 = value.breakfast.address.address1;
-    orderSchema.breakfast.address.address2 = value.breakfast.address.address2;
-    orderSchema.breakfast.address.area = value.breakfast.address.area;
-    orderSchema.breakfast.address.city = value.breakfast.address.city;
-
-    if (value.breakfast.quantity !== 0)
-      orderSchema.breakfast.status.upcoming = true;
-    else orderSchema.breakfast.status.upcoming = false;
-
-    orderSchema.breakfast.price = value.breakfast.price;
-    if (value.breakfast.lite) orderSchema.breakfast.lite = true;
-    if (value.breakfast.full) orderSchema.breakfast.full = true;
-  }
-  if (value.lunch) {
-    //lunch
-    orderSchema.lunch = {};
-    orderSchema.lunch.address = {};
-    orderSchema.lunch.address.coordinates = {};
-    orderSchema.lunch.status = {};
-
-    orderSchema.lunch.address.tag = value.lunch.address.tag;
-    orderSchema.lunch.address.coordinates.latitude =
-      value.lunch.address.coordinates.latitude;
-    orderSchema.lunch.address.coordinates.longitude =
-      value.lunch.address.coordinates.longitude;
-    orderSchema.lunch.address.address1 = value.lunch.address.address1;
-    orderSchema.lunch.address.address2 = value.lunch.address.address2;
-    orderSchema.lunch.address.area = value.lunch.address.area;
-    orderSchema.lunch.address.city = value.lunch.address.city;
-
-    if (value.lunch.quantity !== 0) orderSchema.lunch.status.upcoming = true;
-    else orderSchema.lunch.status.upcoming = false;
-
-    orderSchema.lunch.price = value.lunch.price;
-    if (value.lunch.lite) orderSchema.lunch.lite = true;
-    if (value.lunch.full) orderSchema.lunch.full = true;
-  }
-  if (value.dinner) {
-    //dinner
-    orderSchema.dinner = {};
-    orderSchema.dinner.address = {};
-    orderSchema.dinner.address.coordinates = {};
-    orderSchema.dinner.status = {};
-
-    orderSchema.dinner.address.tag = value.dinner.address.tag;
-    orderSchema.dinner.address.coordinates.latitude =
-      value.dinner.address.coordinates.latitude;
-    orderSchema.dinner.address.coordinates.longitude =
-      value.dinner.address.coordinates.longitude;
-    orderSchema.dinner.address.address1 = value.dinner.address.address1;
-    orderSchema.dinner.address.address2 = value.dinner.address.address2;
-    orderSchema.dinner.address.area = value.dinner.address.area;
-    orderSchema.dinner.address.city = value.dinner.address.city;
-
-    if (value.dinner.quantity !== 0) orderSchema.dinner.status.upcoming = true;
-    else orderSchema.dinner.status.upcoming = false;
-
-    orderSchema.dinner.price = value.dinner.price;
-    if (value.dinner.lite) orderSchema.dinner.lite = true;
-    if (value.dinner.full) orderSchema.dinner.full = true;
-  }
-
-  return orderSchema;
-}
-
-function getKitchen(value) {
-  let subSchema = {};
-  subSchema.status = {};
-
-  if (value.lite) subSchema.lite = true;
-  if (value.full) subSchema.full = true;
-  subSchema.status.pending = true;
-
-  return subSchema;
-}
-
-route.put("/", async (req, res) => {
-  //Code to add subscription
-
-  let schema = new Validator({
-    date: {
-      from: "required",
-      to: "required"
-    },
-    users: {
-      subscriptions: {
-        breakfast: {
-          address: {
-            tag: "string",
-            coordinates: {
-              longitude: "string",
-              latitude: "string"
-            },
-            address1: "string",
-            address2: "string",
-            area: "string",
-            city: "string"
-          },
-          price: "string",
-          quantity: "string",
-          ignore: {
-            Mon: "boolean",
-            Tue: "boolean",
-            Wed: "boolean",
-            Thu: "boolean",
-            Fri: "boolean",
-            Sat: "boolean",
-            Sun: "boolean"
-          }
-        },
-        lunch: {
-          address: {
-            tag: "string",
-            coordinates: {
-              longitude: "string",
-              latitude: "string"
-            },
-            address1: "string",
-            address2: "string",
-            area: "string",
-            city: "string"
-          },
-          price: "string",
-          quantity: "string",
-          ignore: {
-            Mon: "boolean",
-            Tue: "boolean",
-            Wed: "boolean",
-            Thu: "boolean",
-            Fri: "boolean",
-            Sat: "boolean",
-            Sun: "boolean"
-          }
-        },
-        dinner: {
-          address: {
-            tag: "string",
-            coordinates: {
-              longitude: "string",
-              latitude: "string"
-            },
-            address1: "string",
-            address2: "string",
-            area: "string",
-            city: "string"
-          },
-          price: "string",
-          quantity: "string",
-          ignore: {
-            Mon: "boolean",
-            Tue: "boolean",
-            Wed: "boolean",
-            Thu: "boolean",
-            Fri: "boolean",
-            Sat: "boolean",
-            Sun: "boolean"
-          }
-        }
-      }
-    }
-  });
-
-  // const value = schema.passes();
-  const error = false;
-
+route.put("/", (req, res) => {
+  let error = false;
   if (error) {
-    console.log("Post Subscription Error", error);
-    return res
-      .status(400)
-      .json({ error: { message: "Post subscription error", code: "" } });
+    console.log("Post subscription schema error", error);
   } else {
-    let fromDate = req.body.date.from.split("-")[2];
-    let toDate = req.body.date.to.split("-")[2];
-    let month = req.body.date.from.split("-")[1];
-    let year = req.body.date.from.split("-")[0];
+    let fromDate = req.body.date.fromDate;
+    let toDate = req.body.date.toDate;
 
     let batch = db.batch();
 
-    // user subscription ////////////////////////////////////////////////////////////////////////////////////
-    console.log("starting batch of user subscription");
+    ////  user subscriptions //////////////////////////////////
 
-    let subscriptionData = getSubscriptions(req.body.users.subscriptions);
+    console.log("starting batch of user subscriptions");
 
-    let userSubscriptionRef = db
+    let subscriptionsData = getSubscriptions(req.body.users.subscriptions);
+
+    let userSubscriptionsRef = db
       .collection("users")
       .doc(req.body.users.id)
       .collection("subscriptions");
 
-    let date = {};
-    for (date = fromDate; date <= toDate; date++) {
-      //check for the day of the week
+    let d = {};
 
-      let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
+    for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      let date = d.toLocaleDateString().split("/")[0];
+      let month = d.toLocaleDateString().split("/")[1];
+      let year = d.toLocaleDateString().split("/")[2];
+      let day = d.toDateString().split(" ")[0];
 
-      if (req.body.users.subscriptions.breakfast) {
-        if (req.body.users.subscriptions.breakfast.ignore) {
-          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      if (req.body.users.subscriptions.lunch) {
-        if (req.body.users.subscriptions.lunch.ignore) {
-          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      if (req.body.users.subscriptions.dinner) {
-        if (req.body.users.subscriptions.dinner.ignore) {
-          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      let userSubRefDoc = userSubscriptionRef.doc(`${date}${month}${year}`);
+      //ignore the day
+      //
+      //
+      //
+      // will complete it later on
 
-      batch.set(userSubRefDoc, subscriptionData, { merge: true });
+      let userSubscriptionsDocRef = userSubscriptionsRef.doc(
+        `${date}${month}${year}`
+      );
+
+      batch.set(userSubscriptionsDocRef, subscriptionsData, { merge: true });
     }
 
-    console.log("subscription schema is handled");
+    console.log("complete batch of user subscriptions");
 
-    // user calender//////////////////////////////////////////////////////////////////////////////////////////////////
-    console.log("starting batch of user calender");
+    ///////  completed user subscriptions ///////////////////////////////
 
-    let calenderData = getCalender(req.body.users.subscriptions);
+    ///////  starting user calendar //////////////////////////////////////////////
+    console.log("starting batch of user calendar");
 
-    console.log(`${month}${year}`);
-    let userCalenderDocRef = db
-      .collection("users")
-      .doc(req.body.users.id)
-      .collection("calender")
-      .doc(`${month}${year}`);
+    let calendarData = getCalendar(req.body.users.subscriptions);
 
-    console.log("able to open document");
-    for (date = fromDate; date <= toDate; date++) {
-      let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
+    for (d = new Date(toDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      let date = d.toLocaleDateString().split("/")[0];
+      let month = d.toLocaleDateString().split("/")[1];
+      let year = d.toLocaleDateString().split("/")[2];
+      let day = d.toDateString().split(" ")[0];
 
-      if (req.body.users.subscriptions.breakfast) {
-        if (req.body.users.subscriptions.breakfast.ignore) {
-          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
+      ///ignore the day
+      //
+      //
+      //
+      //ignore the day
 
-      if (req.body.users.subscriptions.lunch) {
-        if (req.body.users.subscriptions.lunch.ignore) {
-          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      if (req.body.users.subscriptions.dinner) {
-        if (req.body.users.subscriptions.dinner.ignore) {
-          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
+      let userCalendarDocRef = db
+        .collection("users")
+        .doc(req.body.users.id)
+        .collection("calendar")
+        .doc(`${month}${year}`);
 
-      batch.set(userCalenderDocRef, { [date]: calenderData }, { merge: true });
+      batch.set(userCalendarDocRef, { [date]: calendarData }, { merge: true });
     }
+    console.log("complete batch of user calendars");
+    /////// completed user calendar //////////////////////////////////////////////
 
-    console.log("calender schema is handled");
+    //// batch commit ///////////////
 
-    //  order/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    console.log("starting batch of collection order");
-
-    let orderData = getOrder(req.body.users.subscriptions);
-
-    let orderRef = db.collection("orders").doc(`${month}${year}`);
-
-    for (date = fromDate; date <= toDate; date++) {
-      let day = new Date(`${year}-${month}-${date}`).toString().split(" ")[0];
-
-      console.log("day", day);
-      if (req.body.users.subscriptions.breakfast) {
-        if (req.body.users.subscriptions.breakfast.ignore) {
-          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      if (req.body.users.subscriptions.lunch) {
-        if (req.body.users.subscriptions.lunch.ignore) {
-          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      if (req.body.users.subscriptions.dinner) {
-        if (req.body.users.subscriptions.dinner.ignore) {
-          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) continue;
-          console.log("ignore the day");
-        }
-      }
-      let orderDocRef = orderRef
-        .collection(`${date}${month}${year}`)
-        .doc(req.body.users.id);
-
-      batch.set(orderDocRef, orderData, { merge: true });
-    }
-
-    console.log("order schema is handled");
-
-    ////////////////   kitchen Manager    //////////////////////////////////////////////////////////
-
-    console.log("starting batch of collection kitchen");
-
-    ////////// breakfast ////////////////////////
-
-    if (req.body.users.subscriptions.breakfast) {
-      let kitchenData = getKitchen(req.body.users.subscriptions.breakfast);
-
-      userSector = req.body.users.subscriptions.breakfast.address.area;
-
-      console.log(userSector);
-
-      let kitchenManagerDocRef = await db
-        .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true)
-        .get();
-
-      kitchenManagerDocRef.forEach(doc => {
-        console.log("kitchen checking the sector", doc.data());
-        let id = doc.id;
-        let kitchenName = doc.data().name;
-
-        console.log("kitchen name", kitchenName);
-
-        //writing kitchen details in each user collection
-
-        let userRef = db
-          .collection("users")
-          .doc(req.body.users.id)
-          .collection("subscriptions");
-
-        let kitchenAssignment = getKitchenAssignment(
-          req.body.users.subscriptions,
-          id,
-          kitchenName
-        );
-        let date = {};
-        for (date = fromDate; date <= toDate; date++) {
-          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
-          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
-        }
-
-        // writing kitchen details is completed
-
-        //breakfast
-        let deliveryRef = db
-          .collection("kitchen")
-          .doc(id)
-          .collection("deliveries");
-
-        for (date = fromDate; date <= toDate; date++) {
-          let breakfast = deliveryRef
-            .doc(`${date}${month}${year}`)
-            .collection("breakfast")
-            .doc(req.body.users.id);
-
-          batch.set(breakfast, kitchenData, { merge: true });
-        }
-        console.log("Successful subscribe breakfast kitchen");
-      });
-    }
-
-    // lunch ///////////////////
-
-    if (req.body.users.subscriptions.lunch) {
-      let kitchenData = getKitchen(req.body.users.subscriptions.lunch);
-
-      userSector = req.body.users.subscriptions.lunch.address.area;
-
-      console.log(userSector);
-
-      let kitchenManagerDocRef = await db
-        .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true)
-        .get();
-
-      kitchenManagerDocRef.forEach(doc => {
-        console.log("kitchen checking the sector", doc.data());
-        let id = doc.id;
-        let kitchenName = doc.data().name;
-
-        //writing kitchen details in each user collection
-
-        let userRef = db
-          .collection("users")
-          .doc(req.body.users.id)
-          .collection("subscriptions");
-
-        let kitchenAssignment = getKitchenAssignment(
-          req.body.users.subscriptions,
-          id,
-          kitchenName
-        );
-        let date = {};
-        for (date = fromDate; date <= toDate; date++) {
-          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
-          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
-        }
-
-        // writing kitchen details is completed
-
-        let deliveryRef = db
-          .collection("kitchen")
-          .doc(id)
-          .collection("deliveries");
-
-        for (date = fromDate; date <= toDate; date++) {
-          let lunch = deliveryRef
-            .doc(`${date}${month}${year}`)
-            .collection("lunch")
-            .doc(req.body.users.id);
-
-          batch.set(lunch, kitchenData, { merge: true });
-        }
-        console.log("Successful subscribe lunch kitchen");
-      });
-    }
-
-    // dinner //////////////////
-
-    if (req.body.users.subscriptions.dinner) {
-      let kitchenData = getKitchen(req.body.users.subscriptions.dinner);
-
-      userSector = req.body.users.subscriptions.dinner.address.area;
-
-      console.log(userSector);
-
-      let kitchenManagerDocRef = await db
-        .collection("kitchen")
-        .where(`areaHandling.${userSector}`, "==", true)
-        .get();
-
-      kitchenManagerDocRef.forEach(doc => {
-        console.log("kitchen checking the sector", doc.data());
-        let id = doc.id;
-        let kitchenName = doc.data().name;
-
-        //writing kitchen details in each user collection
-
-        let userRef = db
-          .collection("users")
-          .doc(req.body.users.id)
-          .collection("subscriptions");
-
-        let kitchenAssignment = getKitchenAssignment(
-          req.body.users.subscriptions,
-          id,
-          kitchenName
-        );
-        let date = {};
-        for (date = fromDate; date <= toDate; date++) {
-          let userSubRefDoc = userRef.doc(`${date}${month}${year}`);
-          batch.set(userSubRefDoc, kitchenAssignment, { merge: true });
-        }
-
-        // writing kitchen details is completed
-
-        let deliveryRef = db
-          .collection("kitchen")
-          .doc(id)
-          .collection("deliveries");
-
-        for (date = fromDate; date <= toDate; date++) {
-          let dinner = deliveryRef
-            .doc(`${date}${month}${year}`)
-            .collection("dinner")
-            .doc(req.body.users.id);
-
-          batch.set(dinner, kitchenData, { merge: true });
-        }
-        console.log("Successful subscribe dinner kitchen");
-      });
-    }
-    console.log("kitchen manager completed");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /////////////////// ADMIN SIDE ///////////////////////////////////////////
-
-    //batch commit//////////////////////////////////////
     return batch
       .commit()
       .then(() => {
-        console.log("User Successfully subscribed the meal");
-        return res
-          .status(400)
-          .send({ res: { message: "User Successfully subscribed the meal" } });
+        console.log("user subscriptions batch successful");
+        return res.status(200).json({
+          res: { message: "user subscriptions successful", code: "300" }
+        });
       })
-      .catch(error => {
-        console.log("subscribe batch error");
-        res
-          .status(403)
-          .send({ error: { message: "subscribe batch error", code: "201" } });
+      .catch(e => {
+        console.log("subscription batch error");
+        res.status(403).json({
+          error: { message: "subscription is not successful", code: "301" }
+        });
       });
   }
 });
 
 exports = module.exports = route;
-
-// two things are left
-// 1. kitchen total
-// 2. ignore not working
-// total is left
