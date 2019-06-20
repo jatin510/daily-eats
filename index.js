@@ -13,24 +13,106 @@ const cookieParser = require("cookie-parser")();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-function getReferralCode() {
-  let code = "DE";
+//refer code generation
+function getReferCode() {
+  let code = "";
   let random = Math.random()
     .toString(36)
-    .substr(2, 4);
+    .substr(2, 6);
 
   code += random;
   code = code.toUpperCase();
 
-  db.collection("referralCodes")
+  db.collection("referCodes")
     .doc(code)
     .get()
     .then(doc => {
       if (!doc.exists) return;
-      return getReferralCode();
+      return getReferCode();
     })
-    .catch(e => console.log("error in referral code generation", e));
+    .catch(e => console.log("error in refer code generation", e));
+
   return code;
+}
+
+function getOrderData(value) {
+  var orderSchema = {};
+
+  if (value.breakfast) {
+    //breakfast
+    orderSchema.breakfast = {};
+    orderSchema.breakfast.address = {};
+    orderSchema.breakfast.address.coordinates = {};
+    orderSchema.breakfast.status = {};
+
+    orderSchema.breakfast.address.tag = value.breakfast.address.tag;
+    orderSchema.breakfast.address.coordinates.latitude =
+      value.breakfast.address.coordinates.latitude;
+    orderSchema.breakfast.address.coordinates.longitude =
+      value.breakfast.address.coordinates.longitude;
+    orderSchema.breakfast.address.address1 = value.breakfast.address.address1;
+    orderSchema.breakfast.address.address2 = value.breakfast.address.address2;
+    orderSchema.breakfast.address.area = value.breakfast.address.area;
+    orderSchema.breakfast.address.city = value.breakfast.address.city;
+
+    if (value.breakfast.quantity !== 0)
+      orderSchema.breakfast.status.upcoming = true;
+    else orderSchema.breakfast.status.upcoming = false;
+
+    orderSchema.breakfast.price = value.breakfast.price;
+    if (value.breakfast.lite) orderSchema.breakfast.lite = true;
+    if (value.breakfast.full) orderSchema.breakfast.full = true;
+  }
+  if (value.lunch) {
+    //lunch
+    orderSchema.lunch = {};
+    orderSchema.lunch.address = {};
+    orderSchema.lunch.address.coordinates = {};
+    orderSchema.lunch.status = {};
+
+    orderSchema.lunch.address.tag = value.lunch.address.tag;
+    orderSchema.lunch.address.coordinates.latitude =
+      value.lunch.address.coordinates.latitude;
+    orderSchema.lunch.address.coordinates.longitude =
+      value.lunch.address.coordinates.longitude;
+    orderSchema.lunch.address.address1 = value.lunch.address.address1;
+    orderSchema.lunch.address.address2 = value.lunch.address.address2;
+    orderSchema.lunch.address.area = value.lunch.address.area;
+    orderSchema.lunch.address.city = value.lunch.address.city;
+
+    if (value.lunch.quantity !== 0) orderSchema.lunch.status.upcoming = true;
+    else orderSchema.lunch.status.upcoming = false;
+
+    orderSchema.lunch.price = value.lunch.price;
+    if (value.lunch.lite) orderSchema.lunch.lite = true;
+    if (value.lunch.full) orderSchema.lunch.full = true;
+  }
+  if (value.dinner) {
+    //dinner
+    orderSchema.dinner = {};
+    orderSchema.dinner.address = {};
+    orderSchema.dinner.address.coordinates = {};
+    orderSchema.dinner.status = {};
+
+    orderSchema.dinner.address.tag = value.dinner.address.tag;
+    orderSchema.dinner.address.coordinates.latitude =
+      value.dinner.address.coordinates.latitude;
+    orderSchema.dinner.address.coordinates.longitude =
+      value.dinner.address.coordinates.longitude;
+    orderSchema.dinner.address.address1 = value.dinner.address.address1;
+    orderSchema.dinner.address.address2 = value.dinner.address.address2;
+    orderSchema.dinner.address.area = value.dinner.address.area;
+    orderSchema.dinner.address.city = value.dinner.address.city;
+
+    if (value.dinner.quantity !== 0) orderSchema.dinner.status.upcoming = true;
+    else orderSchema.dinner.status.upcoming = false;
+
+    orderSchema.dinner.price = value.dinner.price;
+    if (value.dinner.lite) orderSchema.dinner.lite = true;
+    if (value.dinner.full) orderSchema.dinner.full = true;
+  }
+
+  return orderSchema;
 }
 
 const validateFirebaseIdToken = (req, res, next) => {
@@ -75,10 +157,7 @@ const validateFirebaseIdToken = (req, res, next) => {
     .verifyIdToken(idToken)
     .then(decodedIdToken => {
       req.user = decodedIdToken;
-      // return db
-      //   .collection("users")
-      //   .doc(req.user.uid)
-      //   .get();
+
       return req;
     })
     .then(token => {
@@ -88,9 +167,6 @@ const validateFirebaseIdToken = (req, res, next) => {
           .status(403)
           .json({ error: { message: "User does not exist" } });
       }
-
-      // req.user = userDoc.data();
-      // req.user.id = userDoc.id();
 
       return next();
     })
@@ -116,56 +192,84 @@ exports.trialRedeem = functions.firestore
   .document("users/{userId}/transaction/{transactionId}")
   .onCreate((snap, context) => {});
 
-//handling referral code
+//handling refer code
 exports.onUserCreation = functions.firestore
   .document("users/{userId}")
   .onCreate(async (snap, context) => {
-    snap.data();
-
-    console.log(snap.data());
-
-    //invitation code of old user
-    let existingUserReferralCode;
-    if (snap.data().invitationCode) {
-      existingUserReferralCode = snap.data().invitationCode;
-
-      // finding the existing user
-      let existingUserDocId = await db
-        .collection("referralCodes")
-        .doc(existingUserReferralCode)
-        .get();
-
-      existingUserDocId.forEach(doc => {
-        if (!doc.exists) return console.log("Document does not exist");
-        return doc.data().id;
-      });
-
-      // writing the data in the existing user
-      db.collection("users")
-        .doc(existingUserDocId)
-        .collection("referral")
-        .add({ id: newUserDocId, name: newUserName });
-    }
-
     //new user info
     let newUserDocId = snap.data().id;
     let newUserName = snap.data().name;
 
-    //referral code generation
-    let generatedReferralCode = getReferralCode();
+    console.log(snap.data());
 
-    //referral code collection updation
+    //invitation code of old user
+    let existingUserReferCode;
+    if (snap.data().invitationCode) {
+      console.log("invitation code data");
 
-    let referralDocRef = db
-      .collection("referralCodes")
-      .doc(generatedReferralCode);
+      existingUserReferCode = snap.data().invitationCode;
 
-    referralDocRef.set(
+      // finding the document id of existing user
+      let existingUserDocId = await db
+        .collection("referCodes")
+        .doc(existingUserReferCode)
+        .get();
+
+      console.log("test");
+      console.log(existingUserDocId);
+
+      if (existingUserDocId.exists) {
+        existingUserDocId = existingUserDocId.data().userId;
+        // writing the data in the existing user
+        if (existingUserDocId) {
+          db.collection("users")
+            .doc(existingUserDocId)
+            .collection("refers")
+            .add({ id: newUserDocId, name: newUserName });
+        }
+      }
+      console.log("existing user doc id", existingUserDocId);
+    }
+
+    //refer code generation
+    let generatedReferCode = getReferCode();
+
+    //refer code collection updation
+
+    console.log("update in refer codes");
+    let referDocRef = db.collection("referCodes").doc(generatedReferCode);
+
+    referDocRef.set(
       { userId: newUserDocId, userName: newUserName },
       { merge: true }
     );
 
-    return snap.ref.set({
-      referralCode: generatedReferralCode
+    //update for admin totals
+
+    console.log("update in totals");
+
+    let totalActiveUser = db.collection("totals").doc("users");
+
+    totalActiveUser.update({
+      totalUsers: admin.firestore.FieldValue.increment(1)
+    });
+
+    console.log("starting refer code updation");
+
+    return snap.ref.update({
+      referCode: generatedReferCode
     });
   });
+
+//user subscribing the meal
+// exports.onUserSubscription = functions.firestore
+//   .document("users/{userId}/subscriptions/{subscriptionId}")
+//   .onCreate((snap, context) => {
+//     console.log(snap.data());
+
+//     //order Data
+//     orderData = getOrderData(snap.data());
+
+//     if (snap.data().breakfast) {
+//     }
+//   });

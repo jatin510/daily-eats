@@ -26,15 +26,10 @@ console.log(date2);
 ///  total --->
 var now = new Date();
 var daysOfYear = [];
-for (var d = new Date("2019-05-26"); d <= now; d.setDate(d.getDate() + 1)) {
-  daysOfYear.push(new Date(d));
-  //   console.log(d);
-}
-let code = "de";
-let random = Math.random()
-  .toString(36)
-  .substr(2, 4);
+for (var d = new Date("2019-06-18"); d <= now; d.setDate(d.getDate() + 1)) {
+  // daysOfYear.push(d);
+  d.toString();
 
-code += random;
-code = code.toUpperCase();
-console.log(code);
+  console.log(d.toDateString().split(" "));
+  console.log(typeof d);
+}

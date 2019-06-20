@@ -510,11 +510,11 @@ route.put("/", async (req, res) => {
 
     console.log("order schema is handled");
 
-    //   kitchen Manager///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////   kitchen Manager    //////////////////////////////////////////////////////////
 
     console.log("starting batch of collection kitchen");
 
-    // breakfast ////////////////////////
+    ////////// breakfast ////////////////////////
 
     if (req.body.users.subscriptions.breakfast) {
       let kitchenData = getKitchen(req.body.users.subscriptions.breakfast);
@@ -688,18 +688,22 @@ route.put("/", async (req, res) => {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /////////////////// ADMIN SIDE ///////////////////////////////////////////
+
     //batch commit//////////////////////////////////////
     return batch
       .commit()
       .then(() => {
-        console.log("Successfully batched subscribed");
+        console.log("User Successfully subscribed the meal");
         return res
           .status(400)
-          .send({ message: "Successfully batched subscribed" });
+          .send({ res: { message: "User Successfully subscribed the meal" } });
       })
       .catch(error => {
         console.log("subscribe batch error");
-        res.status(403).send({ error: { message: "subscribe batch error" } });
+        res
+          .status(403)
+          .send({ error: { message: "subscribe batch error", code: "201" } });
       });
   }
 });

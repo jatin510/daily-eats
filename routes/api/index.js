@@ -10,7 +10,7 @@ function createUserDb(req, res) {
   var userSchema = Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
-    phone: Joi.number().required(),
+    phone: Joi.string().required(),
     email: Joi.string(),
     invitationCode: Joi.string()
   });
@@ -20,8 +20,10 @@ function createUserDb(req, res) {
   console.log("inside createUser");
 
   if (req.body.users.invitationCode) {
-    value.referralRedeemed = false;
+    value.referRedeemed = false;
   }
+
+  value.trialRedeem = false;
 
   console.log(req.body);
 
@@ -38,7 +40,7 @@ function createUserDb(req, res) {
       .then(() => {
         console.log("User successfully added");
         return res.status(200).json({
-          res: { message: "User successfully added", user: value }
+          res: { message: "User successfully added", user: value, code: "" }
         });
       })
       .catch(e => {
