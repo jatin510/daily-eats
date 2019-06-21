@@ -6,6 +6,8 @@ const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+route.use(express.json());
+
 async function getSubscriptions(value) {
   var subSchema = {};
 
@@ -223,13 +225,22 @@ function getCalendar(value) {
   return calenderSchema;
 }
 
-route.put("/", (req, res) => {
+route.put("/", async (req, res) => {
+  console.log("inside the subscription put");
+
   let error = false;
   if (error) {
     console.log("Post subscription schema error", error);
   } else {
-    let fromDate = req.body.date.fromDate;
-    let toDate = req.body.date.toDate;
+    let fromDate = req.body.date.from;
+    let toDate = req.body.date.to;
+    console.log(req.body);
+    console.log(req.body.date);
+
+    console.log("From Date ", fromDate);
+    console.log("To Date ", toDate);
+
+    console.log(typeof fromDate);
 
     let batch = db.batch();
 
@@ -237,32 +248,45 @@ route.put("/", (req, res) => {
 
     console.log("starting batch of user subscriptions");
 
-    let subscriptionsData = getSubscriptions(req.body.users.subscriptions);
+    let subscriptionsData = await getSubscriptions(
+      req.body.users.subscriptions
+    );
 
-    let userSubscriptionsRef = db
+    let userSubscriptionsRef = await db
       .collection("users")
       .doc(req.body.users.id)
       .collection("subscriptions");
 
-    let d = {};
+    let d;
+    console.log("outside for loop");
+
+    //changing into date format for looping
+    toDate = new Date(toDate);
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth();
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+      console.log(date);
+      console.log(month);
+      console.log(year);
+      console.log(day);
 
+      console.log("inside loop");
       //ignore the day
       //
       //
       //
       // will complete it later on
 
-      let userSubscriptionsDocRef = userSubscriptionsRef.doc(
-        `${date}${month}${year}`
-      );
+      console.log(`${date}${month}${year}`);
+      let docId = `${date}${month}${year}`;
+      let userSubDocRef = userSubscriptionsRef.doc(docId);
 
-      batch.set(userSubscriptionsDocRef, subscriptionsData, { merge: true });
+      console.log("for loop subscription");
+
+      batch.set(userSubDocRef, subscriptionsData, { merge: true });
     }
 
     console.log("complete batch of user subscriptions");
@@ -272,12 +296,12 @@ route.put("/", (req, res) => {
     ///////  starting user calendar //////////////////////////////////////////////
     console.log("starting batch of user calendar");
 
-    let calendarData = getCalendar(req.body.users.subscriptions);
+    let calendarData = await getCalendar(req.body.users.subscriptions);
 
     for (d = new Date(toDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth();
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
       ///ignore the day

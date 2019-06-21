@@ -2,20 +2,23 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 const db = admin.firestore();
-const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
-route.use(express.json());
-
-function getSubscriptionData(value) {
+function getSubscriptions() {
   let subSchema = {};
+
+  //breakfast
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
   subSchema.breakfast.status.vacation = false;
+
+  //lunch
   subSchema.lunch = {};
   subSchema.lunch.status = {};
   subSchema.lunch.status.vacation = false;
+
+  //dinner
   subSchema.dinner = {};
   subSchema.dinner.status = {};
   subSchema.dinner.status.vacation = false;
@@ -23,14 +26,20 @@ function getSubscriptionData(value) {
   return subSchema;
 }
 
-function getCalenderData(value) {
+function getCalendar() {
   let subSchema = {};
+
+  //breakfast
   subSchema.breakfast = {};
   subSchema.breakfast.status = {};
   subSchema.breakfast.status.vacation = false;
+
+  //lunch
   subSchema.lunch = {};
   subSchema.lunch.status = {};
   subSchema.lunch.status.vacation = false;
+
+  //dinner
   subSchema.dinner = {};
   subSchema.dinner.status = {};
   subSchema.dinner.status.vacation = false;
@@ -38,173 +47,99 @@ function getCalenderData(value) {
   return subSchema;
 }
 
-function getOrderData(value) {
-  let subSchema = {};
-  subSchema.breakfast = {};
-  subSchema.breakfast.status = {};
-  subSchema.breakfast.status.upcoming = true;
-  subSchema.lunch = {};
-  subSchema.lunch.status = {};
-  subSchema.lunch.status.upcoming = true;
-  subSchema.dinner = {};
-  subSchema.dinner.status = {};
-  subSchema.dinner.status.upcoming = true;
-  return subSchema;
-}
+route.put("/", (req, res) => {
+  //schema validation
 
-function getKitchenData(value) {
-  let subSchema = {};
-  subSchema.status = {};
-  subSchema.status.pending = true;
-
-  return subSchema;
-}
-
-route.get("/", (req, res) => {
-  res.send("End Vacation");
-});
-
-route.put("/", async (req, res) => {
-  //Code to end vacation
-
-  nestedDateSchema = Joi.object().keys({
-    from: Joi.string().required,
-    to: Joi.string().required
+  nestedDateSchema = Jo.object().keys({
+    from: Joi.string().required(),
+    to: Joi.string().required()
   });
 
-  endVacationSchema = Joi.object().keys({
+  schema = Joi.object().keys({
     id: Joi.string().required,
     date: nestedDateSchema
   });
 
-  const { error, value } = Joi.validate(req.body.users, endVacationSchema);
+  const { error, value } = Joi.validate(req.body.users, schema);
 
   if (error) {
-    console.log("Put End Vacation, Error", error);
-    return res
-      .status(400)
-      .json({ error: { message: "Error adding address", code: "" } });
+    console.log("Put End vacation schema error ", error.details[0]);
+    return res.status(400).json({
+      error: { message: `Put End vacation schema error,${error.details[0]}` }
+    });
   } else {
-    let fromDate = req.body.date.from.split("-")[2];
-    let toDate = req.body.date.to.split("-")[2];
-    let month = req.body.date.from.split("-")[1];
-    let year = req.body.date.from.split("-")[0];
-
     let batch = db.batch();
 
-    // user calender /////////////////////////////////////////////////
+    ////////  user calendar /////////////////////////
 
-    console.log("calender endVacation starting");
-    let calenderData = getCalenderData(req.body.users);
+    console.log("calendar endVacation starting");
 
-    let userCalenderDocRef = db
-      .collection("users")
-      .doc(req.body.users.id)
-      .collection("calender")
-      .doc(`${month}${year}`);
-    let date = {};
+    let d = {};
 
-    for (date = fromDate; date <= toDate; i++) {
-      // date = { ...date, ...calenderData };
-      temp = `${date}.${calenderData}`;
-      batch.set(userCalenderDocRef, { [date]: calenderData }, { merge: true });
+    let calendarData = getCalendar();
+
+    for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      let date = d.toLocaleDateString().split("/")[0];
+      let month = d.toLocaleDateString().split("/")[1];
+      let year = d.toLocaleDateString().split("/")[2];
+      let day = d.toDateString().split(" ")[0];
+
+      let userCalendarDocRef = db
+        .collection("users")
+        .doc(req.body.users.id)
+        .collection("calendar")
+        .doc(`${month}${year}`);
+
+      batch.set(userCalendarDocRef, { [date]: calendarData }, { merge: true });
     }
 
-    console.log("calender endVacation ending");
+    console.log("calendar endVacation completed");
+    //////// completed user calendar  ///////////////
 
-    // user subscription /////////////////////////////////
+    //////// user subscription //////////////////////
     console.log("subscription endVacation starting");
 
-    let subscriptionData = getSubscriptionData(req.body.users);
+    let subscriptionsData = getSubscriptions();
+
     let userSubCollectionRef = db
       .collection("users")
       .doc(req.body.users.id)
       .collection("subscriptions");
 
-    date = {};
+    for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      let date = d.toLocaleDateString().split("/")[0];
+      let month = d.toLocaleDateString().split("/")[1];
+      let year = d.toLocaleDateString().split("/")[2];
+      let day = d.toDateString().split(" ")[0];
 
-    for (date = fromDate; date <= toDate; date++) {
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
 
-      batch.set(userSubDocRef, subscriptionData, { merge: true });
+      batch.set(userSubDocRef, subscriptionsData, { merge: true });
     }
 
     console.log("subscription endVacation ended");
 
-    //order Ref
-    console.log("order endvacation starting");
+    //////// completed user subscription ////////////
 
-    let orderData = getOrderData(req.body.users);
+    ////// batch commit starting ///////////////////
+    console.log("batch commit starting");
 
-    let orderRef = db.collection("orders").doc(`${month}${year}`);
-
-    for (date = fromDate; date <= toDate; date++) {
-      let orderDocRef = orderRef
-        .collection(`${date}${month}${year}`)
-        .doc(req.body.users.id);
-
-      batch.set(orderDocRef, orderData, { merge: true });
-    }
-
-    console.log("order endvacation ended");
-
-    // kitchen Ref
-    console.log("kitchen endvacation starting");
-
-    userSector = db
-      .collection("users")
-      .doc(req.body.users)
-      .get();
-
-    kitchenData = getKitchen(req.body.users);
-
-    let kitchenManagerDocRef = await db
-      .collection("kitchen")
-      .where(`areaHandling.${userSector}`, "==", true)
-      .get();
-
-    kitchenManagerDocRef.forEach(doc => {
-      let deliveryRef = doc.collection("deliveries");
-      date = {};
-      for (date = fromDate; date <= toDate; date++) {
-        let breakfast = deliveryRef
-          .doc(`${day}${month}${year}`)
-          .collection("breakfast")
-          .doc(req.body.users.id);
-
-        batch.update(breakfast, { kitchenData });
-
-        let lunch = deliveryRef
-          .doc(`${day}${month}${year}`)
-          .collection("lunch")
-          .doc(req.body.users.id);
-
-        batch.update(lunch, { kitchenData });
-
-        let dinner = deliveryRef
-          .doc(`${day}${month}${year}`)
-          .collection("dinner")
-          .doc(req.body.users.id);
-
-        batch.update(dinner, { kitchenData });
-      }
-    });
-
-    console.log("kitchen endvacation ended");
-
-    // batch commit
     return batch
       .commit()
       .then(() => {
-        console.log("Successfully batched endvacation");
-        return res
-          .status(400)
-          .send({ message: "Successfully batched endvacation" });
+        console.log("successfully ended vacation");
+        return res.status(200).json({
+          res: { message: "successfully ended vacation", code: "330" }
+        });
       })
-      .catch(error => {
-        console.log("endvacation batch error");
-        res.status(403).send({ error: { message: "endvacation batch error" } });
+      .catch(e => {
+        console.log("error adding vacation");
+        res
+          .status(403)
+          .json({ error: { message: "error adding vacation", code: "331" } });
       });
+
+    ////// batch commit ended   ////////////////////
   }
 });
 

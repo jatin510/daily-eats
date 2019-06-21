@@ -13,10 +13,10 @@
 
 // console.log(a);
 
-let date = new Date("2019-06-18").toUTCString();
-let date2 = new Date("2016-06-05").toString().split(" ")[0];
-console.log(date);
-console.log(date2);
+// let date = new Date("2019-06-18").toUTCString();
+// let date2 = new Date("2016-06-05").toString().split(" ")[0];
+// console.log(date);
+// console.log(date2);
 
 /// kitchen ---> address
 /// kitchen ---> meal type
@@ -24,12 +24,33 @@ console.log(date2);
 /// kitchen ---> trial meal type
 
 ///  total --->
-var now = new Date();
-var daysOfYear = [];
-for (var d = new Date("2019-06-18"); d <= now; d.setDate(d.getDate() + 1)) {
-  // daysOfYear.push(d);
-  d.toString();
+// var now = new Date();
+// var daysOfYear = [];
+// let date = "2019-06-18";
+// let d;
+// console.log("now", now);
+// for (d = new Date(date); d <= now; d.setDate(d.getDate() + 1)) {
+//   // daysOfYear.push(d);
+//   d.toString();
 
-  console.log(d.toDateString().split(" "));
-  console.log(typeof d);
+//   console.log(d.toDateString().split(" "));
+//   console.log(typeof d);
+// }
+
+let fromDate = "2019-06-25";
+let toDate = "2019-06-26";
+toDate = new Date(toDate);
+
+for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+  let date = d.toLocaleDateString().split("/")[1];
+  let month = d.toLocaleDateString().split("/")[0];
+  let year = d.toLocaleDateString().split("/")[2];
+  let day = d.toDateString().split(" ")[0];
+  console.log(date);
+  console.log(month);
+  console.log(year);
+  console.log(d.getDate());
+  console.log(d.getMonth());
+  console.log(d.getFullYear());
+  // console.log(d.)
 }

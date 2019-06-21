@@ -6,6 +6,7 @@ const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+// create new User db function
 function createUserDb(req, res) {
   var userSchema = Joi.object().keys({
     id: Joi.string().required(),
@@ -28,9 +29,11 @@ function createUserDb(req, res) {
   console.log(req.body);
 
   if (error) {
-    console.log("Post Add User,error", error);
+    console.log("Post Add User schema error", error.details[0].message);
     return res.status(400).json({
-      error: { message: `Error adding user, ${error.details[0]}` }
+      error: {
+        message: `Error adding user schema, ${error.details[0].message}`
+      }
     });
   } else {
     return db
@@ -40,21 +43,23 @@ function createUserDb(req, res) {
       .then(() => {
         console.log("User successfully added");
         return res.status(200).json({
-          res: { message: "User successfully added", user: value, code: "" }
+          res: { message: "User successfully added", user: value, code: "200" }
         });
       })
       .catch(e => {
         console.log("Add User error ", e);
         return res.status(400).json({
-          error: { message: `Error adding User,${error.details[0]}` }
+          error: {
+            message: `Error adding User`,
+            code: "201"
+          }
         });
       });
   }
 }
 
-route.post("/users/", (req, res) => {
-  //if already exist
-
+//////create new user if does not exist ////////
+route.post("/users", (req, res) => {
   return db
     .collection("users")
     .doc(req.body.users.id)
@@ -72,6 +77,8 @@ route.post("/users/", (req, res) => {
     })
     .catch(error => console.log("error", error));
 });
+
+route.use("/users/:userId/edit", require("./users.js"));
 
 route.use("/users/:userId", require("./users/index.js"));
 

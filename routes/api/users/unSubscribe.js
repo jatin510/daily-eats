@@ -6,6 +6,50 @@ const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+function getSubscriptions(value) {
+  subSchema = {};
+
+  if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.status = {};
+    subSchema.breakfast.status.upcoming = false;
+  }
+  if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.status = {};
+    subSchema.lunch.status.upcoming = false;
+  }
+  if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.status = {};
+    subSchema.dinner.status.upcoming = false;
+  }
+
+  return subSchema;
+}
+
+function getCalendar(value) {
+  subSchema = {};
+
+  if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.status = {};
+    subSchema.breakfast.status.upcoming = false;
+  }
+  if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.status = {};
+    subSchema.lunch.status.upcoming = false;
+  }
+  if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.status = {};
+    subSchema.dinner.status.upcoming = false;
+  }
+
+  return subSchema;
+}
+
 route.put("/", async (req, res) => {
   const dateSchema = Joi.object({
     from: Joi.string(),
@@ -37,6 +81,8 @@ route.put("/", async (req, res) => {
 
     console.log("starting batch of  user unSubscription");
 
+    let subscriptionsData = getSubscriptions(req.body.users.subscriptions);
+
     let userSubscriptionsRef = db
       .collection("users")
       .doc(req.body.users.id)
@@ -45,7 +91,7 @@ route.put("/", async (req, res) => {
     let d = {};
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let data = d.toLocaleDateString().split("/")[0];
+      let date = d.toLocaleDateString().split("/")[0];
       let month = d.toLocaleDateString().split("/")[1];
       let year = d.toLocaleDateString().split("/")[2];
       let day = d.toDateString().split(" ")[0];
@@ -56,15 +102,70 @@ route.put("/", async (req, res) => {
       //
       // will complete it later on
 
-      let userSubscriptionsDocRef = users;
+      let userSubscriptionsDocRef = userSubscriptionsRef.doc(
+        `${date}${month}${year}`
+      );
+
+      batch.set(userSubscriptionsDocRef, subscriptionsData, { merge: true });
     }
+
+    console.log("completed batch of  user unSubscription");
 
     ///////////   completed user subscriptions ////////////////
 
     ///////////   user calendar ///////////////////////////////
-    //
-    //
-    ///////////   completed ser calendar //////////////////////////
+    console.log("starting batch of  user unSubscription calendar");
+
+    let calendarData = getCalendar(req.body.users);
+
+    for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      let date = d.toLocaleDateString().split("/")[0];
+      let month = d.toLocaleDateString().split("/")[1];
+      let year = d.toLocaleDateString().split("/")[2];
+      let day = d.toDateString().split(" ")[0];
+
+      //////ignore to be written
+      ///
+      ///
+      ///
+      //////////////
+
+      let calendarRef = db
+        .collection("users")
+        .doc(req.body.users.id)
+        .collection("calendar")
+        .doc(`${month}${year}`);
+
+      batch.set(calendarRef, { [date]: calendarData }, { merge: true });
+    }
+    console.log("completed batch of  user unSubscription calendar");
+
+    ///////////   completed user calendar //////////////////////////
+
+    /////// starting batch commit  //////////////////////////
+
+    return batch
+      .commit()
+      .then(() => {
+        console.log("Successfully batched unSubscription");
+        return res.status(200).send({
+          res: {
+            message: "User successfully unsubscribed the meal",
+            code: "310"
+          }
+        });
+      })
+      .catch(e => {
+        console.log("unsubscribing the meal error");
+        res.status(403).send({
+          error: {
+            message: "Unsubscribing the meal batch error",
+            code: "311"
+          }
+        });
+      });
+
+    ///// batch committed ////////
   }
   //end
 });

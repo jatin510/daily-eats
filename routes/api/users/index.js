@@ -3,13 +3,22 @@ const admin = require("firebase-admin");
 
 const db = admin.firestore();
 const express = require("express");
+const app = express();
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+// route.use(express.json());
+// var vali = (req, res, next) => {
+//   // console.log(req.body);
+//   let body = req.body;
+
+//   console.log("asdsad", body.p);
+//   next();
+// };
 const validateUser = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
-  console.log(req.body.users.id);
   console.log(req.body.users);
+
   return db
     .collection("users")
     .doc(req.body.users.id + "")
@@ -30,7 +39,8 @@ const validateUser = (req, res, next) => {
     });
 };
 
-route.use(validateUser);
+// route.use(validateUser);
+// app.use("/edit",require('./'))
 route.use("/address", require("./address"));
 route.use("/subscribe", require("./subscribe"));
 route.use("/unsubscribe", require("./unSubscribe"));

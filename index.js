@@ -35,7 +35,7 @@ function getReferCode() {
   return code;
 }
 
-function getOrderData(value) {
+function getOrderDataForSubscription(value) {
   var orderSchema = {};
 
   if (value.breakfast) {
@@ -263,16 +263,3 @@ exports.onUserCreation = functions.firestore
       referCode: generatedReferCode
     });
   });
-
-//user subscribing the meal
-// exports.onUserSubscription = functions.firestore
-//   .document("users/{userId}/subscriptions/{subscriptionId}")
-//   .onCreate((snap, context) => {
-//     console.log(snap.data());
-
-//     //order Data
-//     orderData = getOrderData(snap.data());
-
-//     if (snap.data().breakfast) {
-//     }
-//   });

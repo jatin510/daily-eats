@@ -47,12 +47,18 @@ route.post("/", (req, res) => {
         value.id = val.id;
         console.log("Address successfully added");
         return res.status(200).json({
-          res: { message: "Address successfully added", address: value }
+          res: {
+            message: "Address successfully added",
+            address: value,
+            code: "210"
+          }
         });
       })
       .catch(e => {
         console.log("Add Address error ", e);
-        return res.status(400).json({ error: "Add address error", code: 102 });
+        return res
+          .status(400)
+          .json({ error: { message: "Add address error", code: 102 } });
       });
   }
 });
