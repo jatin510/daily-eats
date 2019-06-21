@@ -10,6 +10,7 @@ function getSubscriptions(value) {
   subSchema = {};
 
   if (value.breakfast) {
+    console.log("inside breakfast");
     subSchema.breakfast = {};
     subSchema.breakfast.status = {};
     subSchema.breakfast.status.upcoming = false;
@@ -72,8 +73,10 @@ route.put("/", async (req, res) => {
       .status(403)
       .json({ error: { message: "unsubscribe meal schema error " } });
   } else {
-    let fromDate = req.body.date.fromDate;
-    let toDate = req.body.date.toDate;
+    let fromDate = req.body.users.date.from;
+    let toDate = req.body.users.date.to;
+
+    console.log("from");
 
     let batch = db.batch();
 
@@ -81,27 +84,29 @@ route.put("/", async (req, res) => {
 
     console.log("starting batch of  user unSubscription");
 
-    let subscriptionsData = getSubscriptions(req.body.users.subscriptions);
+    let subscriptionsData = getSubscriptions(req.body.users);
 
     let userSubscriptionsRef = db
       .collection("users")
       .doc(req.body.users.id)
       .collection("subscriptions");
 
-    let d = {};
+    let d;
+    toDate = new Date(toDate);
 
+    console.log("outside for lop");
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth();
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
-
       //ignore the day
       //
       //
       //
       // will complete it later on
 
+      console.log("inside sub loop");
       let userSubscriptionsDocRef = userSubscriptionsRef.doc(
         `${date}${month}${year}`
       );
@@ -119,16 +124,17 @@ route.put("/", async (req, res) => {
     let calendarData = getCalendar(req.body.users);
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth();
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
-
       //////ignore to be written
       ///
       ///
       ///
       //////////////
+
+      console.log("inside calendar loop");
 
       let calendarRef = db
         .collection("users")

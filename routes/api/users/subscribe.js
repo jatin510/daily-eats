@@ -298,7 +298,7 @@ route.put("/", async (req, res) => {
 
     let calendarData = await getCalendar(req.body.users.subscriptions);
 
-    for (d = new Date(toDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+    for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
       let date = d.getDate();
       let month = d.getMonth();
       let year = d.getFullYear();

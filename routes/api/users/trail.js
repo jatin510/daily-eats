@@ -37,20 +37,25 @@
 //   console.log(typeof d);
 // }
 
-let fromDate = "2019-06-25";
-let toDate = "2019-06-26";
-toDate = new Date(toDate);
+// let fromDate = "2019-06-25";
+// let toDate = "2019-06-26";
+// toDate = new Date(toDate);
 
-for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-  let date = d.toLocaleDateString().split("/")[1];
-  let month = d.toLocaleDateString().split("/")[0];
-  let year = d.toLocaleDateString().split("/")[2];
-  let day = d.toDateString().split(" ")[0];
-  console.log(date);
-  console.log(month);
-  console.log(year);
-  console.log(d.getDate());
-  console.log(d.getMonth());
-  console.log(d.getFullYear());
-  // console.log(d.)
-}
+// for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+//   let date = d.toLocaleDateString().split("/")[1];
+//   let month = d.toLocaleDateString().split("/")[0];
+//   let year = d.toLocaleDateString().split("/")[2];
+//   let day = d.toDateString().split(" ")[0];
+//   console.log(date);
+//   console.log(month);
+//   console.log(year);
+//   console.log(d.getDate());
+//   console.log(d.getMonth());
+//   console.log(d.getFullYear());
+//   // console.log(d.)
+// }
+
+a = { b: true, c: false };
+
+if (a.b) console.log("b");
+if (a.c) console.log("c");
