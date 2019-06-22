@@ -68,6 +68,10 @@ route.put("/", (req, res) => {
       error: { message: `Post add vacation schema error,${error.details[0]}` }
     });
   } else {
+    //date
+    let fromDate = req.body.users.date.from;
+    let toDate = req.body.users.date.to;
+
     let batch = db.batch();
     ////////  user calendar //////////////////////////
 
@@ -75,11 +79,12 @@ route.put("/", (req, res) => {
 
     let calendarData = getCalendar();
     let d = {};
+    toDate = new Date(toDate);
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth() + 1;
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
       let userCalendarDocRef = db
@@ -93,7 +98,8 @@ route.put("/", (req, res) => {
 
     console.log("vacation calendar ended");
 
-    ////////  completed user calendar  ///////////////
+    ////////  completed user calendar  ///////////////////////
+
     ////////  user subscription  /////////////////////////////
 
     console.log("vacation subscriptions starting");
@@ -106,14 +112,12 @@ route.put("/", (req, res) => {
       .collection("subscriptions");
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth() + 1;
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
-      let userSubscriptionsDocRef = userSubCollectionRef.doc(
-        `${date}${month}${year}`
-      );
+      let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
 
       batch.set(userSubDocRef, subscriptionsData, { merge: true });
     }
@@ -121,6 +125,7 @@ route.put("/", (req, res) => {
     console.log("vacation subscriptions ended");
 
     ////////  completed user subscription   //////////////////
+
     ////////  batch starting   ///////////////////////////
 
     batch

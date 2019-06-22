@@ -234,8 +234,6 @@ route.put("/", async (req, res) => {
   } else {
     let fromDate = req.body.date.from;
     let toDate = req.body.date.to;
-    console.log(req.body);
-    console.log(req.body.date);
 
     console.log("From Date ", fromDate);
     console.log("To Date ", toDate);
@@ -265,7 +263,7 @@ route.put("/", async (req, res) => {
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
       let date = d.getDate();
-      let month = d.getMonth();
+      let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
       console.log(date);
@@ -300,7 +298,7 @@ route.put("/", async (req, res) => {
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
       let date = d.getDate();
-      let month = d.getMonth();
+      let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 

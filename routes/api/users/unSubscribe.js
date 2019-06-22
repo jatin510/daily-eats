@@ -76,6 +76,9 @@ route.put("/", async (req, res) => {
     let fromDate = req.body.users.date.from;
     let toDate = req.body.users.date.to;
 
+    console.log("from date", fromDate);
+    console.log("to date", toDate);
+
     console.log("from");
 
     let batch = db.batch();
@@ -94,10 +97,12 @@ route.put("/", async (req, res) => {
     let d;
     toDate = new Date(toDate);
 
+    console.log(subscriptionsData);
+
     console.log("outside for lop");
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
       let date = d.getDate();
-      let month = d.getMonth();
+      let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
       //ignore the day
@@ -106,12 +111,9 @@ route.put("/", async (req, res) => {
       //
       // will complete it later on
 
-      console.log("inside sub loop");
-      let userSubscriptionsDocRef = userSubscriptionsRef.doc(
-        `${date}${month}${year}`
-      );
+      let userSubDocRef = userSubscriptionsRef.doc(`${date}${month}${year}`);
 
-      batch.set(userSubscriptionsDocRef, subscriptionsData, { merge: true });
+      batch.set(userSubDocRef, subscriptionsData, { merge: true });
     }
 
     console.log("completed batch of  user unSubscription");
@@ -122,10 +124,11 @@ route.put("/", async (req, res) => {
     console.log("starting batch of  user unSubscription calendar");
 
     let calendarData = getCalendar(req.body.users);
+    console.log(calendarData);
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
       let date = d.getDate();
-      let month = d.getMonth();
+      let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
       //////ignore to be written
@@ -133,8 +136,6 @@ route.put("/", async (req, res) => {
       ///
       ///
       //////////////
-
-      console.log("inside calendar loop");
 
       let calendarRef = db
         .collection("users")
@@ -152,7 +153,8 @@ route.put("/", async (req, res) => {
 
     return batch
       .commit()
-      .then(() => {
+      .then(val => {
+        console.log(val);
         console.log("Successfully batched unSubscription");
         return res.status(200).send({
           res: {

@@ -50,13 +50,13 @@ function getCalendar() {
 route.put("/", (req, res) => {
   //schema validation
 
-  nestedDateSchema = Jo.object().keys({
+  nestedDateSchema = Joi.object({
     from: Joi.string().required(),
     to: Joi.string().required()
   });
 
   schema = Joi.object().keys({
-    id: Joi.string().required,
+    id: Joi.string().required(),
     date: nestedDateSchema
   });
 
@@ -68,6 +68,10 @@ route.put("/", (req, res) => {
       error: { message: `Put End vacation schema error,${error.details[0]}` }
     });
   } else {
+    // dates
+    let fromDate = req.body.users.date.from;
+    let toDate = req.body.users.date.to;
+
     let batch = db.batch();
 
     ////////  user calendar /////////////////////////
@@ -75,13 +79,14 @@ route.put("/", (req, res) => {
     console.log("calendar endVacation starting");
 
     let d = {};
+    toDate = new Date(toDate);
 
     let calendarData = getCalendar();
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth() + 1;
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
       let userCalendarDocRef = db
@@ -107,9 +112,9 @@ route.put("/", (req, res) => {
       .collection("subscriptions");
 
     for (d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
-      let date = d.toLocaleDateString().split("/")[0];
-      let month = d.toLocaleDateString().split("/")[1];
-      let year = d.toLocaleDateString().split("/")[2];
+      let date = d.getDate();
+      let month = d.getMonth() + 1;
+      let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
