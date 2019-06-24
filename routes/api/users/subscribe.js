@@ -168,7 +168,7 @@ function getCalendar(value) {
     address += `,${value.breakfast.address.area}`;
     address += `,${value.breakfast.address.city}`;
 
-    calenderSchema.fullAddress = address;
+    calenderSchema.breakfast.fullAddress = address;
     if (value.breakfast.quantity !== 0)
       calenderSchema.breakfast.status.upcoming = true;
     else calenderSchema.breakfast.status.upcoming = false;
@@ -190,7 +190,7 @@ function getCalendar(value) {
     address += `,${value.lunch.address.area}`;
     address += `,${value.lunch.address.city}`;
 
-    calenderSchema.fullAddress = address;
+    calenderSchema.lunch.fullAddress = address;
     if (value.lunch.quantity !== 0) calenderSchema.lunch.status.upcoming = true;
     else calenderSchema.lunch.status.upcoming = false;
 
@@ -211,7 +211,7 @@ function getCalendar(value) {
     address += `,${value.dinner.address.area}`;
     address += `,${value.dinner.address.city}`;
 
-    calenderSchema.fullAddress = address;
+    calenderSchema.dinner.fullAddress = address;
     if (value.dinner.quantity !== 0)
       calenderSchema.dinner.status.upcoming = true;
     else calenderSchema.dinner.status.upcoming = false;
@@ -266,6 +266,15 @@ route.put("/", async (req, res) => {
       let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
       console.log(date);
       console.log(month);
       console.log(year);
@@ -301,6 +310,14 @@ route.put("/", async (req, res) => {
       let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
 
       ///ignore the day
       //

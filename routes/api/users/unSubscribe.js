@@ -105,6 +105,15 @@ route.put("/", async (req, res) => {
       let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
       //ignore the day
       //
       //
@@ -131,6 +140,15 @@ route.put("/", async (req, res) => {
       let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
       //////ignore to be written
       ///
       ///

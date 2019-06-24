@@ -35,84 +35,26 @@ function getReferCode() {
   return code;
 }
 
-function getOrderDataForSubscription(value) {
-  var orderSchema = {};
+function forSubscribeData(value) {
+  let subSchema = {};
+
+  subSchema.breakfast = {};
+  subSchema.breakfast.lite = {};
+  subSchema.breakfast.full = {};
+
+  subSchema.lunch = {};
+  subSchema.lunch.lite = {};
+  subSchema.lunch.full = {};
+
+  subSchema.dinner = {};
+  subSchema.dinner.lite = {};
+  subSchema.dinner.full = {};
 
   if (value.breakfast) {
-    //breakfast
-    orderSchema.breakfast = {};
-    orderSchema.breakfast.address = {};
-    orderSchema.breakfast.address.coordinates = {};
-    orderSchema.breakfast.status = {};
-
-    orderSchema.breakfast.address.tag = value.breakfast.address.tag;
-    orderSchema.breakfast.address.coordinates.latitude =
-      value.breakfast.address.coordinates.latitude;
-    orderSchema.breakfast.address.coordinates.longitude =
-      value.breakfast.address.coordinates.longitude;
-    orderSchema.breakfast.address.address1 = value.breakfast.address.address1;
-    orderSchema.breakfast.address.address2 = value.breakfast.address.address2;
-    orderSchema.breakfast.address.area = value.breakfast.address.area;
-    orderSchema.breakfast.address.city = value.breakfast.address.city;
-
-    if (value.breakfast.quantity !== 0)
-      orderSchema.breakfast.status.upcoming = true;
-    else orderSchema.breakfast.status.upcoming = false;
-
-    orderSchema.breakfast.price = value.breakfast.price;
-    if (value.breakfast.lite) orderSchema.breakfast.lite = true;
-    if (value.breakfast.full) orderSchema.breakfast.full = true;
+    if (value.breakfast.status.upcoming == true) {
+      subSchema.dinner;
+    }
   }
-  if (value.lunch) {
-    //lunch
-    orderSchema.lunch = {};
-    orderSchema.lunch.address = {};
-    orderSchema.lunch.address.coordinates = {};
-    orderSchema.lunch.status = {};
-
-    orderSchema.lunch.address.tag = value.lunch.address.tag;
-    orderSchema.lunch.address.coordinates.latitude =
-      value.lunch.address.coordinates.latitude;
-    orderSchema.lunch.address.coordinates.longitude =
-      value.lunch.address.coordinates.longitude;
-    orderSchema.lunch.address.address1 = value.lunch.address.address1;
-    orderSchema.lunch.address.address2 = value.lunch.address.address2;
-    orderSchema.lunch.address.area = value.lunch.address.area;
-    orderSchema.lunch.address.city = value.lunch.address.city;
-
-    if (value.lunch.quantity !== 0) orderSchema.lunch.status.upcoming = true;
-    else orderSchema.lunch.status.upcoming = false;
-
-    orderSchema.lunch.price = value.lunch.price;
-    if (value.lunch.lite) orderSchema.lunch.lite = true;
-    if (value.lunch.full) orderSchema.lunch.full = true;
-  }
-  if (value.dinner) {
-    //dinner
-    orderSchema.dinner = {};
-    orderSchema.dinner.address = {};
-    orderSchema.dinner.address.coordinates = {};
-    orderSchema.dinner.status = {};
-
-    orderSchema.dinner.address.tag = value.dinner.address.tag;
-    orderSchema.dinner.address.coordinates.latitude =
-      value.dinner.address.coordinates.latitude;
-    orderSchema.dinner.address.coordinates.longitude =
-      value.dinner.address.coordinates.longitude;
-    orderSchema.dinner.address.address1 = value.dinner.address.address1;
-    orderSchema.dinner.address.address2 = value.dinner.address.address2;
-    orderSchema.dinner.address.area = value.dinner.address.area;
-    orderSchema.dinner.address.city = value.dinner.address.city;
-
-    if (value.dinner.quantity !== 0) orderSchema.dinner.status.upcoming = true;
-    else orderSchema.dinner.status.upcoming = false;
-
-    orderSchema.dinner.price = value.dinner.price;
-    if (value.dinner.lite) orderSchema.dinner.lite = true;
-    if (value.dinner.full) orderSchema.dinner.full = true;
-  }
-
-  return orderSchema;
 }
 
 const validateFirebaseIdToken = (req, res, next) => {
@@ -192,7 +134,7 @@ exports.trialRedeem = functions.firestore
   .document("users/{userId}/transaction/{transactionId}")
   .onCreate((snap, context) => {});
 
-//handling refer code
+//handling refer code on user creation
 exports.onUserCreation = functions.firestore
   .document("users/{userId}")
   .onCreate(async (snap, context) => {
@@ -263,3 +205,95 @@ exports.onUserCreation = functions.firestore
       referCode: generatedReferCode
     });
   });
+
+//handling changes on user changing its data
+// exports.onUserEditProfile = functions.firestore
+//   .document("users/{userId}")
+//   .onUpdate(async (change, context) => {
+//     const newValue = change.after.data();
+//     const name = change.after.data().name;
+//     if (change.after.data().email && change.after.data().email != "") {
+//       const email = change.after.data().email;
+//     }
+
+//     /// change in user subscriptions
+
+//     /// change in kitchen data
+
+//     /// change in order data
+//   });
+
+// user subscribing the meal
+exports.onUserSubscribe = functions.firestore
+  .document("users/{userId}/subscriptions/{subscriptionId}")
+  .onWrite((change, context) => {
+    console.log(change.after.data());
+
+    //batch creation
+
+    let batch = db.batch();
+
+    //subscriptionDocId
+    let subscriptionDocId = context.params.subscriptionId;
+
+    let date = subscriptionDocId.substring(0, 2);
+    let month = subscriptionDocId.substring(2, 4);
+    let year = subscriptionDocId.substring(4, 8);
+
+    /// order  collection updation ///
+
+    let orderData = change.after.data();
+
+    let orderDocRef = db
+      .collection("orders")
+      .doc(`${month}${year}`)
+      .collection(`${date}${month}${year}`)
+      .doc(context.params.userId);
+
+    batch.set(orderDocRef, orderData, { merge: true });
+
+    /// kitchen collection updation //////
+
+    let kitchenDocRef = db
+      .collection("kitchen")
+      .doc(kitchenId)
+      .collection("deliveries")
+      .doc(`${month}${month}${year}`);
+
+    let kitchenData = kitchenDocRef.get().then();
+
+    //breakfast
+    if (change.after.data().breakfast.status.upcoming == true) {
+    }
+    if (change.after.data().breakfast.status.upcoming == false) {
+    }
+    if (change.after.data().breakfast.status.vacation == true) {
+    }
+    if (change.after.data().breakfast.status.vacation == false) {
+    }
+    //check unsubscription
+
+    //check vacation
+
+    //check endvacation
+
+    if (change.after.data().breakfast) {
+    }
+    return batch
+      .commit()
+      .then(() => console.log("Subscription trigger successful"))
+      .catch(e => {
+        console.log("Error in subscription trigger");
+      });
+  });
+
+// // user unsubscribing the meal
+// exports.onUserUnsubscribe = functions.firestore
+//   .document("")
+//   .onCreate((snap, context) => {
+//     let data = snap.data();
+//   });
+
+// // user on vacation
+// //
+// // user on ending vacation

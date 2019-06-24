@@ -12,15 +12,17 @@ function createUserDb(req, res) {
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
-    email: Joi.string(),
-    invitationCode: Joi.string()
+    email: Joi.string()
+      .email({ minDomainSegments: 2 })
+      .allow(""),
+    invitationCode: Joi.string().allow("")
   });
 
   const { error, value } = Joi.validate(req.body.users, userSchema);
 
   console.log("inside createUser");
 
-  if (req.body.users.invitationCode) {
+  if (req.body.users.invitationCode && req.body.users.invitationCode !== "") {
     value.referRedeemed = false;
   }
 

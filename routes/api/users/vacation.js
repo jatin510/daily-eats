@@ -87,6 +87,14 @@ route.put("/", (req, res) => {
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
 
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
       let userCalendarDocRef = db
         .collection("users")
         .doc(req.body.users.id)
@@ -116,6 +124,14 @@ route.put("/", (req, res) => {
       let month = d.getMonth() + 1;
       let year = d.getFullYear();
       let day = d.toDateString().split(" ")[0];
+
+      // for proper formatting
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
 
       let userSubDocRef = userSubCollectionRef.doc(`${date}${month}${year}`);
 

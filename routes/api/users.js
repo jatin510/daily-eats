@@ -12,6 +12,8 @@ route.put("/", (req, res) => {
     name: Joi.string().required(),
     phone: Joi.string().required(),
     email: Joi.string()
+      .email({ minDomainSegments: 2 })
+      .allow("")
   });
 
   const { error, value } = Joi.validate(req.body.users, schema);
