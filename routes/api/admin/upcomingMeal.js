@@ -18,7 +18,37 @@ function getUpcomingMeal(value) {
     subSchema.breakfast.price.lite = value.breakfast.price.lite;
     subSchema.breakfast.price.full = value.breakfast.price.full;
     subSchema.breakfast.description = {};
+    subSchema.breakfast.description.lite = value.breakfast.description.lite;
+    subSchema.breakfast.description.full = value.breakfast.description.full;
   }
+
+  //// lunch
+  if (value.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.name = value.lunch.name;
+    subSchema.lunch.image = value.lunch.image;
+    subSchema.lunch.price = {};
+    subSchema.lunch.price.lite = value.lunch.price.lite;
+    subSchema.lunch.price.full = value.lunch.price.full;
+    subSchema.lunch.description = {};
+    subSchema.lunch.description.lite = value.lunch.description.lite;
+    subSchema.lunch.description.full = value.lunch.description.full;
+  }
+
+  //// dinner
+  if (value.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.name = value.dinner.name;
+    subSchema.dinner.image = value.dinner.image;
+    subSchema.dinner.price = {};
+    subSchema.dinner.price.lite = value.dinner.price.lite;
+    subSchema.dinner.price.full = value.dinner.price.full;
+    subSchema.dinner.description = {};
+    subSchema.dinner.description.lite = value.dinner.description.lite;
+    subSchema.dinner.description.full = value.dinner.description.full;
+  }
+
+  return subSchema;
 }
 
 route.post("/", (req, res) => {
@@ -51,9 +81,16 @@ route.post("/", (req, res) => {
       }
     });
   } else {
-    return db
-      .collection("upcomingMeals")
-      .add(value)
+    let upcomingMealData = getUpcomingMeal(req.body.upcomingMeals);
+
+    let date = req.body.upcomingMeals.date.split("-");
+
+    let docId;
+
+    let upcomingMealDocRef = db.collection("upcomingMeals").doc(docId);
+
+    upcomingMealDocRef
+      .set(upcomingMealData, { merge: true })
       .then(() => {
         console.log("Added upcoming meal successfully ");
         return res.status(200).json({
