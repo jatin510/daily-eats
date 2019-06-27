@@ -6,6 +6,7 @@ const express = require("express");
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+//////   EDIT USERS   //////////
 route.put("/", (req, res) => {
   let schema = Joi.object().keys({
     id: Joi.string().required(),

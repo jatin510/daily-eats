@@ -86,8 +86,4 @@ route.use("/users/:userId", require("./users/index.js"));
 
 route.use("/admin", require("./admin"));
 
-route.get("/", (req, res) => {
-  res.send(" api index");
-});
-
 exports = module.exports = route;

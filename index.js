@@ -51,7 +51,7 @@ function forSubscribeData(value) {
   subSchema.dinner.full = {};
 
   if (value.breakfast) {
-    if (value.breakfast.status.upcoming == true) {
+    if (value.breakfast.status.upcoming === true) {
       subSchema.dinner;
     }
   }
@@ -121,11 +121,6 @@ const validateFirebaseIdToken = (req, res, next) => {
 app.use(cookieParser);
 // app.use(validateFirebaseIdToken);
 app.use("/", require("./routes/api"));
-
-app.get("/hello", (req, res) => {
-  console.log("hello");
-  res.send("Hello");
-});
 
 exports.api = functions.https.onRequest(app);
 
@@ -263,14 +258,14 @@ exports.onUserSubscribe = functions.firestore
     let kitchenData = kitchenDocRef.get().then();
 
     //breakfast
-    if (change.after.data().breakfast.status.upcoming == true) {
-    }
-    if (change.after.data().breakfast.status.upcoming == false) {
-    }
-    if (change.after.data().breakfast.status.vacation == true) {
-    }
-    if (change.after.data().breakfast.status.vacation == false) {
-    }
+    // if (change.after.data().breakfast.status.upcoming === true) {
+    // }
+    // if (change.after.data().breakfast.status.upcoming === false) {
+    // }
+    // if (change.after.data().breakfast.status.vacation === true) {
+    // }
+    // if (change.after.data().breakfast.status.vacation === false) {
+    // }
     //check unsubscription
 
     //check vacation
