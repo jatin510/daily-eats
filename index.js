@@ -272,8 +272,9 @@ exports.onUserSubscribe = functions.firestore
 
     //check endvacation
 
-    if (change.after.data().breakfast) {
-    }
+    // if (change.after.data().breakfast) {
+    // }
+
     return batch
       .commit()
       .then(() => console.log("Subscription trigger successful"))

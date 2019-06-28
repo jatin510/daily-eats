@@ -51,7 +51,7 @@ function getCalendar(value) {
   return subSchema;
 }
 
-route.put("/", async (req, res) => {
+route.post("/", async (req, res) => {
   const dateSchema = Joi.object({
     from: Joi.string(),
     to: Joi.string()
@@ -114,12 +114,6 @@ route.put("/", async (req, res) => {
         month = "0" + month;
       }
 
-      //ignore the day
-      //
-      //
-      //
-      // will complete it later on
-
       let userSubDocRef = userSubscriptionsRef.doc(`${date}${month}${year}`);
 
       batch.set(userSubDocRef, subscriptionsData, { merge: true });
@@ -148,12 +142,6 @@ route.put("/", async (req, res) => {
       if (month < 10) {
         month = "0" + month;
       }
-
-      //////ignore to be written
-      ///
-      ///
-      ///
-      //////////////
 
       let calendarRef = db
         .collection("users")

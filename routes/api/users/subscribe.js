@@ -225,7 +225,7 @@ function getCalendar(value) {
   return calenderSchema;
 }
 
-route.put("/", async (req, res) => {
+route.post("/", async (req, res) => {
   console.log("inside the subscription put");
 
   let error = false;

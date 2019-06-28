@@ -7,14 +7,7 @@ const app = express();
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
-// route.use(express.json());
-// var vali = (req, res, next) => {
-//   // console.log(req.body);
-//   let body = req.body;
-
-//   console.log("asdsad", body.p);
-//   next();
-// };
+//// validate user if the user exist in database or not
 const validateUser = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
   console.log(req.body.users);

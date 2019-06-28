@@ -47,7 +47,7 @@ function getCalendar() {
   return subSchema;
 }
 
-route.put("/", (req, res) => {
+route.post("/", (req, res) => {
   //schema validation
 
   nestedDateSchema = Joi.object({

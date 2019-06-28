@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 
 const db = admin.firestore();
 const express = require("express");
-const route = require("express").Router();
+const route = express.Router();
 const Joi = require("@hapi/joi");
 
 /////////    Add Kitchen Manager  //////////////
@@ -13,6 +13,7 @@ route.post("/", (req, res) => {
     name: Joi.string().required(),
     phone: Joi.string().required(),
     email: Joi.string().required(),
+    password: Joi.string().required(),
     address: {
       coordinates: {
         longitude: Joi.string().required(),
