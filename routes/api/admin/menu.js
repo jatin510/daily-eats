@@ -1,10 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
-const express = require("express");
-const route = express.Router();
-const Joi = require("@hapi/joi");
-
 const db = admin.firestore();
 const express = require("express");
 const route = express.Router();

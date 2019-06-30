@@ -1,9 +1,5 @@
 const route = require("express").Router();
 
-// route.get("/", (req, res) => {
-//   res.get("admin api index");
-// });
-
 route.use("/", require("../index"));
 route.use("/admins", require("./addAdmin.js"));
 route.use("/menu", require("./menu.js"));
