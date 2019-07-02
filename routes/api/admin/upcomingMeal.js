@@ -14,9 +14,11 @@ function getUpcomingMeal(value) {
     subSchema.breakfast = {};
     subSchema.breakfast.name = value.breakfast.name;
     subSchema.breakfast.image = value.breakfast.image;
+
     subSchema.breakfast.price = {};
     subSchema.breakfast.price.lite = value.breakfast.price.lite;
     subSchema.breakfast.price.full = value.breakfast.price.full;
+
     subSchema.breakfast.description = {};
     subSchema.breakfast.description.lite = value.breakfast.description.lite;
     subSchema.breakfast.description.full = value.breakfast.description.full;
@@ -27,9 +29,11 @@ function getUpcomingMeal(value) {
     subSchema.lunch = {};
     subSchema.lunch.name = value.lunch.name;
     subSchema.lunch.image = value.lunch.image;
+
     subSchema.lunch.price = {};
     subSchema.lunch.price.lite = value.lunch.price.lite;
     subSchema.lunch.price.full = value.lunch.price.full;
+
     subSchema.lunch.description = {};
     subSchema.lunch.description.lite = value.lunch.description.lite;
     subSchema.lunch.description.full = value.lunch.description.full;
@@ -40,9 +44,11 @@ function getUpcomingMeal(value) {
     subSchema.dinner = {};
     subSchema.dinner.name = value.dinner.name;
     subSchema.dinner.image = value.dinner.image;
+
     subSchema.dinner.price = {};
     subSchema.dinner.price.lite = value.dinner.price.lite;
     subSchema.dinner.price.full = value.dinner.price.full;
+
     subSchema.dinner.description = {};
     subSchema.dinner.description.lite = value.dinner.description.lite;
     subSchema.dinner.description.full = value.dinner.description.full;
@@ -51,8 +57,10 @@ function getUpcomingMeal(value) {
   return subSchema;
 }
 
+////////////////
+// add upcoming meal
 route.post("/", (req, res) => {
-  let schema = Joi.object.keys({
+  let schema = Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
     image: Joi.string().required(),
@@ -83,9 +91,16 @@ route.post("/", (req, res) => {
   } else {
     let upcomingMealData = getUpcomingMeal(req.body.upcomingMeals);
 
-    let date = req.body.upcomingMeals.date.split("-");
+    let dateString = req.body.upcomingMeals.date;
 
-    let docId;
+    let d = new Date(dateString);
+
+    let date = d.getDate();
+    let month = d.getMonth() + 1;
+    let year = d.getFullYear();
+
+    // to be done
+    let docId = `${date}${month}${year}`;
 
     let upcomingMealDocRef = db.collection("upcomingMeals").doc(docId);
 
@@ -110,5 +125,7 @@ route.post("/", (req, res) => {
       });
   }
 });
+
+// edit upcoming meal
 
 exports = module.exports = route;

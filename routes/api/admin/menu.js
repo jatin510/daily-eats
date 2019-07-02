@@ -6,13 +6,8 @@ const express = require("express");
 const route = express.Router();
 const Joi = require("@hapi/joi");
 
-function getMenuData(value) {
-  if (value.id === "breakfast") {
-  }
-}
-
 route.post("/", (req, res) => {
-  const schema = Joi.object({
+  const schema = Joi.object().keys({
     time: Joi.string().required(),
     type: Joi.string().required(),
     name: Joi.string().required()
@@ -31,41 +26,95 @@ route.post("/", (req, res) => {
     //  let menuData = getMenuData(req.body.menu);
 
     // breakfast
-    if (req.body.menus.time === "breakfast") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
-      let docRef = db.collection("menus").doc("breakfast");
+    if (req.body.menu.time === "breakfast") {
+      console.log("inside breakfast");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
+      let docRef = db.collection("menu").doc("breakfast");
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayUnion(foodName)
-      });
+      docRef
+        .set(
+          {
+            [type]: admin.firestore.FieldValue.arrayUnion(foodName)
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("Breakfast Menu added successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "Breakfast Menu added successfully" } });
+        })
+        .catch(e => {
+          console.log("error adding Breakfast menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error adding Breakfast menu" } });
+        });
     }
 
     // lunch
-    if (req.body.menus.time === "lunch") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
+    if (req.body.menu.time === "lunch") {
+      console.log("inside lunch");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
 
-      let docRef = db.collection("menus").doc("lunch");
+      let docRef = db.collection("menu").doc("lunch");
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayUnion(foodName)
-      });
+      docRef
+        .update(
+          {
+            [type]: admin.firestore.FieldValue.arrayUnion(foodName)
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("lunch Menu added successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "lunch Menu added successfully" } });
+        })
+        .catch(e => {
+          console.log("error adding lunch menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error adding lunch menu" } });
+        });
     }
 
     // dinner
-    if (req.body.menus.time === "dinner") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
+    if (req.body.menu.time === "dinner") {
+      console.log("inside dinner");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
 
-      let docRef = db.collection("menus").doc("dinner");
+      let docRef = db.collection("menu").doc("dinner");
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayUnion(foodName)
-      });
+      docRef
+        .set(
+          {
+            [type]: admin.firestore.FieldValue.arrayUnion(foodName)
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("dinner Menu added successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "dinner Menu added successfully" } });
+        })
+        .catch(e => {
+          console.log("error adding dinner menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error adding dinner menu" } });
+        });
     }
   }
 });
+
+///////////////// delete //////////////
+////////////////////////////////////////
 
 route.delete("/", (req, res) => {
   const schema = Joi.object({
@@ -84,39 +133,90 @@ route.delete("/", (req, res) => {
       }
     });
   } else {
+    console.log("inside menu ");
     // breakfast
-    if (req.body.menus.time === "breakfast") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
-      let docRef = db.collection("menus").doc("breakfast");
+    if (req.body.menu.time === "breakfast") {
+      console.log("inside breakfast");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
+      let docRef = db.collection("menu").doc("breakfast");
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayRemove(foodName)
-      });
+      docRef
+        .set(
+          { [type]: admin.firestore.FieldValue.arrayRemove(foodName) },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("Breakfast Menu deleted successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "Breakfast Menu deleted successfully" } });
+        })
+        .catch(e => {
+          console.log("error delete Breakfast menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error delete Breakfast menu" } });
+        });
     }
 
     // lunch
-    if (req.body.menus.time === "lunch") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
+    if (req.body.menu.time === "lunch") {
+      console.log("inside lunch");
 
-      let docRef = db.collection("menus").doc("lunch");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayRemove(foodName)
-      });
+      let docRef = db.collection("menu").doc("lunch");
+
+      docRef
+        .set(
+          {
+            [type]: admin.firestore.FieldValue.arrayRemove(foodName)
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("lunch Menu deleted successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "lunch Menu deleted successfully" } });
+        })
+        .catch(e => {
+          console.log("error delete lunch menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error delete lunch menu" } });
+        });
     }
 
     // dinner
-    if (req.body.menus.time === "dinner") {
-      let type = req.body.menus.type;
-      let foodName = req.body.menus.name;
+    if (req.body.menu.time === "dinner") {
+      console.log("inside dinner");
+      let type = req.body.menu.type;
+      let foodName = req.body.menu.name;
 
-      let docRef = db.collection("menus").doc("dinner");
+      let docRef = db.collection("menu").doc("dinner");
 
-      docRef.update({
-        type: FirebaseFirestore.firestore.FieldValue.arrayRemove(foodName)
-      });
+      docRef
+        .set(
+          {
+            [type]: admin.firestore.FieldValue.arrayRemove(foodName)
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log("dinner Menu deleted successfully ");
+          return res
+            .status(200)
+            .json({ res: { message: "dinner Menu deleted successfully" } });
+        })
+        .catch(e => {
+          console.log("error delete dinner menu");
+          return res
+            .status(400)
+            .json({ error: { message: "Error delete dinner menu" } });
+        });
     }
   }
 });

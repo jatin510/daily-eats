@@ -7,12 +7,22 @@ const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
 //////////   Add request /////////////
-route.post("/admins", (req, res) => {
-  var schema = Joi.object.keys({
+route.post("/", (req, res) => {
+  var schema = Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
-    email: Joi.string().required()
+    email: Joi.string().required(),
+    address: {
+      coordinates: {
+        longitude: Joi.string().required(),
+        latitude: Joi.string().required()
+      },
+      address1: Joi.string().required(),
+      address2: Joi.string().required(),
+      area: Joi.string().required(),
+      city: Joi.string().required()
+    }
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
@@ -30,7 +40,7 @@ route.post("/admins", (req, res) => {
     value.role.manager = true;
     return db
       .collection("admins")
-      .req(req.body.admins.id)
+      .doc(req.body.admins.id)
       .set(value)
       .then(() => {
         console.log("Admin successfully added");

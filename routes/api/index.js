@@ -84,6 +84,6 @@ route.use("/users/:userId/edit", require("./users.js"));
 
 route.use("/users/:userId", require("./users/index.js"));
 
-route.use("/admin", require("./admin"));
+route.use("/admin", require("./admin/index.js"));
 
-exports = module.exports = route;
+module.exports = route;

@@ -3,12 +3,12 @@ const admin = require("firebase-admin");
 
 const db = admin.firestore();
 const express = require("express");
-const route = require("express").Router();
+const route = express.Router();
 const Joi = require("@hapi/joi");
 
 /////////  Add Delivery Boy data ////////////////////
 route.post("/", (req, res) => {
-  let schema = Joi.object.keys({
+  let schema = Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),

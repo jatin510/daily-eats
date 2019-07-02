@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "@hapi/joi": "^15.0.3",
+    "async": "^3.1.0",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "firebase-admin": "~7.0.0",
     "firebase-functions": "^2.3.0",
     "joi": "^14.3.1",
+    "nodemailer": "^6.2.1",
     "validatorjs": "^3.15.1"
   },
   "devDependencies": {
