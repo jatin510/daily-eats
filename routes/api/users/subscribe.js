@@ -230,7 +230,12 @@ route.post("/", async (req, res) => {
 
   let error = false;
   if (error) {
-    console.log("Post subscription schema error", error);
+    console.log("Post subscription schema error", error.details[0].message);
+    return res.status(400).json({
+      error: {
+        message: `Post subscription schema error , ${error.details[0].message}`
+      }
+    });
   } else {
     let fromDate = req.body.date.from;
     let toDate = req.body.date.to;
@@ -281,10 +286,34 @@ route.post("/", async (req, res) => {
       console.log(day);
 
       console.log("inside loop");
-      //ignore the day
-      //
-      //
-      //
+
+      // //// ignore the day
+      // if (req.body.users.subscriptions.breakfast) {
+      //   if (req.body.users.subscriptions.breakfast.ignore) {
+      //     if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // if (req.body.users.subscriptions.lunch) {
+      //   if (req.body.users.subscriptions.lunch.ignore) {
+      //     if (req.body.users.subscriptions.lunch.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // if (req.body.users.subscriptions.dinner) {
+      //   if (req.body.users.subscriptions.dinner.ignore) {
+      //     if (req.body.users.subscriptions.dinner.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // //ignore the day
+
       // will complete it later on
 
       console.log(`${date}${month}${year}`);
@@ -319,11 +348,32 @@ route.post("/", async (req, res) => {
         month = "0" + month;
       }
 
-      ///ignore the day
-      //
-      //
-      //
-      //ignore the day
+      // //// ignore the day
+      // if (req.body.users.subscriptions.breakfast) {
+      //   if (req.body.users.subscriptions.breakfast.ignore) {
+      //     if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // if (req.body.users.subscriptions.lunch) {
+      //   if (req.body.users.subscriptions.lunch.ignore) {
+      //     if (req.body.users.subscriptions.lunch.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // if (req.body.users.subscriptions.dinner) {
+      //   if (req.body.users.subscriptions.dinner.ignore) {
+      //     if (req.body.users.subscriptions.dinner.ignore[`${day}`]) {
+      //       console.log("ignore the day");
+      //       continue;
+      //     }
+      //   }
+      // }
+      // //ignore the day
 
       let userCalendarDocRef = db
         .collection("users")

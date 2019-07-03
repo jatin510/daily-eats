@@ -16,10 +16,10 @@ route.post("/", (req, res) => {
   const { error, value } = Joi.validate(req.body.menu, schema);
 
   if (error) {
-    console.log("Post meal schema validation", error.details[0].message);
+    console.log("Post add meal schema validation", error.details[0].message);
     res.status(400).json({
       error: {
-        message: `Add Meal schema error ${error.details[0].message}`
+        message: `Add add Meal schema error ${error.details[0].message}`
       }
     });
   } else {
@@ -126,10 +126,10 @@ route.delete("/", (req, res) => {
   const { error, value } = Joi.validate(req.body.menu, schema);
 
   if (error) {
-    console.log("Post meal schema validation", error.details[0].message);
+    console.log("Post delete meal schema validation", error.details[0].message);
     res.status(400).json({
       error: {
-        message: `Add Meal schema error ${error.details[0].message}`
+        message: ` delete Meal schema error ${error.details[0].message}`
       }
     });
   } else {

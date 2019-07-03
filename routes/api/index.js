@@ -80,7 +80,42 @@ route.post("/users", (req, res) => {
     .catch(error => console.log("error", error));
 });
 
-route.use("/users/:userId/edit", require("./users.js"));
+route.put("/users/", (req, res) => {
+  var userSchema = Joi.object().keys({
+    id: Joi.string().required(),
+    name: Joi.string().required(),
+    phone: Joi.string().required(),
+    email: Joi.string()
+      .email({ minDomainSegments: 2 })
+      .allow("")
+  });
+
+  const { error, value } = Joi.validate(req.body.users, userSchema);
+
+  if (error) {
+    console.log("Error in the edit user schema", error.details[0].message);
+    return res
+      .status(400)
+      .json({ error: { message: "Error in edit user schema" } });
+  } else {
+    return db
+      .collection("users")
+      .doc(req.body.users.id)
+      .set(value, { merge: true })
+      .then(()=>{
+        console.log('User edited successfully')
+        return res.status(200).json({res : {message : "User edited successfully",code : ""}})
+      })
+      .catch(e => {
+        console.log("Error editing user data", e);
+        return res
+          .status(400)
+          .json({ error: { message: "Error editing the user data" ,code : ""} });
+      });
+  }
+});
+
+// route.use("/users/:userId/edit", require("./users.js"));
 
 route.use("/users/:userId", require("./users/index.js"));
 

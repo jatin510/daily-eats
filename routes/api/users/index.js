@@ -1,4 +1,3 @@
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 const db = admin.firestore();
@@ -33,12 +32,12 @@ const validateUser = (req, res, next) => {
 };
 
 // route.use(validateUser);
-// app.use("/edit",require('./'))
-route.use("/address", require("./address"));
-route.use("/subscribe", require("./subscribe"));
-route.use("/unsubscribe", require("./unSubscribe"));
-route.use("/vacation", require("./vacation"));
-route.use("/endvacation", require("./endVacation"));
+route.use("/address", require("./address.js"));
+route.use("/subscribe", require("./subscribe.js"));
+route.use("/unsubscribe", require("./unSubscribe.js"));
+route.use("/vacation", require("./vacation.js"));
+route.use("/endvacation", require("./endVacation.js"));
+route.use("/trialpack", require("./trial.js"));
 
 route.get("/", (req, res) => {
   res.send("users api index");

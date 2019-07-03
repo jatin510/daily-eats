@@ -1,4 +1,3 @@
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 const db = admin.firestore();
@@ -64,7 +63,7 @@ route.post("/", (req, res) => {
 });
 
 //it should be removed
-//update
+//edit
 route.put("/", (req, res) => {
   //Code to Edit Address
 
@@ -116,10 +115,6 @@ route.put("/", (req, res) => {
 
 //delete
 route.delete("/", (req, res) => {
-  //have to make api schema
-
-  console.log("");
-
   return db
     .collection("users")
     .doc(req.body.users.id)

@@ -12,16 +12,9 @@ route.post("/", (req, res) => {
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
-    address: {
-      coordinates: {
-        longitude: Joi.string().required(),
-        latitude: Joi.string().required()
-      },
-      address1: Joi.string().required(),
-      address2: Joi.string().required(),
-      area: Joi.string().required(),
-      city: Joi.string().required()
-    }
+    image: Joi.string().required(),
+    bikeNo: Joi.string().required(),
+    kitchenAppointed: Joi.string().required()
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
@@ -65,29 +58,25 @@ route.post("/", (req, res) => {
 
 /////////  Edit Delivery Boy data ////////////////////
 route.put("/", (req, res) => {
-  let schema = Joi.object.keys({
+  let schema = Joi.object().keys({
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
-    address: {
-      coordinates: {
-        longitude: Joi.string().required(),
-        latitude: Joi.string().required()
-      },
-      address1: Joi.string().required(),
-      address2: Joi.string().required(),
-      area: Joi.string().required(),
-      city: Joi.string().required()
-    }
+    image: Joi.string().required(),
+    bikeNo: Joi.string().required(),
+    kitchenAppointed: Joi.string().required()
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
 
   if (error) {
-    console.log("Post Add DeliveryBoy schema error ", error.details[0].message);
+    console.log(
+      "Post Edit DeliveryBoy schema error ",
+      error.details[0].message
+    );
     return res.status(400).json({
       error: {
-        message: `Error add delivery boy schema,${error.details[0].message}`
+        message: `Error edit delivery boy schema,${error.details[0].message}`
       }
     });
   } else {
@@ -99,20 +88,20 @@ route.put("/", (req, res) => {
       .doc(req.body.admins.id)
       .set(value)
       .then(() => {
-        console.log("Delivery Boy successfully added");
+        console.log("Delivery Boy successfully edited");
         return res.status(200).json({
           res: {
-            message: "Delivery BOy successfully added",
+            message: "Delivery BOy successfully edited",
             code: "",
             deliveryBoy: value
           }
         });
       })
       .catch(e => {
-        console.log("Add Delivery Boy error", e);
+        console.log("edit Delivery Boy error", e);
         return res.status(400).json({
           error: {
-            message: "Error adding Delivery Boy",
+            message: "Error editing Delivery Boy",
             code: ""
           }
         });

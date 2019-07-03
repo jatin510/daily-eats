@@ -35,27 +35,7 @@ function getReferCode() {
   return code;
 }
 
-function forSubscribeData(value) {
-  let subSchema = {};
 
-  subSchema.breakfast = {};
-  subSchema.breakfast.lite = {};
-  subSchema.breakfast.full = {};
-
-  subSchema.lunch = {};
-  subSchema.lunch.lite = {};
-  subSchema.lunch.full = {};
-
-  subSchema.dinner = {};
-  subSchema.dinner.lite = {};
-  subSchema.dinner.full = {};
-
-  if (value.breakfast) {
-    if (value.breakfast.status.upcoming === true) {
-      subSchema.dinner;
-    }
-  }
-}
 
 const validateFirebaseIdToken = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
@@ -122,7 +102,6 @@ app.use(cookieParser);
 // app.use(validateFirebaseIdToken);
 app.use("/", require("./routes/api"));
 
-exports.api = functions.https.onRequest(app);
 
 //handling trialPack
 exports.trialRedeem = functions.firestore
@@ -201,22 +180,6 @@ exports.onUserCreation = functions.firestore
     });
   });
 
-//handling changes on user changing its data
-// exports.onUserEditProfile = functions.firestore
-//   .document("users/{userId}")
-//   .onUpdate(async (change, context) => {
-//     const newValue = change.after.data();
-//     const name = change.after.data().name;
-//     if (change.after.data().email && change.after.data().email != "") {
-//       const email = change.after.data().email;
-//     }
-
-//     /// change in user subscriptions
-
-//     /// change in kitchen data
-
-//     /// change in order data
-//   });
 
 // user subscribing the meal
 exports.onUserSubscribe = functions.firestore
@@ -281,6 +244,57 @@ exports.onUserSubscribe = functions.firestore
       .catch(e => {
         console.log("Error in subscription trigger");
       });
+  });
+
+exports.onSuccessfulDelivery = functions.firestore
+  .document(
+    "admin/{deliveryBoyId}/deliveries/{deliveryId}/{timeOfDay}/{userId}"
+  )
+  .onWrite((change, context) => {
+    const document = change.after.exists
+      ? change.after.data()
+      : change.before.data();
+
+      //finding the date month and year of the 
+      let date = deliveryId.substring(0, 2);
+      let month = deliveryId.substring(2, 4);
+      let year = deliveryId.substring(4, 8);
+    ///// have to split deliveryId
+    calenderDocId = deliveryId 
+
+    // update status in calendar 
+    db.collection("users")
+      .doc(context.params.userId)
+      .collection("calendar")
+      .doc(calenderDocId);
+
+
+
+    // update status in subscriptions
+    db.collection("users")
+      .doc(context.params.userId)
+      .collection("subscriptions");
+
+      
+    // sending fcm
+    if (document.status.delivered === true) {
+      let registrationToken = "registration token";
+
+      let message = {
+        data: {
+          m: "hello"
+        },
+        token: registrationToken
+      };
+
+      admin
+        .messaging()
+        .send(message)
+        .then(response => {
+          return console.log("successfully sent message", response);
+        })
+        .catch(e => console.log("error sending message : ", e));
+    }
   });
 
 // // user unsubscribing the meal

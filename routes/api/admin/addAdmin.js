@@ -13,16 +13,7 @@ route.post("/", (req, res) => {
     name: Joi.string().required(),
     phone: Joi.string().required(),
     email: Joi.string().required(),
-    address: {
-      coordinates: {
-        longitude: Joi.string().required(),
-        latitude: Joi.string().required()
-      },
-      address1: Joi.string().required(),
-      address2: Joi.string().required(),
-      area: Joi.string().required(),
-      city: Joi.string().required()
-    }
+    password: Joi.string().required()
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
@@ -67,16 +58,17 @@ route.put("/admins", (req, res) => {
     id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
-    email: Joi.string().required()
+    email: Joi.string().required(),
+    password: Joi.string().required()
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
 
   if (error) {
-    console.log("Post Add Admin schema error", error.details[0].message);
+    console.log("Post Edit Admin schema error", error.details[0].message);
     return res.status(400).json({
       error: {
-        message: `Error adding admin schema , ${error.details[0].message}`
+        message: `Error edit admin schema , ${error.details[0].message}`
       }
     });
   } else {
@@ -88,16 +80,16 @@ route.put("/admins", (req, res) => {
       .req(req.body.admins.id)
       .set(value)
       .then(() => {
-        console.log("Admin successfully added");
+        console.log("Admin successfully edited");
         return res.status(200).json({
-          res: { message: "Admin successfully added", code: "", admin: value }
+          res: { message: "Admin successfully edited", code: "", admin: value }
         });
       })
       .catch(e => {
-        console.log("Add Admin error ", e);
+        console.log("Edit Admin error ", e);
         return res.status(400).json({
           error: {
-            message: "Error adding Admin",
+            message: "Error editing Admin",
             code: ""
           }
         });
