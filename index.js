@@ -35,8 +35,6 @@ function getReferCode() {
   return code;
 }
 
-
-
 const validateFirebaseIdToken = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
 
@@ -101,7 +99,6 @@ const validateFirebaseIdToken = (req, res, next) => {
 app.use(cookieParser);
 // app.use(validateFirebaseIdToken);
 app.use("/", require("./routes/api"));
-
 
 //handling trialPack
 exports.trialRedeem = functions.firestore
@@ -180,7 +177,6 @@ exports.onUserCreation = functions.firestore
     });
   });
 
-
 // user subscribing the meal
 exports.onUserSubscribe = functions.firestore
   .document("users/{userId}/subscriptions/{subscriptionId}")
@@ -188,18 +184,17 @@ exports.onUserSubscribe = functions.firestore
     console.log(change.after.data());
 
     //batch creation
-
     let batch = db.batch();
 
     //subscriptionDocId
     let subscriptionDocId = context.params.subscriptionId;
 
+    // for accessing different documents
     let date = subscriptionDocId.substring(0, 2);
     let month = subscriptionDocId.substring(2, 4);
     let year = subscriptionDocId.substring(4, 8);
 
     /// order  collection updation ///
-
     let orderData = change.after.data();
 
     let orderDocRef = db
@@ -210,33 +205,550 @@ exports.onUserSubscribe = functions.firestore
 
     batch.set(orderDocRef, orderData, { merge: true });
 
-    /// kitchen collection updation //////
+    /////////////////////////////////////////
+    /////// kitchen collection ////////////
+    /////// total collection ////////////////
 
+
+    // kitchen collection
     let kitchenDocRef = db
       .collection("kitchen")
       .doc(kitchenId)
       .collection("deliveries")
       .doc(`${month}${month}${year}`);
+    
+    // kitchen total
+      let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
+    
+    // monthly total
+      let monthlyTotalDocRef = db
+      .collection("totals")
+      .doc("kitchens")
+      .collection("months")
+      .doc(`${month}${date}`);
 
-    let kitchenData = kitchenDocRef.get().then();
+      // daily total
+    let dailyTotalDocRef = db
+      .collection("totals")
+      .doc("kitchens")
+      .collection("months")
+      .doc(`${month}${year}`)
+      .collection("dates")
+      .doc(`${date}${month}${year}`);
 
     //breakfast
-    // if (change.after.data().breakfast.status.upcoming === true) {
-    // }
-    // if (change.after.data().breakfast.status.upcoming === false) {
-    // }
-    // if (change.after.data().breakfast.status.vacation === true) {
-    // }
-    // if (change.after.data().breakfast.status.vacation === false) {
-    // }
-    //check unsubscription
+    if (orderData.breakfast) {
+      /// upcoming true
+      if (orderData.breakfast.status.upcoming === true) {
+        if (orderData.breakfast.lite) {
+          let totalCount = "totalCount.breakfast.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          /// monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.breakfast.full) {
+          let totalCount = "totalCount.breakfast.full";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
 
-    //check vacation
+      /// upcoming false
+      if (orderData.breakfast.status.upcoming === false) {
+        if (orderData.breakfast.lite) {
+          let totalCount = "totalCount.breakfast.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.breakfast.full) {
+          let totalCount = "totalCount.breakfast.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
 
-    //check endvacation
+      /// vacation true
+      if (orderData.breakfast.status.vacation === true) {
+        if (orderData.breakfast.lite) {
+          let totalCount = "totalCount.breakfast.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.breakfast.full) {
+          let totalCount = "totalCount.breakfast.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
 
-    // if (change.after.data().breakfast) {
-    // }
+      /// vacation false
+      if (orderData.breakfast.status.vacation === false) {
+        if (orderData.breakfast.lite) {
+          let totalCount = "totalCount.breakfast.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.breakfast.full) {
+          let totalCount = "totalCount.breakfast.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+    }
+
+    //lunch
+    if (orderData.lunch) {
+      /// upcoming true
+      if (orderData.lunch.status.upcoming === true) {
+        if (orderData.lunch.lite) {
+          let totalCount = "totalCount.lunch.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          /// monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.lunch.full) {
+          let totalCount = "totalCount.lunch.full";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+
+      /// upcoming false
+      if (orderData.lunch.status.upcoming === false) {
+        if (orderData.lunch.lite) {
+          let totalCount = "totalCount.lunch.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.lunch.full) {
+          let totalCount = "totalCount.lunch.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
+
+      /// vacation true
+      if (orderData.lunch.status.vacation === true) {
+        if (orderData.lunch.lite) {
+          let totalCount = "totalCount.lunch.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.lunch.full) {
+          let totalCount = "totalCount.lunch.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
+
+      /// vacation false
+      if (orderData.lunch.status.vacation === false) {
+        if (orderData.lunch.lite) {
+          let totalCount = "totalCount.lunch.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.lunch.full) {
+          let totalCount = "totalCount.lunch.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+    }
+
+    //dinner
+    if (orderData.dinner) {
+      /// upcoming true
+      if (orderData.dinner.status.upcoming === true) {
+        if (orderData.dinner.lite) {
+          let totalCount = "totalCount.dinner.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          /// monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.dinner.full) {
+          let totalCount = "totalCount.dinner.full";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+
+      /// upcoming false
+      if (orderData.dinner.status.upcoming === false) {
+        if (orderData.dinner.lite) {
+          let totalCount = "totalCount.dinner.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.dinner.full) {
+          let totalCount = "totalCount.dinner.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
+
+      /// vacation true
+      if (orderData.dinner.status.vacation === true) {
+        if (orderData.dinner.lite) {
+          let totalCount = "totalCount.dinner.lite";
+          //kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+        if (orderData.dinner.full) {
+          let totalCount = "totalCount.dinner.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(-1)
+          });
+        }
+      }
+
+      /// vacation false
+      if (orderData.dinner.status.vacation === false) {
+        if (orderData.dinner.lite) {
+          let totalCount = "totalCount.dinner.lite";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+        if (orderData.dinner.full) {
+          let totalCount = "totalCount.dinner.full";
+          // kitchen collection
+          kitchenDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          //kitchen total
+          kitchenTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // monthly total
+          monthlyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+          // daily total
+          dailyTotalDocRef.update({
+            [totalCount]: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+    }
+
 
     return batch
       .commit()
@@ -255,27 +767,24 @@ exports.onSuccessfulDelivery = functions.firestore
       ? change.after.data()
       : change.before.data();
 
-      //finding the date month and year of the 
-      let date = deliveryId.substring(0, 2);
-      let month = deliveryId.substring(2, 4);
-      let year = deliveryId.substring(4, 8);
+    //finding the date month and year of the
+    let date = deliveryId.substring(0, 2);
+    let month = deliveryId.substring(2, 4);
+    let year = deliveryId.substring(4, 8);
     ///// have to split deliveryId
-    calenderDocId = deliveryId 
+    calenderDocId = deliveryId;
 
-    // update status in calendar 
+    // update status in calendar
     db.collection("users")
       .doc(context.params.userId)
       .collection("calendar")
       .doc(calenderDocId);
-
-
 
     // update status in subscriptions
     db.collection("users")
       .doc(context.params.userId)
       .collection("subscriptions");
 
-      
     // sending fcm
     if (document.status.delivered === true) {
       let registrationToken = "registration token";

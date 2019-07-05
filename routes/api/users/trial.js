@@ -60,7 +60,7 @@ async function getSubscriptions(value){
     let userSector = value.lunch.address.area;
 
     let kitchenManagerDocRef = await db
-      .collection("kitchen")
+      .collection("kitchens")
       .where(`areaHandling.${userSector}`, "==", true)
       .get();
 
@@ -296,7 +296,20 @@ function getOrder(value) {
   return orderSchema;
 }
 
-route.post("/", (req, res) => {
+function getKitchen(value) {
+  let subSchema = {};
+  subSchema.status = {};
+
+  if (value.lite) subSchema.lite = true;
+  if (value.full) subSchema.full = true;
+  subSchema.status.pending = true;
+
+  return subSchema;
+}
+
+//// subscribing the trial pack /////
+
+route.post("/", async(req, res) => {
   const schema = {};
 
   let { error, value } = Joi.validate(req.body.users, schema);
@@ -319,7 +332,7 @@ route.post("/", (req, res) => {
 
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
-    let date = date.getDate()
+     date = date.getDate()
 
     // for proper formatting
     if (date < 10) {
@@ -372,23 +385,121 @@ route.post("/", (req, res) => {
 
     //// kitchen starting ////////
     console.log('kitchen batch starting')
-
-
-
-    console.log('kitchen batch ended')
     
-    /// kitchen ended //////////////
-    console.log('starting batch of kitchen collection')
-    
+    let kitchenId;
+    let kitchenName ;
+
     //breakfast
-    if(req.body.users.trial.break){
+    if(req.body.users.trial.breakfast){
+      let kitchenData = getKitchen(req.body.users.trial.breakfast)
       let userSector = req.body.users.trial.breakfast.address.area 
 
-      let kitchenManagerDocRed = await db.collection('kitchens').where()
+      let kitchenManagerDocRef = await db
+        .collection('kitchens')
+        .where(`areHandling.${userSector}`)
+        .get()
+
+      kitchenManagerDocRef.forEach(doc => {
+        kitchenId = doc.id
+        kitchenName = doc.name
+      })
+
+      let breakfast = db
+        .collection('kitchens')
+        .doc(kitchenId)
+        .collection('deliveries')
+        .doc(`${date}${month}${year}`)
+        .collection('breakfast')
+        .doc(req.body.users.id)
+    
+      batch.set(breakfast, kitchenData, {merge : true})
+
+      console.log('Successful subscribe breakfast kitchen')
     }
+
+    //lunch
+    if(req.body.users.trial.lunch){
+      let kitchenData = getKitchen(req.body.users.trial.lunch)
+      let userSector = req.body.users.trial.lunch.address.area 
+
+      let kitchenManagerDocRef = await db
+        .collection('kitchens')
+        .where(`areHandling.${userSector}`)
+        .get()
+
+      kitchenManagerDocRef.forEach(doc => {
+        kitchenId = doc.id
+        kitchenName = doc.name
+      })
+
+      let lunch = db
+        .collection('kitchens')
+        .doc(kitchenId)
+        .collection('deliveries')
+        .doc(`${date}${month}${year}`)
+        .collection('lunch')
+        .doc(req.body.users.id)
+    
+      batch.set(lunch, kitchenData, {merge : true})
+
+      console.log('Successful subscribe lunch kitchen')
+    }
+
+    //dinner
+    if(req.body.users.trial.dinner){
+      let kitchenData = getKitchen(req.body.users.trial.dinner)
+      let userSector = req.body.users.trial.dinner.address.area 
+
+      let kitchenManagerDocRef = await db
+        .collection('kitchens')
+        .where(`areHandling.${userSector}`)
+        .get()
+
+      kitchenManagerDocRef.forEach(doc => {
+        kitchenId = doc.id
+        kitchenName = doc.name
+      })
+
+      let dinner = db
+        .collection('kitchens')
+        .doc(kitchenId)
+        .collection('deliveries')
+        .doc(`${date}${month}${year}`)
+        .collection('dinner')
+        .doc(req.body.users.id)
+
+      batch.set(dinner, kitchenData, {merge : true})
+
+      console.log('Successful subscribe dinner kitchen')
+    }
+    
     console.log('ended batch of kitchen collection')
+    
+    /// kitchen ended //////////////
 
+    ///// total collection started  //////////
+    //
+    //
+    //
+    //
+    /// total collection ended ////////////
 
+        //// batch commit ///////////////
+
+      return batch
+        .commit()
+        .then(() => {
+          console.log("user trial batch successful");
+          return res.status(200).json({
+            res: { message: "user trial successful", code: "" }
+          });
+        })
+        .catch(e => {
+          console.log("trial batch error");
+          res.status(403).json({
+            error: { message: "trial is not successful", code: "" }
+          });
+        });
 
   }
 });
