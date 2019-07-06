@@ -1,32 +1,35 @@
 const admin = require("firebase-admin");
+const functions = require("firebase-functions");
 
 const db = admin.firestore();
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
-async function getSubscriptions(value){
-  let subSchema = {}
+async function getSubscriptions(value) {
+  let subSchema = {};
 
-  if(value.breakfast){
-    subSchema.breakfast = {}
-    subSchema.breakfast.address = {}
-    subSchema.breakfast.address.coordinates = {}
-    subSchema.breakfast.status = {}
+  if (value.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.address = {};
+    subSchema.breakfast.address.coordinates = {};
+    subSchema.breakfast.status = {};
 
     /// user sector /////
 
-    let kitchenManagerDocRef = await db.collection('kitchens').where(`areaHandling.${userSector}`,"==",true).get()
+    let kitchenManagerDocRef = await db
+      .collection("kitchens")
+      .where(`areaHandling.${userSector}`, "==", true)
+      .get();
 
-    kitchenManagerDocRef.forEach(doc =>{
-      console.log('Kitchen breakfast getting sector',doc.data())
-      let id = doc.id
-      let kitchenName = doc.data().name
+    kitchenManagerDocRef.forEach(doc => {
+      console.log("Kitchen breakfast getting sector", doc.data());
+      let id = doc.id;
+      let kitchenName = doc.data().name;
 
-      subSchema.breakfast.kitchen = {}
-      subSchema.breakfast.kitchen.id = id
-      subSchema.breakfast.kitchen.name = kitchenName
-
-    })
+      subSchema.breakfast.kitchen = {};
+      subSchema.breakfast.kitchen.id = id;
+      subSchema.breakfast.kitchen.name = kitchenName;
+    });
 
     if (value.breakfast.lite) subSchema.breakfast.lite = true;
     if (value.breakfast.full) subSchema.breakfast.full = true;
@@ -106,7 +109,7 @@ async function getSubscriptions(value){
     let userSector = value.dinner.address.area;
 
     let kitchenManagerDocRef = await db
-      .collection("kitchen")
+      .collection("kitchens")
       .where(`areaHandling.${userSector}`, "==", true)
       .get();
 
@@ -141,7 +144,7 @@ async function getSubscriptions(value){
     }
   }
 
-  return subSchema 
+  return subSchema;
 }
 
 function getCalendar(value) {
@@ -309,22 +312,31 @@ function getKitchen(value) {
 
 //// subscribing the trial pack /////
 
-route.post("/", async(req, res) => {
+route.post("/", async (req, res) => {
   const schema = {};
 
   let { error, value } = Joi.validate(req.body.users, schema);
 
   error = false;
   if (error) {
-    console.log("Post trial schema error",error.details[0].message);
+    console.log("Post trial schema error", error.details[0].message);
     return res.status(400).json({
       error: {
         message: `Post trial schema error , ${error.details[0].message}`
       }
     });
   } else {
+    let batch = db.batch();
 
-    let batch = db.batch()
+    /////   users    ///////
+
+    db.collection("users")
+      .doc(req.body.users.id)
+      .update({
+        trialRedeemed: false
+      })
+      .then(() => console.log("updated field in the user "))
+      .catch(e => console.log("cannot update the field in user"));
 
     let date = req.body.date;
 
@@ -332,7 +344,7 @@ route.post("/", async(req, res) => {
 
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
-     date = date.getDate()
+    date = date.getDate();
 
     // for proper formatting
     if (date < 10) {
@@ -343,165 +355,323 @@ route.post("/", async(req, res) => {
     }
 
     //// user subscriptions ////
-    console.log('user trial subscription start')
-    let SubscriptionData = await getSubscriptions(req.body.users.trial)
+    console.log("user trial subscription start");
+    let SubscriptionData = await getSubscriptions(req.body.users.trial);
 
-    let userSubscriptionsRef = await db.collection('users').doc(req.body.users.id).collection('subscriptions')
+    let userSubscriptionsRef = await db
+      .collection("users")
+      .doc(req.body.users.id)
+      .collection("subscriptions");
 
-    let docId = `${date}${month}${year}`
-    let userSubDocRef = userSubscriptionsRef.doc(docId)
+    let docId = `${date}${month}${year}`;
+    let userSubDocRef = userSubscriptionsRef.doc(docId);
 
-    batch.set(userSubDocRef, SubscriptionData,{merge : true})
-    console.log('user trial subscription ended')
+    batch.set(userSubDocRef, SubscriptionData, { merge: true });
+    console.log("user trial subscription ended");
 
     /////  completed user subscription //////////
 
     /////  user calendar starting ///////////////
 
-    console.log('user trial calendar start')
+    console.log("user trial calendar start");
 
-    let calendarData = await getCalendar(req.body.users.trial)
+    let calendarData = await getCalendar(req.body.users.trial);
 
-    let userCalendarDocRef = db.collection('users').doc(req.body.users.id).collection('calendar').doc(`${month}${year}`)
+    let userCalendarDocRef = db
+      .collection("users")
+      .doc(req.body.users.id)
+      .collection("calendar")
+      .doc(`${month}${year}`);
 
-    batch.set(userCalendarDocRef, {[date] : calendarData}, {merge : true})
-    
-    console.log('user trial calendar ended')
+    batch.set(userCalendarDocRef, { [date]: calendarData }, { merge: true });
+
+    console.log("user trial calendar ended");
 
     //// user calendar ended ////////
 
-    ///// order started //// 
-    console.log('order batch started')
+    ///// order started ////
+    console.log("order batch started");
 
-    let orderData = getOrder(req.body.users.trial)
+    let orderData = getOrder(req.body.users.trial);
 
-    let orderDocRef = db.collection('orders').doc(`${month}${year}`).collection(`${date}${month}${year}`).doc(req.body.users.id)
+    let orderDocRef = db
+      .collection("orders")
+      .doc(`${month}${year}`)
+      .collection(`${date}${month}${year}`)
+      .doc(req.body.users.id);
 
-    batch.set(orderDocRef, orderData, {merge : true})
+    batch.set(orderDocRef, orderData, { merge: true });
 
-    console.log('order batch ended ')
+    console.log("order batch ended ");
     //// order ended ///////
 
+    //// kitchen collection and totals collection starting ////////
+    console.log("kitchen batch starting");
 
-    //// kitchen starting ////////
-    console.log('kitchen batch starting')
-    
     let kitchenId;
-    let kitchenName ;
+    let kitchenName;
 
     //breakfast
-    if(req.body.users.trial.breakfast){
-      let kitchenData = getKitchen(req.body.users.trial.breakfast)
-      let userSector = req.body.users.trial.breakfast.address.area 
+    if (req.body.users.trial.breakfast) {
+      let kitchenData = getKitchen(req.body.users.trial.breakfast);
+      let userSector = req.body.users.trial.breakfast.address.area;
 
       let kitchenManagerDocRef = await db
-        .collection('kitchens')
+        .collection("kitchens")
         .where(`areHandling.${userSector}`)
-        .get()
+        .get();
 
       kitchenManagerDocRef.forEach(doc => {
-        kitchenId = doc.id
-        kitchenName = doc.name
-      })
+        kitchenId = doc.id;
+        kitchenName = doc.name;
+      });
 
-      let breakfast = db
-        .collection('kitchens')
+      // increment count of total trial meals inside the
+      // kitchen per day doc
+
+      let kitchenDocRef = db
+        .collection("kitchen")
         .doc(kitchenId)
-        .collection('deliveries')
-        .doc(`${date}${month}${year}`)
-        .collection('breakfast')
-        .doc(req.body.users.id)
-    
-      batch.set(breakfast, kitchenData, {merge : true})
+        .collection("deliveries")
+        .doc(`${date}${month}${year}`);
 
-      console.log('Successful subscribe breakfast kitchen')
+      let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
+
+      let monthlyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`);
+
+      let dailyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`)
+        .collection("dates")
+        .doc(`${date}${month}${year}`);
+
+      if (req.body.users.trial.breakfast.lite) {
+        let totalCount = "trialCount.breakfast.lite";
+      }
+      if (req.body.users.trial.breakfast.full) {
+        let totalCount = "trialCount.breakfast.lite";
+      }
+      batch.update(kitchenDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(kitchenTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(monthlyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(dailyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+
+      // adding data of user in the kitchen collection
+      let breakfast = db
+        .collection("kitchens")
+        .doc(kitchenId)
+        .collection("deliveries")
+        .doc(`${date}${month}${year}`)
+        .collection("breakfast")
+        .doc(req.body.users.id);
+
+      batch.set(breakfast, kitchenData, { merge: true });
+
+      console.log("Successful subscribe breakfast kitchen");
     }
 
     //lunch
-    if(req.body.users.trial.lunch){
-      let kitchenData = getKitchen(req.body.users.trial.lunch)
-      let userSector = req.body.users.trial.lunch.address.area 
+    if (req.body.users.trial.lunch) {
+      let kitchenData = getKitchen(req.body.users.trial.lunch);
+      let userSector = req.body.users.trial.lunch.address.area;
 
       let kitchenManagerDocRef = await db
-        .collection('kitchens')
+        .collection("kitchens")
         .where(`areHandling.${userSector}`)
-        .get()
+        .get();
 
       kitchenManagerDocRef.forEach(doc => {
-        kitchenId = doc.id
-        kitchenName = doc.name
-      })
+        kitchenId = doc.id;
+        kitchenName = doc.name;
+      });
 
-      let lunch = db
-        .collection('kitchens')
+      // increment count of total trial meals inside the
+      // kitchen per day doc
+
+      let kitchenDocRef = db
+        .collection("kitchen")
         .doc(kitchenId)
-        .collection('deliveries')
-        .doc(`${date}${month}${year}`)
-        .collection('lunch')
-        .doc(req.body.users.id)
-    
-      batch.set(lunch, kitchenData, {merge : true})
+        .collection("deliveries")
+        .doc(`${date}${month}${year}`);
 
-      console.log('Successful subscribe lunch kitchen')
+      let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
+
+      let monthlyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`);
+
+      let dailyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`)
+        .collection("dates")
+        .doc(`${date}${month}${year}`);
+
+      if (req.body.users.trial.lunch.lite) {
+        let totalCount = "trialCount.lunch.lite";
+      }
+      if (req.body.users.trial.lunch.full) {
+        let totalCount = "trialCount.lunch.lite";
+      }
+      batch.update(kitchenDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(kitchenTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(monthlyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(dailyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+
+      db.collection("kitchens");
+
+      // adding data of user inside the deliveries
+      let lunch = db
+        .collection("kitchens")
+        .doc(kitchenId)
+        .collection("deliveries")
+        .doc(`${date}${month}${year}`)
+        .collection("lunch")
+        .doc(req.body.users.id);
+
+      batch.set(lunch, kitchenData, { merge: true });
+
+      console.log("Successful subscribe lunch kitchen");
     }
 
     //dinner
-    if(req.body.users.trial.dinner){
-      let kitchenData = getKitchen(req.body.users.trial.dinner)
-      let userSector = req.body.users.trial.dinner.address.area 
+    if (req.body.users.trial.dinner) {
+      let kitchenData = getKitchen(req.body.users.trial.dinner);
+      let userSector = req.body.users.trial.dinner.address.area;
 
       let kitchenManagerDocRef = await db
-        .collection('kitchens')
+        .collection("kitchens")
         .where(`areHandling.${userSector}`)
-        .get()
+        .get();
 
       kitchenManagerDocRef.forEach(doc => {
-        kitchenId = doc.id
-        kitchenName = doc.name
-      })
+        kitchenId = doc.id;
+        kitchenName = doc.name;
+      });
+      // increment count of total trial meals inside the
+      // kitchen per day doc
+
+      let kitchenDocRef = db
+        .collection("kitchen")
+        .doc(kitchenId)
+        .collection("deliveries")
+        .doc(`${date}${month}${year}`);
+
+      let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
+
+      let monthlyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`);
+
+      let dailyTotalDocRef = db
+        .collection("totals")
+        .doc("kitchens")
+        .collection("months")
+        .doc(`${month}${year}`)
+        .collection("dates")
+        .doc(`${date}${month}${year}`);
+
+      if (req.body.users.trial.dinner.lite) {
+        let totalCount = "trialCount.dinner.lite";
+      }
+      if (req.body.users.trial.dinner.full) {
+        let totalCount = "trialCount.dinner.lite";
+      }
+      batch.update(kitchenDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(kitchenTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(monthlyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
+      batch.update(dailyTotalDocRef, {
+        [totalCount]: admin.firestore.FieldValue.increment(1)
+      });
 
       let dinner = db
-        .collection('kitchens')
+        .collection("kitchens")
         .doc(kitchenId)
-        .collection('deliveries')
+        .collection("deliveries")
         .doc(`${date}${month}${year}`)
-        .collection('dinner')
-        .doc(req.body.users.id)
+        .collection("dinner")
+        .doc(req.body.users.id);
 
-      batch.set(dinner, kitchenData, {merge : true})
+      batch.set(dinner, kitchenData, { merge: true });
 
-      console.log('Successful subscribe dinner kitchen')
+      console.log("Successful subscribe dinner kitchen");
     }
-    
-    console.log('ended batch of kitchen collection')
-    
+
+    console.log("ended batch of kitchen collection");
+
     /// kitchen ended //////////////
 
-    ///// total collection started  //////////
-    //
-    //
-    //
-    //
-    /// total collection ended ////////////
+    //// batch commit ///////////////
 
-        //// batch commit ///////////////
+    return batch
+      .commit()
+      .then(() => {
+        console.log("user trial batch successful");
+        // http request for trial pack
 
-      return batch
-        .commit()
-        .then(() => {
-          console.log("user trial batch successful");
-          return res.status(200).json({
-            res: { message: "user trial successful", code: "" }
-          });
-        })
-        .catch(e => {
-          console.log("trial batch error");
-          res.status(403).json({
-            error: { message: "trial is not successful", code: "" }
-          });
+        return res.status(200).json({
+          res: { message: "user trial successful", code: "" }
         });
-
+      })
+      .catch(e => {
+        console.log("trial batch error");
+        return res.status(403).json({
+          error: { message: "trial is not successful", code: "" }
+        });
+      });
   }
 });
 
+fu;
+
 module.exports = route;
+
+exports.trial = functions.https.onRequest((req, res) => {
+  const registrationTokens = [];
+
+  const message = {
+    data: {
+      message:
+        "You have successfully subscribe our trial meal. Enjoy the day !!!"
+    }
+  };
+
+  admin
+    .messaging()
+    .send(message)
+    .then(response => console.log("Successfully sent trial message ", response))
+    .catch(error => console.log("Error sending error: ", error));
+});

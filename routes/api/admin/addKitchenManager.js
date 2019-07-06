@@ -44,36 +44,33 @@ route.post("/", (req, res) => {
       }
     });
   } else {
+    let batch = db.batch();
+
     value.role = {};
     value.role.kitchenManager = true;
 
-    return db
-      .collection("admins")
-      .doc(req.body.admins.id)
-      .set(value)
+    let kitchenData = getKitchenData(req.body.admins)
 
-      .then(() => {
-        console.log("Kitchen Manager successfully added ");
-        return res.status(200).json({
-          res: {
-            message: "Kitchen manager successfully added successfully",
-            code: "",
-            kitchenManager: value
-          }
-        });
-      })
+    let kitchenRef = db.collection('kitchens')
+    batch.add(kitchenRef,kitchenData)
 
-      .catch(e => {
-        console.log("Add Kitchen Manager error ", e);
-        return res.status(400).json({
-          error: {
-            message: "Error adding kitchen manager",
-            code: ""
-          }
-        });
-      });
-  }
-});
+    let adminRef = db.collection("admins").doc(req.body.admins.id);
+    batch.set(adminRef, value)
+      
+    batch.commit()
+    .then(()=>{
+      console.log('successfully added the kitchen and km')
+      return res.status(200).json({res :{message : "successfully added the kitchen and km",code :""}})
+    })
+    .catch(error => {
+      console.log('Error adding the kitchen and kitchen Manager',error)
+      return res.status(400).json({error :{
+        message :"Error adding the kitchen  and KM",
+        code :""
+      }})
+    })
+   
+}
 
 //////////    Edit Kitchen Manager //////////////
 route.put("/", (req, res) => {

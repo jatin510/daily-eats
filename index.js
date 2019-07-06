@@ -209,25 +209,24 @@ exports.onUserSubscribe = functions.firestore
     /////// kitchen collection ////////////
     /////// total collection ////////////////
 
-
     // kitchen collection
     let kitchenDocRef = db
       .collection("kitchen")
       .doc(kitchenId)
       .collection("deliveries")
-      .doc(`${month}${month}${year}`);
-    
+      .doc(`${date}${month}${year}`);
+
     // kitchen total
-      let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
-    
+    let kitchenTotalDocRef = db.collection("totals").doc("kitchens");
+
     // monthly total
-      let monthlyTotalDocRef = db
+    let monthlyTotalDocRef = db
       .collection("totals")
       .doc("kitchens")
       .collection("months")
       .doc(`${month}${date}`);
 
-      // daily total
+    // daily total
     let dailyTotalDocRef = db
       .collection("totals")
       .doc("kitchens")
@@ -749,7 +748,6 @@ exports.onUserSubscribe = functions.firestore
       }
     }
 
-
     return batch
       .commit()
       .then(() => console.log("Subscription trigger successful"))
@@ -758,6 +756,7 @@ exports.onUserSubscribe = functions.firestore
       });
   });
 
+// successful delivery
 exports.onSuccessfulDelivery = functions.firestore
   .document(
     "admin/{deliveryBoyId}/deliveries/{deliveryId}/{timeOfDay}/{userId}"
@@ -806,13 +805,4 @@ exports.onSuccessfulDelivery = functions.firestore
     }
   });
 
-// // user unsubscribing the meal
-// exports.onUserUnsubscribe = functions.firestore
-//   .document("")
-//   .onCreate((snap, context) => {
-//     let data = snap.data();
-//   });
-
-// // user on vacation
-// //
-// // user on ending vacation
+// 
