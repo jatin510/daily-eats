@@ -1,0 +1,597 @@
+{
+  "users": {
+    "name": "jatin",
+    "phoneNo": 8,
+    "email": "jatin6972@gmail.com",
+    "wallet": 1000,
+    "trialRedeemed": true,
+
+    "invitationCode(optional)": "",
+    "referralRedeemed(optional)": false,
+
+    "address": [
+      {
+        "id": 1,
+        "tag": "home/office",
+        "coordinates": {
+          "latitude": 2,
+          "longitude": 3
+        },
+        "address1": "flat No. / house No.",
+        "address2": "apartment, society name",
+        "area": "ha",
+        "city": "delhi"
+      }
+    ],
+
+    "calender": [
+      {
+        "id": "month",
+        "1": {
+          "breakfast": {
+            "fullAddress": "2",
+            "meals": {
+              "id": "name",
+              "name": "chole bhature",
+              "image": "",
+              "contents": ["chole bhature", "bread pakora"]
+            },
+            "lite/full": 50,
+            "price": "",
+            "status": {
+              "upcoming": true,
+              "delivered": true,
+              "cancelled": true,
+              "vacation": true
+            }
+          },
+          "lunch": {},
+          "dinner": {}
+        }
+      }
+    ],
+
+    "transaction": [
+      {
+        "id": "AutomaticallyGenerated/dateTime",
+        "method": "upi",
+        "amount": 12,
+        "status": {
+          "successfull": true,
+          "failed": true,
+          "pending": true
+        },
+        "accountEntry": {
+          "credit": true,
+          "debit": false
+        },
+        "time": "time"
+      }
+    ],
+
+    "subscription": [
+      {
+        "id": "dayMonthYear",
+        "breakfast": {
+          "meals": {
+            "id": "name",
+            "name": "chole bhature",
+            "image": "",
+            "contents": ["chole bhature", "bread pakora"]
+          },
+          "address": {
+            "id": 1,
+            "tag": "home/office",
+            "coordinates": {
+              "latitude": 2,
+              "longitude": 3
+            },
+            "address1": "flat No. / house No.",
+            "address2": "apartment, society name",
+            "area": "ha",
+            "city": "delhi"
+          },
+          "lite/full": "",
+          "price": "",
+          "status": {
+            "upcoming": "boolean",
+            "delivered": "boolean",
+            "vacation": "boolean",
+            "onTheWay": "boolean",
+            "packed": "boolean",
+            "cancelled": {
+              "reason": "",
+              "time": ""
+            }
+          },
+          "time": "timeOfDelivery/Cancellation",
+          "deliveryBoy": {
+            "id": "",
+            "name": "",
+            "phoneNumber": ""
+          },
+          "kitchen": {
+            "KitchenName": ""
+          }
+        },
+        "lunch": {},
+        "dinner": {}
+      }
+    ],
+
+    "monthlyBill": [
+      {
+        "id": "month",
+        "mealCounts": {
+          "breakfastCount": 23,
+          "lunchCount": 23,
+          "dinnerCount": 23
+        },
+        "totalExpense": {
+          "breakfastExpense": 23,
+          "lunchExpense": 23,
+          "dinnerExpense": 23
+        }
+      }
+    ],
+
+    "refer&Earn(only_for_user)": {
+      "referralId": "",
+      "earns": [
+        {
+          "userId": "",
+          "name": "",
+          "redeem": true
+        }
+      ]
+    }
+  },
+
+  "upcomingMeals": [
+    {
+      "id": "day/month/year",
+
+      "breakfast": [
+        {
+          "id": "name",
+          "name": "chole bhature",
+          "image": "",
+          "price": {
+            "lite": 50,
+            "full": 60
+          },
+          "contents": ["chole bhature", "bread pakora"]
+        }
+      ],
+
+      "lunch": [
+        {
+          "id": "name",
+          "name": "chole bhature",
+          "image": "",
+          "price": {
+            "lite": 50,
+            "full": 60
+          },
+          "contents": {
+            "bread": ["roti", "paratha"],
+            "rice": [""],
+            "veggie": ["bhindi", "aloo"],
+            "addOn": {
+              "curd": true,
+              "salad": true
+            }
+          }
+        }
+      ],
+
+      "dinner": [
+        {
+          "id": "name",
+          "name": "chole bhature",
+          "image": "",
+          "price": {
+            "lite": 50,
+            "full": 60
+          },
+          "contents": {
+            "bread": ["roti", "paratha"],
+            "rice": [""],
+            "veggie": ["bhindi", "aloo"],
+            "addOn": {
+              "curd": true,
+              "salad": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+
+  "transaction": [
+    {
+      "id": "transactionId",
+      "user": {
+        "id": "",
+        "name": "",
+        "email": "",
+        "phoneNumber": ""
+      },
+      "details": "fetch from each user"
+    }
+  ],
+
+  "order": [
+    {
+      "id": "month/year",
+      "perDay": [
+        {
+          "id": "userId",
+          "breakfast": {
+            "meals": {
+              "id": "name",
+              "name": "chole bhature",
+              "image": "",
+              "contents": ["chole bhature", "bread pakora"]
+            },
+            "address": {
+              "coordinates": {
+                "latitude": 2,
+                "longitude": 3
+              },
+              "address1": "flat No. / house No.",
+              "address2": "apartment, society name",
+              "area": "ha",
+              "city": "delhi"
+            },
+            "lite/full": "",
+            "price": "",
+            "status": {
+              "upcoming": false,
+              "delivered": "boolean",
+              "cancelled": {
+                "reason": "",
+                "time": ""
+              },
+              "vacation": "boolean",
+              "onTheWay": "boolean",
+              "packed": "Time"
+            },
+            "time": "timeOfDelivery/Cancellation",
+            "deliveryBoy": {
+              "id": "",
+              "name": "",
+              "phoneNumber": ""
+            },
+            "kitchen": {
+              "id": "",
+              "KitchenName": ""
+            }
+          },
+          "lunch": {},
+          "dinner": {}
+        }
+      ]
+    }
+  ],
+
+  "menu": [
+    {
+      "id": "breakfast/lunch/dinner",
+      "bread": [
+        { "name": "roti", "image": "" },
+        { "name": "paratha", "image": "" }
+      ],
+      "pulse": [
+        { "name": "rajma", "image": "" },
+        { "name": "arhar", "image": "" }
+      ],
+      "rice": [
+        { "name": "normal", "image": "" },
+        { "name": "pulao", "image": "" }
+      ],
+      "addOns": [
+        { "name": "salad", "image": "" },
+        { "name": "curd", "image": "" },
+        { "name": "chutni", "image": "" }
+      ]
+    }
+  ],
+
+  "kitchen": {
+    "id": "",
+    "name": "",
+    "address": {
+      "coordinates": {
+        "latitude": 2,
+        "longitude": 3
+      },
+      "address1": "flat No. / house No.",
+      "address2": "apartment, society name",
+      "area": "ha",
+      "city": "delhi"
+    },
+
+    "areaHandling": {
+      "sector19": true,
+      "sector20": false
+    },
+
+    "kitchenManager": {
+      "id": "",
+      "name": ""
+    },
+
+    "deliveries": [
+      {
+        "id": "date/month/year",
+
+        "totalCount": {
+          "breakfast": {
+            "lite": "",
+            "full": ""
+          },
+          "lunch": {
+            "lite": "",
+            "full": ""
+          },
+          "dinner": {
+            "lite": "",
+            "full": ""
+          }
+        },
+        "breakfast": [
+          {
+            "userId": "",
+            "lite/full": "",
+            "status": {
+              "pending": true,
+              "delivered": true
+            },
+            "time": "",
+            "deliveryBoy": {
+              "id": "",
+              "name": ""
+            }
+          }
+        ],
+        "lunch": [
+          {
+            "userId": "",
+            "lite/full": "",
+            "status": {
+              "pending": true,
+              "delivered": true
+            },
+            "time": "",
+            "deliveryBoy": {
+              "id": "",
+              "name": ""
+            }
+          }
+        ],
+        "dinner": [
+          {
+            "userId": "",
+            "lite/full": "",
+            "status": {
+              "pending": true,
+              "delivered": true
+            },
+            "time": "",
+            "deliveryBoy": {
+              "id": "",
+              "name": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "admin": [
+    {
+      "name": "",
+      "phoneNo": "",
+      "role": {
+        "admin": true,
+        "manager": true,
+        "kitchenManager": true,
+        "deliveryBoy": true
+      },
+
+      "deliveryBoy(for_for_delivery_boy)": {
+        "deliveries": [
+          {
+            "id": "date/month/year",
+
+            "totalCount": {
+              "breakfast": {
+                "lite": "",
+                "full": "",
+                "successfullDelivered": ""
+              },
+              "lunch": {
+                "lite": "",
+                "full": "",
+                "successfullDelivered": ""
+              },
+              "dinner": {
+                "lite": "",
+                "full": "",
+                "successfullDelivered": ""
+              }
+            },
+
+            "breakfast": [
+              {
+                "userId": "",
+                "name": "",
+                "phoneNo": "",
+                "address": {
+                  "coordinates": {
+                    "latitude": "",
+                    "longitude": ""
+                  },
+                  "address1": "flat No. / house No.",
+                  "address2": "apartment, society name",
+                  "area": "ha",
+                  "city": "delhi"
+                },
+                "lite/full": "",
+                "status": {
+                  "pending": true,
+                  "delivered": true,
+                  "cancelled": {
+                    "reason": ""
+                  }
+                },
+                "time": ""
+              }
+            ],
+            "lunch": [
+              {
+                "userId": "",
+                "name": "",
+                "phoneNo": "",
+                "address": {
+                  "coordinates": {
+                    "latitude": "",
+                    "longitude": ""
+                  },
+                  "address1": "flat No. / house No.",
+                  "address2": "apartment, society name",
+                  "area": "ha",
+                  "city": "delhi"
+                },
+                "lite/full": "",
+                "status": {
+                  "pending": true,
+                  "delivered": true,
+                  "cancelled": {
+                    "reason": ""
+                  }
+                },
+                "time": ""
+              }
+            ],
+            "dinner": [
+              {
+                "userId": "",
+                "name": "",
+                "phoneNo": "",
+                "address": {
+                  "coordinates": {
+                    "latitude": "",
+                    "longitude": ""
+                  },
+                  "address1": "flat No. / house No.",
+                  "address2": "apartment, society name",
+                  "area": "ha",
+                  "city": "delhi"
+                },
+                "lite/full": "",
+                "status": {
+                  "pending": true,
+                  "delivered": true,
+                  "cancelled": {
+                    "reason": ""
+                  }
+                },
+                "time": ""
+              }
+            ]
+          }
+        ]
+      },
+
+      "kitchenHandling(only_for_kitchenManager)": {
+        "id": "",
+        "name": "",
+        "address": {
+          "id": 1,
+          "tag": "home/office",
+          "coordinates": {
+            "latitude": 2,
+            "longitude": 3
+          },
+          "address1": "flat No. / house No.",
+          "address2": "apartment, society name",
+          "area": "ha",
+          "city": "delhi"
+        }
+      }
+    }
+  ],
+
+  "totals": {
+    "users": {
+      "totalUsers": 3,
+      "totalActive": 2,
+      "totalTrial": 2
+    },
+
+    "kitchen": {
+      "totalKitchen": "",
+      "totalKitchenManager": "",
+      "totalDeliveryBoy": ""
+    },
+
+    "totalMeals": [
+      {
+        "totalAmount": "",
+        "totalTrials": "",
+
+        "total": {
+          "breakfast": {
+            "lite": "",
+            "full": ""
+          },
+          "lunch": {
+            "lite": "",
+            "full": ""
+          },
+          "dinner": {
+            "lite": "",
+            "full": ""
+          }
+        },
+
+        "monthly": [
+          {
+            "id": "month/year",
+            "sales": {
+              "totalAmount": "",
+              "total": {
+                "breakfast": {
+                  "lite": "",
+                  "full": "",
+                  "trials": {
+                    "lite": "",
+                    "full": ""
+                  }
+                },
+                "lunch": {
+                  "lite": "",
+                  "full": "",
+                  "trials": {
+                    "lite": "",
+                    "full": ""
+                  }
+                },
+                "dinner": {
+                  "lite": "",
+                  "full": "",
+                  "trials": {
+                    "lite": "",
+                    "full": ""
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

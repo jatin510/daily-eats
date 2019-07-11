@@ -6,6 +6,32 @@ const express = require("express");
 const route = express.Router();
 const Joi = require("@hapi/joi");
 
+function getKitchenData(value) {
+  let subSchema = {};
+
+  subSchema.id = value.id;
+  subSchema.name = value.name;
+  subSchema.address = {};
+  subSchema.address.coordinates = {};
+  subSchema.address.coordinates.longitude = value.address.coordinates.longitude;
+  subSchema.address.coordinates.latitude = value.address.coordinates.latitude;
+  subSchema.address.address1 = value.address.address1;
+  subSchema.address.address2 = value.address.address2;
+  subSchema.address.area = value.address.area;
+  subSchema.address.city = value.address.city;
+
+  //kitchen manager
+  subSchema.kitchenManager = {};
+  subSchema.kitchenManager.id = value.kitchenManager.id;
+  subSchema.kitchenManager.name = value.kitchenManager.name;
+
+  // area handling
+  subSchema.areaHandling = {};
+  subSchema.areaHandling = value.areaHandling;
+
+  return subSchema;
+}
+
 /////////    Add Kitchen Manager  //////////////
 route.post("/", (req, res) => {
   let schema = Joi.object().keys({
@@ -22,11 +48,16 @@ route.post("/", (req, res) => {
       city: Joi.string().required()
     },
     kitchenManager: {
+      id: Joi.string().required(),
       name: Joi.string().required(),
       phone: Joi.string().required(),
       email: Joi.string().required(),
       password: Joi.string().required()
-    }
+    },
+
+    // how to verify area handling
+
+    areaHandling: Joi.object().pattern(/^/, [Joi.string(), Joi.number()])
   });
 
   const { error, value } = Joi.validate(req.body.admins, schema);
@@ -49,28 +80,50 @@ route.post("/", (req, res) => {
     value.role = {};
     value.role.kitchenManager = true;
 
-    let kitchenData = getKitchenData(req.body.admins)
+    let kitchenData = getKitchenData(req.body.admins);
 
-    let kitchenRef = db.collection('kitchens')
-    batch.add(kitchenRef,kitchenData)
+    let kitchenRef = db.collection("kitchens");
+    batch.add(kitchenRef, kitchenData);
 
     let adminRef = db.collection("admins").doc(req.body.admins.id);
-    batch.set(adminRef, value)
-      
-    batch.commit()
-    .then(()=>{
-      console.log('successfully added the kitchen and km')
-      return res.status(200).json({res :{message : "successfully added the kitchen and km",code :""}})
-    })
-    .catch(error => {
-      console.log('Error adding the kitchen and kitchen Manager',error)
-      return res.status(400).json({error :{
-        message :"Error adding the kitchen  and KM",
-        code :""
-      }})
-    })
-   
-}
+    batch.set(adminRef, value);
+
+    // add New User sector in the sector collection
+
+    let locationCollectionRef = db
+      .collection("locations")
+      .doc(req.body.admins.address.city);
+
+    // converting the object into array of its values
+    let areaHandling = req.body.admins.areaHandling;
+
+    const keys = Object.keys(areaHandling);
+
+    for (const key of keys) {
+      batch.set(locationCollectionRef, {
+        areaHandling: admin.firestore.FieldValue.arrayUnion(key)
+      });
+    }
+
+    batch
+      .commit()
+      .then(() => {
+        console.log("successfully added the kitchen and km");
+        return res.status(200).json({
+          res: { message: "successfully added the kitchen and km", code: "" }
+        });
+      })
+      .catch(error => {
+        console.log("Error adding the kitchen and kitchen Manager", error);
+        return res.status(400).json({
+          error: {
+            message: "Error adding the kitchen  and KM",
+            code: ""
+          }
+        });
+      });
+  }
+});
 
 //////////    Edit Kitchen Manager //////////////
 route.put("/", (req, res) => {
@@ -88,50 +141,59 @@ route.put("/", (req, res) => {
       city: Joi.string().required()
     },
     kitchenManager: {
+      id: Joi.string().required(),
       name: Joi.string().required(),
       phone: Joi.string().required(),
       email: Joi.string().required(),
       password: Joi.string().required()
-    }
+    },
+
+    // how to verify area handling
+
+    areaHandling: Joi.object().pattern(/^/, [Joi.string(), Joi.number()])
   });
+
   const { error, value } = Joi.validate(req.body.admins, schema);
 
   if (error) {
     console.log(
-      "Post editing Kitchen Data schema error ",
+      "Post Add Kitchen Data schema error ",
       error.details[0].message
     );
     return res.status(400).json({
       error: {
-        message: `Error editing Kitchen Manager schema, ${
+        message: `Error adding Kitchen Manager schema, ${
           error.details[0].message
         }`
       }
     });
   } else {
+    let batch = db.batch();
+
     value.role = {};
     value.role.kitchenManager = true;
 
-    return db
-      .collection("admins")
-      .doc(req.body.admins.id)
-      .set(value)
+    let kitchenData = getKitchenData(req.body.admins);
+
+    let kitchenRef = db.collection("kitchens");
+    batch.add(kitchenRef, kitchenData);
+
+    let adminRef = db.collection("admins").doc(req.body.admins.id);
+    batch.set(adminRef, value);
+
+    batch
+      .commit()
       .then(() => {
-        console.log("Kitchen Manager successfully edited ");
+        console.log("successfully added the kitchen and km");
         return res.status(200).json({
-          res: {
-            message: "Kitchen manager successfully edited successfully",
-            code: "",
-            kitchenManager: value
-          }
+          res: { message: "successfully added the kitchen and km", code: "" }
         });
       })
-
-      .catch(e => {
-        console.log("edit Kitchen Manager error ", e);
+      .catch(error => {
+        console.log("Error adding the kitchen and kitchen Manager", error);
         return res.status(400).json({
           error: {
-            message: "Error editing kitchen manager",
+            message: "Error adding the kitchen  and KM",
             code: ""
           }
         });
