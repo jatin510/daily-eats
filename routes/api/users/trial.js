@@ -315,6 +315,11 @@ function getKitchen(value) {
 route.post("/", async (req, res) => {
   const schema = {};
 
+  ///  validate
+  ///  the data
+  ///  for the
+  ///  trial meal
+
   let { error, value } = Joi.validate(req.body.users, schema);
 
   error = false;
@@ -333,7 +338,7 @@ route.post("/", async (req, res) => {
     db.collection("users")
       .doc(req.body.users.id)
       .update({
-        trialRedeemed: false
+        trialRedeemed: true
       })
       .then(() => console.log("updated field in the user "))
       .catch(e => console.log("cannot update the field in user"));

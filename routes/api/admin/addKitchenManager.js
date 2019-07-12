@@ -181,6 +181,23 @@ route.put("/", (req, res) => {
     let adminRef = db.collection("admins").doc(req.body.admins.id);
     batch.set(adminRef, value);
 
+    // add New User sector in the sector collection
+
+    let locationCollectionRef = db
+      .collection("locations")
+      .doc(req.body.admins.address.city);
+
+    // converting the object into array of its values
+    let areaHandling = req.body.admins.areaHandling;
+
+    const keys = Object.keys(areaHandling);
+
+    for (const key of keys) {
+      batch.set(locationCollectionRef, {
+        areaHandling: admin.firestore.FieldValue.arrayUnion(key)
+      });
+    }
+
     batch
       .commit()
       .then(() => {

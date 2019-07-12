@@ -11,6 +11,9 @@ route.use(express.json());
 async function getSubscriptions(value) {
   var subSchema = {};
 
+  // make new fields
+  //subSchema.
+
   if (value.breakfast) {
     //breakfast schema
     subSchema.breakfast = {};
