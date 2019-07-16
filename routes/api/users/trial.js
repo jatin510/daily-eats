@@ -30,6 +30,7 @@ async function getSubscriptions(value) {
       console.log("Kitchen breakfast getting sector", doc.data());
       let id = doc.id;
       let kitchenName = doc.data().name;
+      console.log('functions',id)
 
       subSchema.breakfast.kitchen = {};
       subSchema.breakfast.kitchen.id = id;
@@ -343,13 +344,20 @@ route.post("/", async (req, res) => {
 
     /////   users    ///////
 
+    let usersDocRef = db.collection('users').doc(req.body.users.id).get().then((doc)=>
+    {
+      if(doc.data().trialRedeem == true )
+        continue;
+    }).catch(e => console.log('error in the user',e))
+
     db.collection("users")
       .doc(req.body.users.id)
       .update({
-        trialRedeemed: true
+        trialRedeem: true
       })
       .then(() => console.log("updated field in the user "))
       .catch(e => console.log("cannot update the field in user"));
+
 
     let date = req.body.date;
 
@@ -370,6 +378,8 @@ route.post("/", async (req, res) => {
     //// user subscriptions ////
     console.log("user trial subscription start");
     let SubscriptionData = await getSubscriptions(req.body.users.trial);
+
+    
 
     let userSubscriptionsRef = await db
       .collection("users")
@@ -418,6 +428,13 @@ route.post("/", async (req, res) => {
     console.log("order batch ended ");
     //// order ended ///////
 
+
+    /// removing for testing period
+    ///
+    ///
+    //
+    //
+    //
     //// kitchen collection and totals collection starting ////////
     console.log("kitchen batch starting");
 
@@ -427,12 +444,13 @@ route.post("/", async (req, res) => {
 
     //breakfast
     if (req.body.users.trial.breakfast) {
+      console.log('inside breakfast')
       let kitchenData = getKitchen(req.body.users.trial.breakfast);
       let userSector = req.body.users.trial.breakfast.address.area;
 
       let kitchenManagerDocRef = await db
         .collection("kitchens")
-        .where(`areHandling.${userSector}`, "==", true)
+        .where(`areaHandling.${userSector}`, "==", true)
         .get();
 
       kitchenManagerDocRef.forEach(doc => {
@@ -440,23 +458,9 @@ route.post("/", async (req, res) => {
         kitchenName = doc.data().name;
       });
 
-      //
-      // let kitchenManagerDocRef = await db
-      // .collection("kitchens")
-      // .where(`areaHandling.${userSector}`, "==", true)
-      // .get();
-
-    // kitchenManagerDocRef.forEach(doc => {
-    //   console.log("Kitchen breakfast getting sector", doc.data());
-    //   let id = doc.id;
-    //   let kitchenName = doc.data().name;
-
-
       // increment count of total trial meals inside the
       // kitchen per day doc
 
-      console.log(kitchenId)
-      console.log(kitchenName)
       let kitchenDocRef = db
         .collection("kitchens")
         .doc(kitchenId)
@@ -485,20 +489,22 @@ route.post("/", async (req, res) => {
       if (req.body.users.trial.breakfast.full) {
          totalCount = "trialCount.breakfast.lite";
       }
-      batch.update(kitchenDocRef, {
+      batch.set(kitchenDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(kitchenTotalDocRef, {
+      },{merge : true});
+      batch.set(kitchenTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(monthlyTotalDocRef, {
+      },{merge : true});
+      batch.set(monthlyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(dailyTotalDocRef, {
+      },{merge : true});
+      batch.set(dailyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
+      },{merge : true});
 
-      // adding data of user in the kitchen collection
+      db.collection("kitchens");
+
+      // adding data of user inside the deliveries
       let breakfast = db
         .collection("kitchens")
         .doc(kitchenId)
@@ -514,17 +520,18 @@ route.post("/", async (req, res) => {
 
     //lunch
     if (req.body.users.trial.lunch) {
+      console.log('inside lunch')
       let kitchenData = getKitchen(req.body.users.trial.lunch);
       let userSector = req.body.users.trial.lunch.address.area;
 
       let kitchenManagerDocRef = await db
         .collection("kitchens")
-        .where(`areHandling.${userSector}`, "==", true)
+        .where(`areaHandling.${userSector}`, "==", true)
         .get();
 
       kitchenManagerDocRef.forEach(doc => {
         kitchenId = doc.id;
-        kitchenName = doc.name;
+        kitchenName = doc.data().name;
       });
 
       // increment count of total trial meals inside the
@@ -558,18 +565,18 @@ route.post("/", async (req, res) => {
       if (req.body.users.trial.lunch.full) {
          totalCount = "trialCount.lunch.lite";
       }
-      batch.update(kitchenDocRef, {
+      batch.set(kitchenDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(kitchenTotalDocRef, {
+      },{merge : true});
+      batch.set(kitchenTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(monthlyTotalDocRef, {
+      },{merge : true});
+      batch.set(monthlyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(dailyTotalDocRef, {
+      },{merge : true});
+      batch.set(dailyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
+      },{merge : true});
 
       db.collection("kitchens");
 
@@ -589,17 +596,18 @@ route.post("/", async (req, res) => {
 
     //dinner
     if (req.body.users.trial.dinner) {
+      console.log('inside dinner')
       let kitchenData = getKitchen(req.body.users.trial.dinner);
       let userSector = req.body.users.trial.dinner.address.area;
 
       let kitchenManagerDocRef = await db
         .collection("kitchens")
-        .where(`areHandling.${userSector}`, "==", true)
+        .where(`areaHandling.${userSector}`, "==", true)
         .get();
 
       kitchenManagerDocRef.forEach(doc => {
         kitchenId = doc.id;
-        kitchenName = doc.name;
+        kitchenName = doc.data().name;
       });
       // increment count of total trial meals inside the
       // kitchen per day doc
@@ -626,24 +634,24 @@ route.post("/", async (req, res) => {
         .collection("dates")
         .doc(`${date}${month}${year}`);
 
-      if (req.body.users.trial.dinner.lite) {
+      if (req.body.users.trial.dinner.lite) {        
          totalCount = "trialCount.dinner.lite";
       }
       if (req.body.users.trial.dinner.full) {
          totalCount = "trialCount.dinner.lite";
       }
-      batch.update(kitchenDocRef, {
+      batch.set(kitchenDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(kitchenTotalDocRef, {
+      },{merge:true});
+      batch.set(kitchenTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(monthlyTotalDocRef, {
+      },{merge:true});
+      batch.set(monthlyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
-      batch.update(dailyTotalDocRef, {
+      },{merge:true});
+      batch.set(dailyTotalDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
-      });
+      },{merge:true});
 
       let dinner = db
         .collection("kitchens")
@@ -675,7 +683,7 @@ route.post("/", async (req, res) => {
         });
       })
       .catch(e => {
-        console.log("trial batch error");
+        console.log("trial batch error",e);
         return res.status(403).json({
           error: { message: "trial is not successful", code: "" }
         });
@@ -685,7 +693,7 @@ route.post("/", async (req, res) => {
 
 
 
-exports = module.exports = route;
+module.exports = route;
 
 // exports.trial = functions.https.onRequest((req, res) => {
 //   const registrationTokens = [];

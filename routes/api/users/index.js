@@ -37,7 +37,7 @@ route.use("/subscribe", require("./subscribe.js"));
 route.use("/unsubscribe", require("./unSubscribe.js"));
 route.use("/vacation", require("./vacation.js"));
 route.use("/endvacation", require("./endVacation.js"));
-route.use("/trialpack", require("./trial.js"));
+route.use("/trial", require("./trial.js"));
 
 route.get("/", (req, res) => {
   res.send("users api index");

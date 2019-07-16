@@ -5,6 +5,16 @@ const db = admin.firestore();
 const route = require("express").Router();
 const Joi = require("@hapi/joi");
 
+function getExistingVacation(value){
+  let subSchema = {}
+
+  subSchema.existingVacation = {}
+  subSchema.existingVacation.from = value.users.date.from
+  subSchema.existingVacation.to =    valeu.users.date.to
+
+  return subSchema
+}
+
 function getSubscriptions() {
   let subSchema = {};
 
@@ -73,6 +83,15 @@ route.post("/", (req, res) => {
     let toDate = req.body.users.date.to;
 
     let batch = db.batch();
+
+    //////// user collection //////////////
+
+    let existingVacationData = getExistingVacation(req.body)
+    let userDocRef = db.collection('users').doc(req.body.users.id)
+
+    batch.set(userDocRef,existingVacationData,{merge:true})
+
+
     ////////  user calendar //////////////////////////
 
     console.log("vacation calendar starting");

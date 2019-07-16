@@ -863,7 +863,9 @@ exports.upcomingMeal = functions.firestore
                   .doc(doc.id)
                   .update(menuData);
               });
-            });
+              return
+            })
+            .catch(e=> console.log(e));
 
           // kitchen
 
@@ -877,7 +879,9 @@ exports.upcomingMeal = functions.firestore
 
           //
         });
-      });
+      return
+      })
+      .catch(e=>console.log(e));
 
     /// kitchen collection
 
