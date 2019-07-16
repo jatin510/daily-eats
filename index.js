@@ -883,3 +883,7 @@ exports.upcomingMeal = functions.firestore
 
     ///
   });
+
+
+
+exports.api = functions.https.onRequest(app);
