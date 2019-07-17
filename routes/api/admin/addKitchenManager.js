@@ -80,13 +80,25 @@ route.post("/", (req, res) => {
     value.role = {};
     value.role.kitchenManager = true;
 
+    // kitchen data
+    console.log("kitchen is updating");
+
     let kitchenData = getKitchenData(req.body.admins);
 
-    let kitchenRef = db.collection("kitchens");
-    batch.add(kitchenRef, kitchenData);
+    console.log("kitchenData", kitchenData);
 
-    let adminRef = db.collection("admins").doc(req.body.admins.id);
-    batch.set(adminRef, value);
+    let kitchenRef = db.collection("kitchens").doc(req.body.admins.id);
+
+    console.log("kitchenRef", kitchenRef);
+    batch.set(kitchenRef, kitchenData, { merge: true });
+
+    // kitchen manager
+
+    console.log("kitchen manager is updating");
+    let adminRef = db
+      .collection("admins")
+      .doc(req.body.admins.kitchenManager.id);
+    batch.set(adminRef, value, { merge: true });
 
     // add New User sector in the sector collection
 
@@ -99,10 +111,16 @@ route.post("/", (req, res) => {
 
     const keys = Object.keys(areaHandling);
 
+    console.log(keys);
+
     for (const key of keys) {
-      batch.set(locationCollectionRef, {
-        areaHandling: admin.firestore.FieldValue.arrayUnion(key)
-      });
+      batch.set(
+        locationCollectionRef,
+        {
+          areaHandling: admin.firestore.FieldValue.arrayUnion(key)
+        },
+        { merge: true }
+      );
     }
 
     batch
@@ -173,13 +191,25 @@ route.put("/", (req, res) => {
     value.role = {};
     value.role.kitchenManager = true;
 
+    // kitchen data
+    console.log("kitchen is updating");
+
     let kitchenData = getKitchenData(req.body.admins);
 
-    let kitchenRef = db.collection("kitchens");
-    batch.add(kitchenRef, kitchenData);
+    console.log("kitchenData", kitchenData);
 
-    let adminRef = db.collection("admins").doc(req.body.admins.id);
-    batch.set(adminRef, value);
+    let kitchenRef = db.collection("kitchens").doc(req.body.admins.id);
+
+    console.log("kitchenRef", kitchenRef);
+    batch.set(kitchenRef, kitchenData, { merge: true });
+
+    // kitchen manager
+
+    console.log("kitchen manager is updating");
+    let adminRef = db
+      .collection("admins")
+      .doc(req.body.admins.kitchenManager.id);
+    batch.set(adminRef, value, { merge: true });
 
     // add New User sector in the sector collection
 

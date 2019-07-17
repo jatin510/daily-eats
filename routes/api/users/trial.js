@@ -344,11 +344,18 @@ route.post("/", async (req, res) => {
 
     /////   users    ///////
 
-    let usersDocRef = db.collection('users').doc(req.body.users.id).get().then((doc)=>
-    {
-      if(doc.data().trialRedeem == true )
-        continue;
-    }).catch(e => console.log('error in the user',e))
+    // user cannot take trial pack
+
+    //  db.collection('users').doc(req.body.users.id).get().then((doc)=>
+    // {
+    //   if(doc.data().trialRedeem === true ){
+    //     return res.status(200).json({res : {message : "user already used trial pack"}})
+    //   }
+
+    //   return 
+    //   
+      
+    // }).catch(e => console.log('error in the user',e))
 
     db.collection("users")
       .doc(req.body.users.id)
@@ -484,22 +491,33 @@ route.post("/", async (req, res) => {
         .doc(`${date}${month}${year}`);
 
       if (req.body.users.trial.breakfast.lite) {
-         totalCount = "trialCount.breakfast.lite";
+        let temp = {}
+        temp.trialCount = {}
+        temp.trialCount.breakfast = {}
+        temp.trialCount.breakfast.lite
+         totalCount = JSON.stringify(temp);
       }
       if (req.body.users.trial.breakfast.full) {
-         totalCount = "trialCount.breakfast.lite";
+        let temp = {}
+        temp.trialCount = {}
+        temp.trialCount.breakfast = {}
+        temp.trialCount.breakfast.full
+         totalCount = JSON.stringify(temp);
       }
       batch.set(kitchenDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
+        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
       },{merge : true});
+
       batch.set(kitchenTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
+        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
       },{merge : true});
+      
       batch.set(monthlyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
+        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
       },{merge : true});
+      
       batch.set(dailyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
+        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
       },{merge : true});
 
       db.collection("kitchens");
@@ -563,7 +581,7 @@ route.post("/", async (req, res) => {
          totalCount = "trialCount.lunch.lite";
       }
       if (req.body.users.trial.lunch.full) {
-         totalCount = "trialCount.lunch.lite";
+         totalCount = "trialCount.lunch.full";
       }
       batch.set(kitchenDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)
@@ -638,7 +656,7 @@ route.post("/", async (req, res) => {
          totalCount = "trialCount.dinner.lite";
       }
       if (req.body.users.trial.dinner.full) {
-         totalCount = "trialCount.dinner.lite";
+         totalCount = "trialCount.dinner.full";
       }
       batch.set(kitchenDocRef, {
         [totalCount]: admin.firestore.FieldValue.increment(1)

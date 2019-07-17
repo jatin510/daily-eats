@@ -8,9 +8,8 @@ const Joi = require("@hapi/joi");
 function getExistingVacation(value){
   let subSchema = {}
 
-  subSchema.existingVacation = {}
-  subSchema.existingVacation.from = value.users.date.from
-  subSchema.existingVacation.to =    valeu.users.date.to
+  subSchema.from = value.users.date.from
+  subSchema.to =    value.users.date.to
 
   return subSchema
 }
@@ -89,7 +88,9 @@ route.post("/", (req, res) => {
     let existingVacationData = getExistingVacation(req.body)
     let userDocRef = db.collection('users').doc(req.body.users.id)
 
-    batch.set(userDocRef,existingVacationData,{merge:true})
+    batch.set(userDocRef,
+{      existingVacation : admin.firestore.FieldValue.arrayUnion(existingVacationData)}
+      ,{merge:true})
 
 
     ////////  user calendar //////////////////////////

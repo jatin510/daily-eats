@@ -61,20 +61,22 @@ function getUpcomingMeal(value) {
 // add upcoming meal
 route.post("/", (req, res) => {
   let schema = Joi.object().keys({
-    id: Joi.string().required(),
-    name: Joi.string().required(),
-    image: Joi.string().required(),
-    price: {
-      lite: Joi.string().required(),
-      full: Joi.string().required()
-    },
-    description: {
-      lite: Joi.string().required(),
-      full: Joi.string().required()
+    date: Joi.string().required(),
+    id: {
+      name: Joi.string().required(),
+      image: Joi.string().required(),
+      price: {
+        lite: Joi.string().required(),
+        full: Joi.string().required()
+      },
+      description: {
+        lite: Joi.string().required(),
+        full: Joi.string().required()
+      }
     }
   });
 
-  const { error, value } = Joi.validate(req.body.upcomingMeal, schema);
+  const { error, value } = Joi.validate(req.body.upcomingMeals, schema);
 
   if (error) {
     console.log(
@@ -89,7 +91,8 @@ route.post("/", (req, res) => {
       }
     });
   } else {
-    let upcomingMealData = getUpcomingMeal(req.body.upcomingMeals);
+    // maybe this will not be required
+    // let upcomingMealData = getUpcomingMeal(req.body.upcomingMeals);
 
     let dateString = req.body.upcomingMeals.date;
 
@@ -104,18 +107,16 @@ route.post("/", (req, res) => {
 
     let upcomingMealDocRef = db.collection("upcomingMeals").doc(docId);
 
-    // to be done
-    // to be done
-    // breakfast
-    // lunch
-    // dinner
+    console.log("value", value);
+    // deleting date inside the value
+    delete value.date;
 
     upcomingMealDocRef
-      .set(upcomingMealData, { merge: true })
+      .set(value, { merge: true })
       .then(() => {
         console.log("Added upcoming meal successfully ");
         return res.status(200).json({
-          message: "",
+          message: "added upcoming meal successfully",
           code: "",
           upcomingMeal: value
         });
