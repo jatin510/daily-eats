@@ -102,15 +102,17 @@ route.put("/users/", (req, res) => {
       .collection("users")
       .doc(req.body.users.id)
       .set(value, { merge: true })
-      .then(()=>{
-        console.log('User edited successfully')
-        return res.status(200).json({res : {message : "User edited successfully",code : ""}})
+      .then(() => {
+        console.log("User edited successfully");
+        return res
+          .status(200)
+          .json({ res: { message: "User edited successfully", code: "" } });
       })
       .catch(e => {
         console.log("Error editing user data", e);
-        return res
-          .status(400)
-          .json({ error: { message: "Error editing the user data" ,code : ""} });
+        return res.status(400).json({
+          error: { message: "Error editing the user data", code: "" }
+        });
       });
   }
 });
@@ -120,5 +122,6 @@ route.put("/users/", (req, res) => {
 route.use("/users/:userId", require("./users/index.js"));
 
 route.use("/admin", require("./admin/index.js"));
+route.use("/transaction", require("./transaction/index.js"));
 
 module.exports = route;

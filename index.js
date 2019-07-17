@@ -863,31 +863,27 @@ exports.upcomingMeal = functions.firestore
                   .doc(doc.id)
                   .update(menuData);
               });
-              return
+              return;
             })
-            .catch(e=> console.log(e));
+            .catch(e => console.log(e));
 
           // kitchen
 
           // db.collection('kitchen').get()
           // .then(querySnapShot=>{
           //   querySnapShot.forEach(doc => {
-
           //     db.collection('kitchen').doc(doc.id).collection('deliveries').doc(`${date}${month}${year}`)
           //   })
           // })
-
           //
         });
-      return
+        return;
       })
-      .catch(e=>console.log(e));
+      .catch(e => console.log(e));
 
     /// kitchen collection
 
     ///
   });
-
-
 
 exports.api = functions.https.onRequest(app);

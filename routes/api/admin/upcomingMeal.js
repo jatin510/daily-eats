@@ -60,21 +60,21 @@ function getUpcomingMeal(value) {
 ////////////////
 // add upcoming meal
 route.post("/", (req, res) => {
-  let schema = Joi.object().keys({
-    date: Joi.string().required(),
-    id: {
-      name: Joi.string().required(),
-      image: Joi.string().required(),
-      price: {
-        lite: Joi.string().required(),
-        full: Joi.string().required()
-      },
-      description: {
-        lite: Joi.string().required(),
-        full: Joi.string().required()
-      }
-    }
-  });
+  // let schema = Joi.object().keys({
+  //   date: Joi.string().required(),
+  //   id: {
+  //     name: Joi.string().required(),
+  //     image: Joi.string().required(),
+  //     price: {
+  //       lite: Joi.string().required(),
+  //       full: Joi.string().required()
+  //     },
+  //     description: {
+  //       lite: Joi.string().required(),
+  //       full: Joi.string().required()
+  //     }
+  //   }
+  // });
 
   const { error, value } = Joi.validate(req.body.upcomingMeals, schema);
 

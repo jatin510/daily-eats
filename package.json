@@ -21,6 +21,7 @@
     "firebase-functions": "^2.3.0",
     "joi": "^14.3.1",
     "nodemailer": "^6.2.1",
+    "razorpay": "^2.0.4",
     "validatorjs": "^3.15.1"
   },
   "devDependencies": {

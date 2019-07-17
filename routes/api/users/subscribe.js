@@ -8,34 +8,32 @@ const Joi = require("@hapi/joi");
 
 route.use(express.json());
 
-function getExistingSub(value){
-  let subSchema = {}
+function getExistingSub(value) {
+  let subSchema = {};
 
-  subSchema.date={}
-  subSchema.date.from = value.date.from
-  subSchema.date.to = value.date.to
+  subSchema.date = {};
+  subSchema.date.from = value.date.from;
+  subSchema.date.to = value.date.to;
 
-  if(value.users.subscriptions.breakfast){
-    subSchema.breakfast = {}
-    subSchema.breakfast.ignore = {}
-    subSchema.breakfast.ignore = value.users.subscriptions.breakfast.ignore
+  if (value.users.subscriptions.breakfast) {
+    subSchema.breakfast = {};
+    subSchema.breakfast.ignore = {};
+    subSchema.breakfast.ignore = value.users.subscriptions.breakfast.ignore;
   }
-  if(value.users.subscriptions.lunch){
-    subSchema.lunch = {}
-    subSchema.lunch.ignore = {}
-    subSchema.lunch.ignore = value.users.subscriptions.lunch.ignore
+  if (value.users.subscriptions.lunch) {
+    subSchema.lunch = {};
+    subSchema.lunch.ignore = {};
+    subSchema.lunch.ignore = value.users.subscriptions.lunch.ignore;
   }
-  if(value.users.subscriptions.dinner){
-    subSchema.dinner = {}
-    subSchema.dinner.ignore = {}
-    subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore
+  if (value.users.subscriptions.dinner) {
+    subSchema.dinner = {};
+    subSchema.dinner.ignore = {};
+    subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore;
   }
 }
 
 async function getSubscriptions(value) {
   var subSchema = {};
-
-  
 
   //subSchema.
 
@@ -275,13 +273,13 @@ route.post("/", async (req, res) => {
 
     let batch = db.batch();
 
-    // creating existing  in user schema 
+    // creating existing  in user schema
 
-    let existingSubData = getExistingSub(req.body)
+    let existingSubData = getExistingSub(req.body);
 
-    let userDocRef = db.collection('users').doc(req.body.users.id)
+    let userDocRef = db.collection("users").doc(req.body.users.id);
 
-    batch.set(userDocRef,existingSubData,{merge : true})
+    batch.set(userDocRef, existingSubData, { merge: true });
     ////  user subscriptions //////////////////////////////////
 
     console.log("starting batch of user subscriptions");
@@ -384,30 +382,30 @@ route.post("/", async (req, res) => {
       }
 
       // //// ignore the day
-      // if (req.body.users.subscriptions.breakfast) {
-      //   if (req.body.users.subscriptions.breakfast.ignore) {
-      //     if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) {
-      //       console.log("ignore the day");
-      //       continue;
-      //     }
-      //   }
-      // }
-      // if (req.body.users.subscriptions.lunch) {
-      //   if (req.body.users.subscriptions.lunch.ignore) {
-      //     if (req.body.users.subscriptions.lunch.ignore[`${day}`]) {
-      //       console.log("ignore the day");
-      //       continue;
-      //     }
-      //   }
-      // }
-      // if (req.body.users.subscriptions.dinner) {
-      //   if (req.body.users.subscriptions.dinner.ignore) {
-      //     if (req.body.users.subscriptions.dinner.ignore[`${day}`]) {
-      //       console.log("ignore the day");
-      //       continue;
-      //     }
-      //   }
-      // }
+      if (req.body.users.subscriptions.breakfast) {
+        if (req.body.users.subscriptions.breakfast.ignore) {
+          if (req.body.users.subscriptions.breakfast.ignore[`${day}`]) {
+            console.log("ignore the day");
+            continue;
+          }
+        }
+      }
+      if (req.body.users.subscriptions.lunch) {
+        if (req.body.users.subscriptions.lunch.ignore) {
+          if (req.body.users.subscriptions.lunch.ignore[`${day}`]) {
+            console.log("ignore the day");
+            continue;
+          }
+        }
+      }
+      if (req.body.users.subscriptions.dinner) {
+        if (req.body.users.subscriptions.dinner.ignore) {
+          if (req.body.users.subscriptions.dinner.ignore[`${day}`]) {
+            console.log("ignore the day");
+            continue;
+          }
+        }
+      }
       // //ignore the day
 
       let userCalendarDocRef = db
