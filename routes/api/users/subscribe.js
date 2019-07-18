@@ -252,9 +252,73 @@ function getCalendar(value) {
 }
 
 route.post("/", async (req, res) => {
-  console.log("inside the subscription put");
-
-  let error = false;
+  let schema = Joi.object.keys({
+    date: {
+      from: Joi.string().required(),
+      to: Joi.string().required()
+    },
+    users: {
+      id: Joi.string().required(),
+      subscriptions: {
+        breakfast: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              longitude: Joi.string().required(),
+              latitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.string().required()
+        },
+        lunch: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              longitude: Joi.string().required(),
+              latitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.string().required()
+        },
+        dinner: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              longitude: Joi.string().required(),
+              latitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.string().required()
+        }
+      }
+    }
+  });
+  const error = false;
+  // const { value, error } = Joi.validate(req.body, schema);
   if (error) {
     console.log("Post subscription schema error", error.details[0].message);
     return res.status(400).json({

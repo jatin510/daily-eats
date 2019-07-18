@@ -122,6 +122,6 @@ route.put("/users/", (req, res) => {
 route.use("/users/:userId", require("./users/index.js"));
 
 route.use("/admin", require("./admin/index.js"));
-route.use("/transaction", require("./transaction/index.js"));
+route.use("/transactions", require("./transaction/index.js"));
 
 module.exports = route;

@@ -8,9 +8,10 @@ const Joi = require("@hapi/joi");
 route.use(express.json());
 
 route.post("/", (req, res) => {
-  const schema = {};
+  // const schema = {};
+  // const { error, value } = Joi.validate(req.body.deliveryBoy, schema);
 
-  const { error, value } = Joi.validate(req.body.deliveryBoy, schema);
+  error = false;
 
   if (error) {
     console.log("Post status changing schema error", error.details[0].message);
@@ -22,6 +23,6 @@ route.post("/", (req, res) => {
       }
     });
   } else {
-    //
+    //update delivery status
   }
 });

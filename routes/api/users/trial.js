@@ -8,14 +8,11 @@ const Joi = require("@hapi/joi");
 async function getSubscriptions(value) {
   let subSchema = {};
 
-  
-
   if (value.breakfast) {
     subSchema.breakfast = {};
     subSchema.breakfast.address = {};
     subSchema.breakfast.address.coordinates = {};
     subSchema.breakfast.status = {};
-
 
     /// user sector /////
 
@@ -30,7 +27,7 @@ async function getSubscriptions(value) {
       console.log("Kitchen breakfast getting sector", doc.data());
       let id = doc.id;
       let kitchenName = doc.data().name;
-      console.log('functions',id)
+      console.log("functions", id);
 
       subSchema.breakfast.kitchen = {};
       subSchema.breakfast.kitchen.id = id;
@@ -78,7 +75,7 @@ async function getSubscriptions(value) {
       let id = doc.id;
       let kitchenName = doc.data().name;
 
-      console.log('fucntion', id )
+      console.log("fucntion", id);
 
       subSchema.lunch.kitchen = {};
       subSchema.lunch.kitchen.id = id;
@@ -339,7 +336,7 @@ route.post("/", async (req, res) => {
       }
     });
   } else {
-    console.log('batch will start')
+    console.log("batch will start");
     let batch = db.batch();
 
     /////   users    ///////
@@ -352,9 +349,9 @@ route.post("/", async (req, res) => {
     //     return res.status(200).json({res : {message : "user already used trial pack"}})
     //   }
 
-    //   return 
-    //   
-      
+    //   return
+    //
+
     // }).catch(e => console.log('error in the user',e))
 
     db.collection("users")
@@ -364,7 +361,6 @@ route.post("/", async (req, res) => {
       })
       .then(() => console.log("updated field in the user "))
       .catch(e => console.log("cannot update the field in user"));
-
 
     let date = req.body.date;
 
@@ -385,8 +381,6 @@ route.post("/", async (req, res) => {
     //// user subscriptions ////
     console.log("user trial subscription start");
     let SubscriptionData = await getSubscriptions(req.body.users.trial);
-
-    
 
     let userSubscriptionsRef = await db
       .collection("users")
@@ -435,7 +429,6 @@ route.post("/", async (req, res) => {
     console.log("order batch ended ");
     //// order ended ///////
 
-
     /// removing for testing period
     ///
     ///
@@ -447,11 +440,11 @@ route.post("/", async (req, res) => {
 
     let kitchenId;
     let kitchenName;
-    let totalCount
+    let totalCount;
 
     //breakfast
     if (req.body.users.trial.breakfast) {
-      console.log('inside breakfast')
+      console.log("inside breakfast");
       let kitchenData = getKitchen(req.body.users.trial.breakfast);
       let userSector = req.body.users.trial.breakfast.address.area;
 
@@ -491,34 +484,97 @@ route.post("/", async (req, res) => {
         .doc(`${date}${month}${year}`);
 
       if (req.body.users.trial.breakfast.lite) {
-        let temp = {}
-        temp.trialCount = {}
-        temp.trialCount.breakfast = {}
-        temp.trialCount.breakfast.lite
-         totalCount = JSON.stringify(temp);
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
       if (req.body.users.trial.breakfast.full) {
-        let temp = {}
-        temp.trialCount = {}
-        temp.trialCount.breakfast = {}
-        temp.trialCount.breakfast.full
-         totalCount = JSON.stringify(temp);
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              breakfast: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
-      batch.set(kitchenDocRef, {
-        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-
-      batch.set(kitchenTotalDocRef, {
-        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-      
-      batch.set(monthlyTotalDocRef, {
-        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-      
-      batch.set(dailyTotalDocRef, {
-        "trialCount.breakfast.full": admin.firestore.FieldValue.increment(1)
-      },{merge : true});
 
       db.collection("kitchens");
 
@@ -538,7 +594,7 @@ route.post("/", async (req, res) => {
 
     //lunch
     if (req.body.users.trial.lunch) {
-      console.log('inside lunch')
+      console.log("inside lunch");
       let kitchenData = getKitchen(req.body.users.trial.lunch);
       let userSector = req.body.users.trial.lunch.address.area;
 
@@ -578,23 +634,97 @@ route.post("/", async (req, res) => {
         .doc(`${date}${month}${year}`);
 
       if (req.body.users.trial.lunch.lite) {
-         totalCount = "trialCount.lunch.lite";
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
       if (req.body.users.trial.lunch.full) {
-         totalCount = "trialCount.lunch.full";
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
-      batch.set(kitchenDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-      batch.set(kitchenTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-      batch.set(monthlyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge : true});
-      batch.set(dailyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge : true});
 
       db.collection("kitchens");
 
@@ -614,7 +744,7 @@ route.post("/", async (req, res) => {
 
     //dinner
     if (req.body.users.trial.dinner) {
-      console.log('inside dinner')
+      console.log("inside dinner");
       let kitchenData = getKitchen(req.body.users.trial.dinner);
       let userSector = req.body.users.trial.dinner.address.area;
 
@@ -652,24 +782,98 @@ route.post("/", async (req, res) => {
         .collection("dates")
         .doc(`${date}${month}${year}`);
 
-      if (req.body.users.trial.dinner.lite) {        
-         totalCount = "trialCount.dinner.lite";
+      if (req.body.users.trial.dinner.lite) {
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
       if (req.body.users.trial.dinner.full) {
-         totalCount = "trialCount.dinner.full";
+        batch.set(
+          kitchenDocRef,
+          {
+            trialCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          kitchenTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          monthlyTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
+        batch.set(
+          dailyTotalDocRef,
+          {
+            trialCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
+          },
+          { merge: true }
+        );
       }
-      batch.set(kitchenDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge:true});
-      batch.set(kitchenTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge:true});
-      batch.set(monthlyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge:true});
-      batch.set(dailyTotalDocRef, {
-        [totalCount]: admin.firestore.FieldValue.increment(1)
-      },{merge:true});
 
       let dinner = db
         .collection("kitchens")
@@ -701,15 +905,13 @@ route.post("/", async (req, res) => {
         });
       })
       .catch(e => {
-        console.log("trial batch error",e);
+        console.log("trial batch error", e);
         return res.status(403).json({
           error: { message: "trial is not successful", code: "" }
         });
       });
   }
 });
-
-
 
 module.exports = route;
 
