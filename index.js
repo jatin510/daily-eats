@@ -310,7 +310,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -318,7 +318,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -326,7 +326,7 @@ exports.onUserSubscribe = functions.firestore
           monthlyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -334,7 +334,7 @@ exports.onUserSubscribe = functions.firestore
           dailyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -344,7 +344,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -352,7 +352,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -360,7 +360,7 @@ exports.onUserSubscribe = functions.firestore
           monthlyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -368,7 +368,7 @@ exports.onUserSubscribe = functions.firestore
           dailyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -382,7 +382,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -390,7 +390,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -398,7 +398,7 @@ exports.onUserSubscribe = functions.firestore
           monthlyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -406,7 +406,7 @@ exports.onUserSubscribe = functions.firestore
           dailyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                lite: admin.firestore.FieldValue.increment(1)
+                lite: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -416,7 +416,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -424,7 +424,7 @@ exports.onUserSubscribe = functions.firestore
           kitchenTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -432,7 +432,7 @@ exports.onUserSubscribe = functions.firestore
           monthlyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -440,7 +440,7 @@ exports.onUserSubscribe = functions.firestore
           dailyTotalDocRef.update({
             totalCount: {
               breakfast: {
-                full: admin.firestore.FieldValue.increment(1)
+                full: admin.firestore.FieldValue.increment(-1)
               }
             }
           });
@@ -528,41 +528,71 @@ exports.onUserSubscribe = functions.firestore
       /// upcoming true
       if (orderData.lunch.status.upcoming === true) {
         if (orderData.lunch.lite) {
-          let totalCount = "totalCount.lunch.lite";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           /// monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
         if (orderData.lunch.full) {
-          let totalCount = "totalCount.lunch.full";
           //kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
       }
@@ -570,41 +600,71 @@ exports.onUserSubscribe = functions.firestore
       /// upcoming false
       if (orderData.lunch.status.upcoming === false) {
         if (orderData.lunch.lite) {
-          let totalCount = "totalCount.lunch.lite";
           //kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
         if (orderData.lunch.full) {
-          let totalCount = "totalCount.lunch.full";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
       }
@@ -612,7 +672,6 @@ exports.onUserSubscribe = functions.firestore
       /// vacation true
       if (orderData.lunch.status.vacation === true) {
         if (orderData.lunch.lite) {
-          let totalCount = "totalCount.lunch.lite";
           //kitchen collection
           kitchenDocRef.update({
             [totalCount]: admin.firestore.FieldValue.increment(-1)
@@ -654,41 +713,71 @@ exports.onUserSubscribe = functions.firestore
       /// vacation false
       if (orderData.lunch.status.vacation === false) {
         if (orderData.lunch.lite) {
-          let totalCount = "totalCount.lunch.lite";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
         if (orderData.lunch.full) {
-          let totalCount = "totalCount.lunch.full";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              lunch: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
       }
@@ -699,41 +788,71 @@ exports.onUserSubscribe = functions.firestore
       /// upcoming true
       if (orderData.dinner.status.upcoming === true) {
         if (orderData.dinner.lite) {
-          let totalCount = "totalCount.dinner.lite";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           /// monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
         if (orderData.dinner.full) {
-          let totalCount = "totalCount.dinner.full";
           //kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
       }
@@ -741,41 +860,71 @@ exports.onUserSubscribe = functions.firestore
       /// upcoming false
       if (orderData.dinner.status.upcoming === false) {
         if (orderData.dinner.lite) {
-          let totalCount = "totalCount.dinner.lite";
           //kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
         if (orderData.dinner.full) {
-          let totalCount = "totalCount.dinner.full";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
       }
@@ -783,41 +932,71 @@ exports.onUserSubscribe = functions.firestore
       /// vacation true
       if (orderData.dinner.status.vacation === true) {
         if (orderData.dinner.lite) {
-          let totalCount = "totalCount.dinner.lite";
           //kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           //monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
         if (orderData.dinner.full) {
-          let totalCount = "totalCount.dinner.full";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(-1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(-1)
+              }
+            }
           });
         }
       }
@@ -825,41 +1004,71 @@ exports.onUserSubscribe = functions.firestore
       /// vacation false
       if (orderData.dinner.status.vacation === false) {
         if (orderData.dinner.lite) {
-          let totalCount = "totalCount.dinner.lite";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                lite: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
         if (orderData.dinner.full) {
-          let totalCount = "totalCount.dinner.full";
           // kitchen collection
           kitchenDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           //kitchen total
           kitchenTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // monthly total
           monthlyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
           // daily total
           dailyTotalDocRef.update({
-            [totalCount]: admin.firestore.FieldValue.increment(1)
+            totalCount: {
+              dinner: {
+                full: admin.firestore.FieldValue.increment(1)
+              }
+            }
           });
         }
       }
