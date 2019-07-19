@@ -4,12 +4,15 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
+const Razorpay = require("razorpay");
 const express = require("express");
-const cors = require("cors")({ origin: true });
+const cors = require("cors");
 const Joi = require("@hapi/joi");
 const app = express();
 const cookieParser = require("cookie-parser")();
 
+//middlewares
+app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -211,7 +214,7 @@ exports.onUserSubscribe = functions.firestore
 
     // kitchen collection
     let kitchenDocRef = db
-      .collection("kitchen")
+      .collection("kitchens")
       .doc(kitchenId)
       .collection("deliveries")
       .doc(`${date}${month}${year}`);
@@ -1208,8 +1211,29 @@ exports.upcomingMeal = functions.firestore
       .catch(e => console.log(e));
 
     /// kitchen collection
-
-    ///
   });
+
+app.get("/fucked", (req, res) => {
+  let instance = new Razorpay({
+    key_id: "rzp_test_UVxky2BI7xOprZ",
+    key_secret: "ejLssWIVxjaKB5eLMbk7j1yo"
+  });
+
+  let options = {
+    amount: 100000,
+    currency: "INR",
+    receipt: "hello fucker",
+    payment_capture: "1"
+  };
+
+  instance.orders.create(options, (err, order) => {
+    if (err) {
+      console.log("transacation error", err);
+      return res.send("error, ", err);
+    }
+
+    res.send(order);
+  });
+});
 
 exports.api = functions.https.onRequest(app);

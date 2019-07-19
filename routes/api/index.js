@@ -39,6 +39,9 @@ function createUserDb(req, res) {
       }
     });
   } else {
+    value.userCreatedOn = admin.firestore.FieldValue.serverTimestamp();
+
+    // console.log("hello ", value.userCreatedOn);
     return db
       .collection("users")
       .doc(req.body.users.id)
@@ -99,6 +102,7 @@ route.put("/users/", (req, res) => {
       .status(400)
       .json({ error: { message: "Error in edit user schema" } });
   } else {
+    value.userCreatedOn = admin.firestore.FieldValue.serverTimestamp;
     return db
       .collection("users")
       .doc(req.body.users.id)
@@ -125,7 +129,7 @@ route.use("/users/:userId", require("./users/index.js"));
 route.use("/admin", require("./admin/index.js"));
 // route.use("/transactions", require("./transaction/index.js"));
 
-route.post("/transactions/createorder", (req, res) => {
+route.get("/transactions/createorder", (req, res) => {
   let instance = new Razorpay({
     key_id: "rzp_test_UVxky2BI7xOprZ",
     key_secret: "ejLssWIVxjaKB5eLMbk7j1yo"
@@ -139,7 +143,10 @@ route.post("/transactions/createorder", (req, res) => {
   };
 
   instance.orders.create(options, (err, order) => {
-    if (err) return console.log("error ,", err);
+    if (err) {
+      console.log("error ,", err);
+      return res.send("error", err);
+    }
 
     console.log("order", order);
 

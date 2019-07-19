@@ -30,6 +30,8 @@ function getExistingSub(value) {
     subSchema.dinner.ignore = {};
     subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore;
   }
+
+  return subSchema;
 }
 
 async function getSubscriptions(value) {
@@ -49,7 +51,7 @@ async function getSubscriptions(value) {
     let userSector = value.breakfast.address.area;
 
     let kitchenManagerDocRef = await db
-      .collection("kitchen")
+      .collection("kitchens")
       .where(`areaHandling.${userSector}`, "==", true)
       .get();
 
@@ -95,7 +97,7 @@ async function getSubscriptions(value) {
     let userSector = value.lunch.address.area;
 
     let kitchenManagerDocRef = await db
-      .collection("kitchen")
+      .collection("kitchens")
       .where(`areaHandling.${userSector}`, "==", true)
       .get();
 
@@ -141,7 +143,7 @@ async function getSubscriptions(value) {
     let userSector = value.dinner.address.area;
 
     let kitchenManagerDocRef = await db
-      .collection("kitchen")
+      .collection("kitchens")
       .where(`areaHandling.${userSector}`, "==", true)
       .get();
 
@@ -252,7 +254,7 @@ function getCalendar(value) {
 }
 
 route.post("/", async (req, res) => {
-  let schema = Joi.object.keys({
+  let schema = Joi.object().keys({
     date: {
       from: Joi.string().required(),
       to: Joi.string().required()
@@ -275,8 +277,17 @@ route.post("/", async (req, res) => {
           },
           full: Joi.boolean(),
           lite: Joi.boolean(),
-          price: Joi.string().required(),
-          quantity: Joi.string().required()
+          price: Joi.number().required(),
+          quantity: Joi.number().required(),
+          ignore: {
+            Mon: Joi.boolean(),
+            Tue: Joi.boolean(),
+            Wed: Joi.boolean(),
+            Thu: Joi.boolean(),
+            Fri: Joi.boolean(),
+            Sat: Joi.boolean(),
+            Sun: Joi.boolean()
+          }
         },
         lunch: {
           address: {
@@ -293,8 +304,17 @@ route.post("/", async (req, res) => {
           },
           full: Joi.boolean(),
           lite: Joi.boolean(),
-          price: Joi.string().required(),
-          quantity: Joi.string().required()
+          price: Joi.number().required(),
+          quantity: Joi.number().required(),
+          ignore: {
+            Mon: Joi.boolean(),
+            Tue: Joi.boolean(),
+            Wed: Joi.boolean(),
+            Thu: Joi.boolean(),
+            Fri: Joi.boolean(),
+            Sat: Joi.boolean(),
+            Sun: Joi.boolean()
+          }
         },
         dinner: {
           address: {
@@ -311,14 +331,23 @@ route.post("/", async (req, res) => {
           },
           full: Joi.boolean(),
           lite: Joi.boolean(),
-          price: Joi.string().required(),
-          quantity: Joi.string().required()
+          price: Joi.number().required(),
+          quantity: Joi.number().required(),
+          ignore: {
+            Mon: Joi.boolean(),
+            Tue: Joi.boolean(),
+            Wed: Joi.boolean(),
+            Thu: Joi.boolean(),
+            Fri: Joi.boolean(),
+            Sat: Joi.boolean(),
+            Sun: Joi.boolean()
+          }
         }
       }
     }
   });
-  const error = false;
-  // const { value, error } = Joi.validate(req.body, schema);
+  // const error = false;
+  const { value, error } = Joi.validate(req.body, schema);
   if (error) {
     console.log("Post subscription schema error", error.details[0].message);
     return res.status(400).json({
