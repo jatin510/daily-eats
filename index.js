@@ -180,6 +180,20 @@ exports.onUserCreation = functions.firestore
     });
   });
 
+// schdedule for transaction
+exports.schedulerForTransacation = functions.pubsub
+  .schedule("53 17 * * *")
+  .timeZone("Asia/Kolkata")
+  .onRun(context => {
+    console.log("inside the schedule functions");
+
+    console.log(context.timestamp);
+    let dateString = context.timestamp.substring(0, 10);
+
+    let dateObject = new Date(dateString)
+    console.log(timestamp);
+  });
+
 // user subscribing the meal
 exports.onUserSubscribe = functions.firestore
   .document("users/{userId}/subscriptions/{subscriptionId}")
@@ -1163,6 +1177,20 @@ exports.upcomingMeal = functions.firestore
       .get()
       .then(querySnapShot => {
         querySnapShot.forEach(doc => {
+          // check if the user has subscribed or not
+
+          //////////////////////////////
+          // have to ask suraj sir ////
+          ///////////////////////////////
+          let menuData;
+          db.collection("users")
+            .doc(doc.id)
+            .collection("subscriptions")
+            .doc(`${date}${month}${year}`)
+            .get()
+            .then(data => console.log(data))
+            .catch(e => console.log("user has not taken subscription"));
+
           // user calendar
           db.collection("users")
             .doc(doc.id)
@@ -1222,16 +1250,15 @@ app.get("/fucked", (req, res) => {
   let options = {
     amount: 100000,
     currency: "INR",
-    receipt: "hello fucker",
+    receipt: "hello ",
     payment_capture: "1"
   };
 
   instance.orders.create(options, (err, order) => {
     if (err) {
       console.log("transacation error", err);
-      return res.send("error, ", err);
     }
-
+    console.log(order);
     res.send(order);
   });
 });

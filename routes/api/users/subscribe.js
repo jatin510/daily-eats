@@ -17,18 +17,24 @@ function getExistingSub(value) {
 
   if (value.users.subscriptions.breakfast) {
     subSchema.breakfast = {};
-    subSchema.breakfast.ignore = {};
-    subSchema.breakfast.ignore = value.users.subscriptions.breakfast.ignore;
+    if (value.users.subscriptions.breakfast.ignore) {
+      subSchema.breakfast.ignore = {};
+      subSchema.breakfast.ignore = value.users.subscriptions.breakfast.ignore;
+    }
   }
   if (value.users.subscriptions.lunch) {
     subSchema.lunch = {};
-    subSchema.lunch.ignore = {};
-    subSchema.lunch.ignore = value.users.subscriptions.lunch.ignore;
+    if (value.users.subscriptions.lunch.ignore) {
+      subSchema.lunch.ignore = {};
+      subSchema.lunch.ignore = value.users.subscriptions.lunch.ignore;
+    }
   }
   if (value.users.subscriptions.dinner) {
     subSchema.dinner = {};
-    subSchema.dinner.ignore = {};
-    subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore;
+    if (value.users.subscriptions.dinner.ignore) {
+      subSchema.dinner.ignore = {};
+      subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore;
+    }
   }
 
   return subSchema;
@@ -370,9 +376,14 @@ route.post("/", async (req, res) => {
 
     let existingSubData = getExistingSub(req.body);
 
-    let userDocRef = db.collection("users").doc(req.body.users.id);
+    let userExistingSubDocRef = db
+      .collection("users")
+      .doc(req.body.users.id)
+      .collection("existingSubscription")
+      .doc("existingSubscriptionDoc");
 
-    batch.set(userDocRef, existingSubData, { merge: true });
+    batch.set(userExistingSubDocRef, existingSubData, { merge: true });
+
     ////  user subscriptions //////////////////////////////////
 
     console.log("starting batch of user subscriptions");

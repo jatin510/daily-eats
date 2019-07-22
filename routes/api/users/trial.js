@@ -318,16 +318,77 @@ function getKitchen(value) {
 //// subscribing the trial pack /////
 
 route.post("/", async (req, res) => {
-  const schema = {};
+  const schema = {
+    date: Joi.string().required(),
+    users: {
+      id: Joi.string().required(),
+      trial: {
+        breakfast: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              latitude: Joi.string().required(),
+              longitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.number().required()
+        },
+        lunch: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              latitude: Joi.string().required(),
+              longitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.number().required()
+        },
+        dinner: {
+          address: {
+            id: Joi.string().required(),
+            tag: Joi.string().required(),
+            coordinates: {
+              latitude: Joi.string().required(),
+              longitude: Joi.string().required()
+            },
+            address1: Joi.string().required(),
+            address2: Joi.string().required(),
+            area: Joi.string().required(),
+            city: Joi.string().required()
+          },
+          full: Joi.boolean(),
+          lite: Joi.boolean(),
+          price: Joi.string().required(),
+          quantity: Joi.number().required()
+        }
+      }
+    }
+  };
 
   ///  validate
   ///  the data
   ///  for the
   ///  trial meal
 
-  let { error, value } = Joi.validate(req.body.users, schema);
+  let { error, value } = Joi.validate(req.body, schema);
 
-  error = false;
+  // error = false;
   if (error) {
     console.log("Post trial schema error", error.details[0].message);
     return res.status(400).json({
@@ -343,16 +404,19 @@ route.post("/", async (req, res) => {
 
     // user cannot take trial pack
 
-    //  db.collection('users').doc(req.body.users.id).get().then((doc)=>
-    // {
-    //   if(doc.data().trialRedeem === true ){
-    //     return res.status(200).json({res : {message : "user already used trial pack"}})
-    //   }
+    // db.collection("users")
+    //   .doc(req.body.users.id)
+    //   .get()
+    //   .then(doc => {
+    //     if (doc.data().trialRedeem === true) {
+    //       return res
+    //         .status(200)
+    //         .json({ res: { message: "user already used trial pack" } });
+    //     }
 
-    //   return
-    //
-
-    // }).catch(e => console.log('error in the user',e))
+    //     return;
+    //   })
+    //   .catch(e => console.log("error in the user", e));
 
     db.collection("users")
       .doc(req.body.users.id)

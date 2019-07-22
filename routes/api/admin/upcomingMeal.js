@@ -127,6 +127,14 @@ route.post("/", (req, res) => {
     let month = d.getMonth() + 1;
     let year = d.getFullYear();
 
+    // for proper formatting
+    if (date < 10) {
+      date = "0" + date;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+
     // to be done
     let docId = `${date}${month}${year}`;
 

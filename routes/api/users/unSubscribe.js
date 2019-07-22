@@ -83,6 +83,18 @@ route.post("/", async (req, res) => {
 
     let batch = db.batch();
 
+    //////////   user existing subscriptions /////////////////////////
+
+    console.log("deleting subscription");
+
+    let existingSubscriptionDocRef = db
+      .collection("users")
+      .doc(req.body.users.id)
+      .collection("existingSubscription")
+      .doc("existingSubscriptionDoc");
+
+    batch.delete(existingSubscriptionDocRef);
+
     //////////   user subscriptions ///////////////////////////////////////////////////
 
     console.log("starting batch of  user unSubscription");
