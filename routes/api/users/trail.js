@@ -59,14 +59,18 @@
 // if (a.b) console.log("b");
 // if (a.c) console.log("c");
 
-var thisIsObject = {
-  Cow: "Moo",
-  Cat: "Meow",
-  Dog: "Bark"
-};
+// var thisIsObject = {
+//   Cow: "Moo",
+//   Cat: "Meow",
+//   Dog: "Bark"
+// };
 
-console.log(thisIsObject);
+// console.log(thisIsObject);
 
-delete thisIsObject["Cow"];
+// delete thisIsObject["Cow"];
 
-console.log(thisIsObject);
+// console.log(thisIsObject);
+
+let date = "2019/12/12";
+
+console.log(new Date(date));

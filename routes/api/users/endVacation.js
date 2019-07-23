@@ -74,6 +74,12 @@ route.post("/", (req, res) => {
 
     let batch = db.batch();
 
+    db.collection("users")
+      .doc(req.body.users.id)
+      .collection("existingVacation")
+      .doc(`${fromDate} & ${toDate}`)
+      .delete();
+
     ////////  user calendar /////////////////////////
 
     console.log("calendar endVacation starting");

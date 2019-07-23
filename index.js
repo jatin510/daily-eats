@@ -38,6 +38,17 @@ function getReferCode() {
   return code;
 }
 
+function getUserTransaction(price) {
+  let subSchema = {};
+  subSchema.method = "auto";
+  subSchema.amount = price;
+  subSchema.status = {};
+  subSchema.status.successful = true;
+  subSchema.accountEntry = {};
+  subSchema.accountEntry.debit = true;
+
+  return subSchema;
+}
 const validateFirebaseIdToken = (req, res, next) => {
   console.log("Check if request is authorized with Firebase ID token");
 
@@ -181,18 +192,86 @@ exports.onUserCreation = functions.firestore
   });
 
 // schdedule for transaction
-exports.schedulerForTransacation = functions.pubsub
-  .schedule("53 17 * * *")
-  .timeZone("Asia/Kolkata")
-  .onRun(context => {
-    console.log("inside the schedule functions");
+// breakfast
+// exports.schedulerForTransacation = functions.pubsub
+//   .schedule("53 17 * * *")
+//   .timeZone("Asia/Kolkata")
+//   .onRun(async context => {
 
-    console.log(context.timestamp);
-    let dateString = context.timestamp.substring(0, 10);
+//     let batch = db.batch()
 
-    let dateObject = new Date(dateString)
-    console.log(timestamp);
-  });
+//     console.log("inside the schedule functions");
+
+//     console.log(context.timestamp);
+//     let dateString = context.timestamp.substring(0, 10);
+
+//     let dateObject = new Date(dateString);
+
+//     let date = dateObject.getDate();
+//     let month = dateObject.getMonth() + 1;
+//     let year = dateObject.getFullYear();
+
+//     if (date < 10) {
+//       date = "0" + date;
+//     }
+//     if (month < 10) {
+//       month = "0" + month;
+//     }
+
+//     console.log(timestamp);
+
+//     /// transaction in user collection
+
+//     let userDoc = await db.collection("users").get();
+
+//     userDoc.forEach(doc => {
+//       let id = doc.id;
+//       let userData = doc.data()
+//       let userWalletAmount = doc.data().wallet;
+
+//       let userSubscriptionDoc = await db.collection("users").doc(id).collection("subscriptions").doc(`${date}${month}${year}`).get();
+
+//         let userSubscriptionData = userSubscriptionDoc.data()
+//         if(userSubscriptionDoc.exists){ // user subscription
+//           if(userSubscriptionData.breakfast){ // if breakfast exists
+//             if(userSubscriptionData.breakfast.status){ // status check
+//               if(userSubscriptionData.breakfast.status.upcoming === true && userSubscriptionData.breakfast.status.vacation !== true && userSubscriptionData.breakfast.status.cancelled !== true){ // check if its upcoming
+//                 let mealPrice =userSubscriptionData.breakfast.price;
+
+//                // for creating transaction
+//                 if(userWalletAmount >= mealPrice ){
+
+//                   ///  create the transaction in user colllection
+
+//                   let userTransactionData = getUserTransaction(mealPrice)
+
+//                   let userTransactionRef = db.collection('users')
+//                   .doc(id)
+//                   .collection('transactions')
+//                   .add(userTransactionData)
+//                   .then(()=>console.log('successfully added user transaction document'))
+//                   .catch(e=>console.log('error adding user transcation document',e))
+
+//                   // create transaction in transaction collection
+
+//                   let transacationData = getTransaction()
+
+//                   let transacationDocRef = db.collection('transactions').add(transacationData)
+//                   .then(()=>console.log('successfully added transacation document'))
+//                   .catch(e=> console.log('error adding transaction data ',e))
+
+//                 }
+
+//                 // kitchen collection handling
+
+//               }
+//             }
+//           }
+
+//         }
+
+//     });
+//   });
 
 // user subscribing the meal
 exports.onUserSubscribe = functions.firestore
@@ -1109,6 +1188,8 @@ exports.onSuccessfulDelivery = functions.firestore
       ? change.after.data()
       : change.before.data();
 
+    let batch = db.batch();
+
     //finding the date month and year of the
     let date = deliveryId.substring(0, 2);
     let month = deliveryId.substring(2, 4);
@@ -1121,6 +1202,8 @@ exports.onSuccessfulDelivery = functions.firestore
       .doc(context.params.userId)
       .collection("calendar")
       .doc(calenderDocId);
+
+    // batch.update({date : })
 
     // update status in subscriptions
     db.collection("users")

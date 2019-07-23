@@ -410,12 +410,6 @@ route.post("/", async (req, res) => {
       let day = d.toDateString().split(" ")[0];
 
       // for proper formatting
-      if (date < 10) {
-        date = "0" + date;
-      }
-      if (month < 10) {
-        month = "0" + month;
-      }
 
       console.log(date);
       console.log(month);
