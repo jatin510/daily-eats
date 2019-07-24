@@ -142,6 +142,8 @@ exports.onUserCreation = functions.firestore
         .doc(existingUserReferCode)
         .get();
 
+      console.log("refer code ");
+
       console.log("test");
       console.log(existingUserDocId);
 
@@ -163,6 +165,8 @@ exports.onUserCreation = functions.firestore
 
     //refer code generation
     let generatedReferCode = getReferCode();
+
+    console.log(generatedReferCode);
 
     //refer code collection updation
 
@@ -186,6 +190,7 @@ exports.onUserCreation = functions.firestore
 
     console.log("starting refer code updation");
 
+    console.log(generatedReferCode);
     return snap.ref.update({
       referCode: generatedReferCode
     });
