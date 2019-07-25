@@ -191,6 +191,7 @@ exports.onUserCreation = functions.firestore
     console.log("starting refer code updation");
 
     console.log(generatedReferCode);
+
     return snap.ref.update({
       referCode: generatedReferCode
     });

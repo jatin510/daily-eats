@@ -34,7 +34,7 @@ route.post("/createorder", (req, res) => {
   let schema = Joi.object().keys({
     id: Joi.string().required(),
     transaction: {
-      method: Joi.string().required(),
+      // method: Joi.string().required(),
       amount: Joi.string().required(),
       status: {
         successfull: Joi.boolean(),
@@ -88,6 +88,7 @@ route.post("/createorder", (req, res) => {
       // adding order id into the db
       userTrasactionData.id = order.id;
       userTrasactionData.entity = order.entity;
+      userTrasactionData.method = order.method;
       userTrasactionData.notes = order.notes;
       userTrasactionData.creationTime = order["created_at"];
 
@@ -115,15 +116,16 @@ route.post("/createorder", (req, res) => {
   }
 });
 
-route.post("/paymentconfirm", (req, res) => {
-  let schema = {
+route.post("/confirmpayment", (req, res) => {
+  let schema = Joi.object().keys({
     users: {
       id: Joi.string().required(),
       orderId: Joi.string().required(),
       paymentId: Joi.string().required(),
       amount: Joi.number().required()
     }
-  };
+  });
+
   const { error, value } = Joi.validate(req.body, schema);
 
   if (error) {

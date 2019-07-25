@@ -126,32 +126,5 @@ route.put("/users/", (req, res) => {
 route.use("/users/:userId", require("./users/index.js"));
 
 route.use("/admin", require("./admin/index.js"));
-// route.use("/transactions", require("./transaction/index.js"));
-
-// route.get("/transactions/createorder", (req, res) => {
-//   console.log("hello this is transaction");
-//   let instance = new Razorpay({
-//     key_id: "rzp_test_UVxky2BI7xOprZ",
-//     key_secret: "ejLssWIVxjaKB5eLMbk7j1yo"
-//   });
-
-//   let options = {
-//     amount: 100000,
-//     currency: "INR",
-//     receipt: "order_rcptid_11",
-//     payment_capture: "1"
-//   };
-
-//   instance.orders.create(options, (err, order) => {
-//     if (err) {
-//       console.log("error ,", err);
-//       return res.send("error", err);
-//     }
-
-//     console.log("order", order);
-
-//     return res.send(order);
-//   });
-// });
 
 module.exports = route;
