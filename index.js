@@ -285,6 +285,9 @@ exports.onUserSubscribe = functions.firestore
   .onWrite((change, context) => {
     console.log(change.after.data());
 
+    let breakfastDifference = change.after.data() - change.before.data() + 1;
+    let lunchDiff = change.after.data() - change.before.data() + 1;
+    let dinnerDiff = change.after.data() - change.before.data() + 1;
     //batch creation
     let batch = db.batch();
 
@@ -1329,27 +1332,5 @@ exports.upcomingMeal = functions.firestore
 
     /// kitchen collection
   });
-
-app.get("/fucked", (req, res) => {
-  let instance = new Razorpay({
-    key_id: "rzp_test_UVxky2BI7xOprZ",
-    key_secret: "ejLssWIVxjaKB5eLMbk7j1yo"
-  });
-
-  let options = {
-    amount: 100000,
-    currency: "INR",
-    receipt: "hello ",
-    payment_capture: "1"
-  };
-
-  instance.orders.create(options, (err, order) => {
-    if (err) {
-      console.log("transacation error", err);
-    }
-    console.log(order);
-    res.send(order);
-  });
-});
 
 exports.api = functions.https.onRequest(app);

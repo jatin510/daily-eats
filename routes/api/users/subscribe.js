@@ -352,7 +352,6 @@ route.post("/", async (req, res) => {
       }
     }
   });
-  // const error = false;
   const { value, error } = Joi.validate(req.body, schema);
   if (error) {
     console.log("Post subscription schema error", error.details[0].message);
@@ -371,6 +370,15 @@ route.post("/", async (req, res) => {
     console.log(typeof fromDate);
 
     let batch = db.batch();
+
+    // user field
+
+    let userDoc = db
+      .collection("users")
+      .doc(req.body.users.id)
+      .update({
+        hasSubscription: true
+      });
 
     // creating existing  in user schema
 
@@ -410,11 +418,12 @@ route.post("/", async (req, res) => {
       let day = d.toDateString().split(" ")[0];
 
       // for proper formatting
-
-      console.log(date);
-      console.log(month);
-      console.log(year);
-      console.log(day);
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
 
       console.log("inside loop");
 
