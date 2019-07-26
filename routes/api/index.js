@@ -39,6 +39,8 @@ function createUserDb(req, res) {
       }
     });
   } else {
+    // let batch = db.catch();
+
     value.userCreatedOn = admin.firestore.FieldValue.serverTimestamp();
     value.wallet = 0;
 

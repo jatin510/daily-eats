@@ -10,7 +10,7 @@ let instance = new Razorpay({
   key_secret: "ejLssWIVxjaKB5eLMbk7j1yo"
 });
 
-function getTransaction(value) {
+function getUserTransaction(value) {
   let subSchema = {};
 
   subSchema.method = value.transaction.method;
@@ -77,7 +77,9 @@ route.post("/createorder", (req, res) => {
 
       console.log("storing data into db");
 
-      let userTrasactionData = getTransaction(req.body.users);
+      let userTrasactionData = getUserTransaction(req.body.users);
+
+      /////////////  user collection transaction ////////////////////
 
       let userTrasactionDocRef = db
         .collection("users")
@@ -95,6 +97,34 @@ route.post("/createorder", (req, res) => {
       console.log(order);
 
       batch.set(userTrasactionDocRef, userTrasactionData, { merge: true });
+
+      ///////////  transaction collection //////////////////////////
+
+      function getTransactionData(order, userId) {
+        let schema = {};
+        let userName;
+        let userPhone;
+        let userEmail;
+
+        db.collection("users")
+          .doc(userId)
+          .get()
+          .then(doc => {
+            let userData = doc.data();
+
+            userName = userData.name;
+            userPhone = userData.phone;
+            if (userData.email) {
+              userEmail = userData.email;
+            }
+          })
+          .catch(e => console.log("Error fetching user data", e));
+      }
+
+      let transactionData = getTransactionData(order, req.body.users.id);
+      let transactionRef = db.collection("transactions").doc(order.id);
+
+      batch.set(transactionRef, {}, { merge: true });
 
       batch
         .commit()

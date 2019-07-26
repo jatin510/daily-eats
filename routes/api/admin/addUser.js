@@ -9,7 +9,7 @@ const Joi = require("@hapi/joi");
 
 function createUserDb(req, res) {
   var userSchema = Joi.object().keys({
-    id: Joi.string().required(),
+    // id: Joi.string().required(),
     name: Joi.string().required(),
     phone: Joi.string().required(),
     email: Joi.string()
@@ -38,12 +38,11 @@ function createUserDb(req, res) {
 
     return db
       .collection("users")
-      .doc(req.body.users.id)
-      .set(value)
+      .add(value)
       .then(() => {
         console.log("User successfully added");
         return res.status(200).json({
-          res: { message: "User successfully added", user: value, code: "200" }
+          res: { message: "User successfully added", user: value }
         });
       })
       .catch(e => {

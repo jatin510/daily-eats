@@ -39,7 +39,47 @@ async function main(amount, email, name) {
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-// main().catch(console.error);
+async function getTransactionData(order, userId) {
+  let subSchema = {};
+  let userName;
+  let userPhone;
+  let userEmail;
+
+  let userData = await db
+    .collection("users")
+    .doc(userId)
+    .get();
+
+  userData.forEach(doc => {
+    let userData = doc.data();
+
+    userName = userData.name;
+    userPhone = userData.phone;
+    if (userData.email) {
+      userEmail = userData.email;
+    }
+  });
+
+  subSchema.orderId = order.id;
+  subSchema.time = order["created_at"];
+  subSchema.receipt = order.receipt;
+
+  // status
+  subSchema.status = {};
+  subSchema.status.pending = true;
+
+  // account entry
+  subSchema.accountEntry = {};
+  subSchema.accountEntry.credit = true;
+
+  // user details
+  subSchema.user = {};
+  subSchema.user.name = userName;
+  subSchema.user.phone = userPhone;
+  if (userEmail) subSchema.user.email = userEmail;
+
+  return subSchema;
+}
 
 let instance = new Razorpay({
   key_id: "rzp_test_UVxky2BI7xOprZ",
@@ -105,7 +145,7 @@ route.post("/createorder", (req, res) => {
       payment_capture: "1"
     };
 
-    instance.orders.create(options, (err, order) => {
+    instance.orders.create(options, async (err, order) => {
       if (err) {
         console.log("transaction error", err);
         return res.status.json({ error: { message: `error, ${err}` } });
@@ -131,6 +171,14 @@ route.post("/createorder", (req, res) => {
 
       batch.set(userTrasactionDocRef, userTrasactionData, { merge: true });
 
+      ///////////  transaction collection //////////////////////////
+
+      let transactionData = await getTransactionData(order, req.body.users.id);
+      let transactionRef = db.collection("transactions").doc(order.id);
+
+      batch.set(transactionRef, { transactionData }, { merge: true });
+
+      //batch commit
       batch
         .commit()
         .then(() => {
@@ -227,8 +275,17 @@ route.post("/confirmpayment", (req, res) => {
     // transaction collection
     // have to do this
 
-    let transactionDocRef = db.collection("transactions");
+    let transactionDocRef = db
+      .collection("transactions")
+      .doc(req.body.users.orderId);
 
+    batch.set(
+      transactionDocRef,
+      { paymentId: req.body.users.paymentId },
+      { merge: true }
+    );
+
+    // batch commit
     batch
       .commit()
       .then(() => {

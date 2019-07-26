@@ -16,7 +16,7 @@ function getOffer(value) {
   return subSchema;
 }
 
-route.use("/", (req, res) => {
+route.post("/", (req, res) => {
   let schema = Joi.object().keys({
     code: Joi.string().required(),
     validity: Joi.string().required(),
