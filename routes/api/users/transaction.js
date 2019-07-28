@@ -173,6 +173,8 @@ route.post("/createorder", (req, res) => {
 
       ///////////  transaction collection //////////////////////////
 
+      console.log("transaction collection");
+
       let transactionData = await getTransactionData(order, req.body.users.id);
       let transactionRef = db.collection("transactions").doc(order.id);
 
@@ -281,7 +283,14 @@ route.post("/confirmpayment", (req, res) => {
 
     batch.set(
       transactionDocRef,
-      { paymentId: req.body.users.paymentId },
+      {
+        paymentId: req.body.users.paymentId,
+        users: {
+          status: {
+            successful: true
+          }
+        }
+      },
       { merge: true }
     );
 
@@ -312,6 +321,7 @@ route.post("/confirmpayment", (req, res) => {
   }
 });
 
+// this is completed
 route.post("/paymentfailed", (req, res) => {
   let schema = Joi.object().keys({
     users: {
@@ -330,6 +340,7 @@ route.post("/paymentfailed", (req, res) => {
   } else {
     let batch = db.batch();
 
+    // user collection transaction
     let userTransactionRef = db
       .collection("users")
       .doc(req.body.users.id)
@@ -341,6 +352,22 @@ route.post("/paymentfailed", (req, res) => {
       {
         status: {
           failed: true
+        }
+      },
+      { merge: true }
+    );
+
+    // transction collection
+
+    let transactionDoc = db
+      .collection("transactions")
+      .doc(req.body.users.orderId);
+
+    batch.set(
+      transactionDoc,
+      {
+        status: {
+          failed: false
         }
       },
       { merge: true }
