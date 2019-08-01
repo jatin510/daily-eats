@@ -21,20 +21,31 @@ function getExistingSub(value) {
       subSchema.breakfast.ignore = {};
       subSchema.breakfast.ignore = value.users.subscriptions.breakfast.ignore;
     }
+    subSchema.breakfast.address = {};
+    subSchema.breakfast.address = value.users.subscriptions.breakfast.address;
+    subSchema.breakfast.price = value.users.subscriptions.breakfast.price;
   }
+
   if (value.users.subscriptions.lunch) {
     subSchema.lunch = {};
     if (value.users.subscriptions.lunch.ignore) {
       subSchema.lunch.ignore = {};
       subSchema.lunch.ignore = value.users.subscriptions.lunch.ignore;
     }
+    subSchema.lunch.address = {};
+    subSchema.lunch.address = value.users.subscriptions.lunch.address;
+    subSchema.lunch.price = value.users.subscriptions.lunch.price;
   }
+
   if (value.users.subscriptions.dinner) {
     subSchema.dinner = {};
     if (value.users.subscriptions.dinner.ignore) {
       subSchema.dinner.ignore = {};
       subSchema.dinner.ignore = value.users.subscriptions.dinner.ignore;
     }
+    subSchema.dinner.address = {};
+    subSchema.dinner.address = value.users.subscriptions.dinner.address;
+    subSchema.dinner.price = value.users.subscriptions.dinner.price;
   }
 
   return subSchema;
