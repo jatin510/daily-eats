@@ -23,19 +23,22 @@ function getReferCode() {
     .toString(36)
     .substr(2, 6);
 
+  console.log(random);
+
   code += random;
   code = code.toUpperCase();
 
-  db.collection("referCodes")
+  return db.collection("referCodes")
     .doc(code)
     .get()
     .then(doc => {
-      if (!doc.exists) return;
+      if (!doc.exists) return code;
       return getReferCode();
     })
-    .catch(e => console.log("error in refer code generation", e));
-
-  return code;
+    .catch(e => {
+      console.log("error in refer code generation", e);
+      return new Error(e);
+    });
 }
 
 function getUserTransaction(price) {
@@ -117,12 +120,13 @@ app.use("/", require("./routes/api"));
 //handling trialPack
 exports.trialRedeem = functions.firestore
   .document("users/{userId}/transaction/{transactionId}")
-  .onCreate((snap, context) => {});
+  .onCreate((snap, context) => { });
 
 //handling refer code on user creation
 exports.onUserCreation = functions.firestore
   .document("users/{userId}")
   .onCreate(async (snap, context) => {
+    console.log("OnUserCreation function start")
     //new user info
     let newUserDocId = snap.data().id;
     let newUserName = snap.data().name;
@@ -164,9 +168,9 @@ exports.onUserCreation = functions.firestore
     }
 
     //refer code generation
-    let generatedReferCode = getReferCode();
+    let generatedReferCode = await getReferCode();
 
-    console.log(generatedReferCode);
+    console.log("ReferCode", generatedReferCode);
 
     //refer code collection updation
 
@@ -176,7 +180,10 @@ exports.onUserCreation = functions.firestore
     referDocRef.set(
       { userId: newUserDocId, userName: newUserName },
       { merge: true }
-    );
+    ).then(res => console.log("Refer code has been added", res))
+      .catch(error => {
+        return console.log("error on refer code", error);
+      });
 
     //update for admin totals
 
@@ -184,8 +191,12 @@ exports.onUserCreation = functions.firestore
 
     let totalActiveUser = db.collection("totals").doc("users");
 
-    totalActiveUser.update({
+    totalActiveUser.set({
       totalUsers: admin.firestore.FieldValue.increment(1)
+    }, { merge: true }).then(res => {
+      return console.log("Refer code has been added", res)
+    }).catch(error => {
+      return console.log("error on total active", error);
     });
 
     console.log("starting refer code updation");
