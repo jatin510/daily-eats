@@ -67,7 +67,8 @@ route.post("/", (req, res) => {
           status: {
             // cancel: true,
             upcoming: false
-          }
+          },
+          quantity: 0
         }
       },
       { merge: true }
@@ -92,7 +93,8 @@ route.post("/", (req, res) => {
             status: {
               // cancel: true,
               upcoming: false
-            }
+            },
+            quantity: 0
           }
         }
       },

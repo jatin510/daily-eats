@@ -145,6 +145,7 @@ route.post("/createorder", (req, res) => {
       payment_capture: "1"
     };
 
+    // this function is using async and await
     instance.orders.create(options, async (err, order) => {
       if (err) {
         console.log("transaction error", err);

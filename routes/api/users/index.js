@@ -39,6 +39,7 @@ route.use("/vacation", require("./vacation.js"));
 route.use("/endvacation", require("./endVacation.js"));
 route.use("/trial", require("./trial.js"));
 route.use("/transaction", require("./transaction.js"));
+route.use("/cancel", require("./cancel.js"));
 
 route.get("/", (req, res) => {
   res.send("users api index");
