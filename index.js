@@ -28,7 +28,8 @@ function getReferCode() {
   code += random;
   code = code.toUpperCase();
 
-  return db.collection("referCodes")
+  return db
+    .collection("referCodes")
     .doc(code)
     .get()
     .then(doc => {
@@ -120,13 +121,13 @@ app.use("/", require("./routes/api"));
 //handling trialPack
 exports.trialRedeem = functions.firestore
   .document("users/{userId}/transaction/{transactionId}")
-  .onCreate((snap, context) => { });
+  .onCreate((snap, context) => {});
 
 //handling refer code on user creation
 exports.onUserCreation = functions.firestore
   .document("users/{userId}")
   .onCreate(async (snap, context) => {
-    console.log("OnUserCreation function start")
+    console.log("OnUserCreation function start");
     //new user info
     let newUserDocId = snap.data().id;
     let newUserName = snap.data().name;
@@ -177,10 +178,9 @@ exports.onUserCreation = functions.firestore
     console.log("update in refer codes");
     let referDocRef = db.collection("referCodes").doc(generatedReferCode);
 
-    referDocRef.set(
-      { userId: newUserDocId, userName: newUserName },
-      { merge: true }
-    ).then(res => console.log("Refer code has been added", res))
+    referDocRef
+      .set({ userId: newUserDocId, userName: newUserName }, { merge: true })
+      .then(res => console.log("Refer code has been added", res))
       .catch(error => {
         return console.log("error on refer code", error);
       });
@@ -191,13 +191,19 @@ exports.onUserCreation = functions.firestore
 
     let totalActiveUser = db.collection("totals").doc("users");
 
-    totalActiveUser.set({
-      totalUsers: admin.firestore.FieldValue.increment(1)
-    }, { merge: true }).then(res => {
-      return console.log("Refer code has been added", res)
-    }).catch(error => {
-      return console.log("error on total active", error);
-    });
+    totalActiveUser
+      .set(
+        {
+          totalUsers: admin.firestore.FieldValue.increment(1)
+        },
+        { merge: true }
+      )
+      .then(res => {
+        return console.log("Refer code has been added", res);
+      })
+      .catch(error => {
+        return console.log("error on total active", error);
+      });
 
     console.log("starting refer code updation");
 
