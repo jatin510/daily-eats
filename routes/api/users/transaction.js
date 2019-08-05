@@ -149,7 +149,7 @@ route.post("/createorder", (req, res) => {
     instance.orders.create(options, async (err, order) => {
       if (err) {
         console.log("transaction error", err);
-        return res.status.json({ error: { message: `error, ${err}` } });
+        return res.status(400).json({ error: { message: `error, ${err}` } });
       }
 
       console.log("storing data into db");

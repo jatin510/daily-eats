@@ -28,7 +28,7 @@ route.post("/", (req, res) => {
 
     let month = date.getMonth() + 1;
     let year = date.getFullYear;
-    let date = date.getDate();
+    date = date.getDate();
 
     if (date < 10) {
       date = "0" + date;
