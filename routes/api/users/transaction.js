@@ -145,6 +145,10 @@ route.post("/createorder", (req, res) => {
       payment_capture: "1"
     };
 
+    /// for sms purpose
+    let userMobileNumber;
+    let textSMS;
+
     // this function is using async and await
     instance.orders.create(options, async (err, order) => {
       if (err) {
@@ -181,23 +185,31 @@ route.post("/createorder", (req, res) => {
 
       batch.set(transactionRef, { transactionData }, { merge: true });
 
-      //batch commit
-      batch
-        .commit()
-        .then(() => {
-          console.log("transaction successfull");
+      //// data for sms
+      //user phone
+      userMobileNumber = transactionData.user.phone;
+      textSMS =
+        //batch commit
+        batch
+          .commit()
+          .then(() => {
+            console.log("transaction successfull");
 
-          return res.status(200).json({ res: { message: order.id } });
-        })
-        .catch(e => {
-          console.log("Error commiting the batch", e);
-          return res.status(400).json({
-            error: {
-              message: `Error commiting the batch `,
-              code: ""
-            }
+            // network call to send sms
+
+            url = `http://nimbusit.info/api/pushsms.php?user=${id}&key=${key}&sender=${senderId}&mobile=${userMobileNumber}&text=${textSMS}`;
+
+            return res.status(200).json({ res: { message: order.id } });
+          })
+          .catch(e => {
+            console.log("Error commiting the batch", e);
+            return res.status(400).json({
+              error: {
+                message: `Error commiting the batch `,
+                code: ""
+              }
+            });
           });
-        });
     });
   }
 });
