@@ -472,8 +472,11 @@ route.post("/", async (req, res) => {
       let userSubDocRef = userSubscriptionsRef.doc(docId);
 
       console.log("for loop subscription");
-      subscriptionsData.date = parseInt(`${date}${month}${year}`);
+      // ease of the front end
+      let subscriptionDate = parseInt(`${date}${month}${year}`);
+      // console.log("date ,", subscriptionsData.date);
 
+      userSubDocRef.set({ date: subscriptionDate });
       batch.set(userSubDocRef, subscriptionsData, { merge: true });
     }
 

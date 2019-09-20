@@ -5,6 +5,7 @@ const route = require("express").Router();
 const Razorpay = require("razorpay");
 const Joi = require("@hapi/joi");
 const nodemailer = require("nodemailer");
+// const axios = require("axios");
 
 // async..await is not allowed in global scope, must use a wrapper
 async function main(amount, email, name) {
@@ -404,3 +405,7 @@ route.post("/paymentfailed", (req, res) => {
 });
 
 module.exports = route;
+
+// writing for sending sms
+
+// axios.get();

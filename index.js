@@ -1259,95 +1259,95 @@ exports.onSuccessfulDelivery = functions.firestore
 
 // upcoming meal triggers
 
-exports.upcomingMeal = functions.firestore
-  .document("upcomingMeals/{upcomingMealId}")
-  .onWrite((change, context) => {
-    let upcomingMealDocId = context.params.upcomingMealId;
-    let menuData = change.after.data();
+// exports.upcomingMeal = functions.firestore
+//   .document("upcomingMeals/{upcomingMealId}")
+//   .onWrite((change, context) => {
+//     let upcomingMealDocId = context.params.upcomingMealId;
+//     let menuData = change.after.data();
 
-    //finding the date month and year of the
-    let date = upcomingMealDocId.substring(0, 2);
-    let month = upcomingMealDocId.substring(2, 4);
-    let year = upcomingMealDocId.substring(4, 8);
+//     //finding the date month and year of the
+//     let date = upcomingMealDocId.substring(0, 2);
+//     let month = upcomingMealDocId.substring(2, 4);
+//     let year = upcomingMealDocId.substring(4, 8);
 
-    let batch = db.batch();
+//     let batch = db.batch();
 
-    /// user collection
+//     /// user collection
 
-    // what to do about description
-    let menuSchema = {};
-    let time = menuData.id;
-    menuSchema[time] = {};
-    menuSchema[time].name = menuData.name;
-    menuSchema[time].image = menuData.image;
-    menuSchema[time].description = menuData;
+//     // what to do about description
+//     let menuSchema = {};
+//     let time = menuData.id;
+//     menuSchema[time] = {};
+//     menuSchema[time].name = menuData.name;
+//     menuSchema[time].image = menuData.image;
+//     menuSchema[time].description = menuData;
 
-    db.collection("users")
-      .get()
-      .then(querySnapShot => {
-        querySnapShot.forEach(doc => {
-          // check if the user has subscribed or not
+//     db.collection("users")
+//       .get()
+//       .then(querySnapShot => {
+//         querySnapShot.forEach(doc => {
+//           // check if the user has subscribed or not
 
-          //////////////////////////////
-          // have to ask suraj sir ////
-          ///////////////////////////////
-          let menuData;
-          db.collection("users")
-            .doc(doc.id)
-            .collection("subscriptions")
-            .doc(`${date}${month}${year}`)
-            .get()
-            .then(data => console.log(data))
-            .catch(e => console.log("user has not taken subscription"));
+//           //////////////////////////////
+//           // have to ask suraj sir ////
+//           ///////////////////////////////
+//           let menuData;
+//           db.collection("users")
+//             .doc(doc.id)
+//             .collection("subscriptions")
+//             .doc(`${date}${month}${year}`)
+//             .get()
+//             .then(data => console.log(data))
+//             .catch(e => console.log("user has not taken subscription"));
 
-          // user calendar
-          db.collection("users")
-            .doc(doc.id)
-            .collection("calendar")
-            .doc(`${month}${year}`)
-            .set({ [date]: menuSchema }, { merge: true });
+//           // user calendar
+//           db.collection("users")
+//             .doc(doc.id)
+//             .collection("calendar")
+//             .doc(`${month}${year}`)
+//             .set({ [date]: menuSchema }, { merge: true });
 
-          // user subscriptions
-          db.collection("users")
-            .doc(doc.id)
-            .collection("subscriptions")
-            .doc(`${date}${month}${date}`)
-            .set(menuData, { merge: true });
+//           // user subscriptions
+//           db.collection("users")
+//             .doc(doc.id)
+//             .collection("subscriptions")
+//             .doc(`${date}${month}${date}`)
+//             .set(menuData, { merge: true });
 
-          // order collection
+//           // order collection
 
-          db.collection("orders")
-            .doc(`${month}${year}`)
-            .collection(`${day}${month}${year}`)
-            .get()
-            .then(querySnapShot => {
-              querySnapShot.forEach(doc => {
-                // user order update
-                db.collection("orders")
-                  .doc(`${month}${year}`)
-                  .collection(`${day}${month}${year}`)
-                  .doc(doc.id)
-                  .update(menuData);
-              });
-              return;
-            })
-            .catch(e => console.log(e));
+//           db.collection("orders")
+//             .doc(`${month}${year}`)
+//             .collection(`${day}${month}${year}`)
+//             .get()
+//             .then(querySnapShot => {
+//               querySnapShot.forEach(doc => {
+//                 // user order update
+//                 db.collection("orders")
+//                   .doc(`${month}${year}`)
+//                   .collection(`${day}${month}${year}`)
+//                   .doc(doc.id)
+//                   .update(menuData);
+//               });
+//               return;
+//             })
+//             .catch(e => console.log(e));
 
-          // kitchen
+//           // kitchen
 
-          // db.collection('kitchen').get()
-          // .then(querySnapShot=>{
-          //   querySnapShot.forEach(doc => {
-          //     db.collection('kitchen').doc(doc.id).collection('deliveries').doc(`${date}${month}${year}`)
-          //   })
-          // })
-          //
-        });
-        return;
-      })
-      .catch(e => console.log(e));
+//           // db.collection('kitchen').get()
+//           // .then(querySnapShot=>{
+//           //   querySnapShot.forEach(doc => {
+//           //     db.collection('kitchen').doc(doc.id).collection('deliveries').doc(`${date}${month}${year}`)
+//           //   })
+//           // })
+//           //
+//         });
+//         return;
+//       })
+//       .catch(e => console.log(e));
 
-    /// kitchen collection
-  });
+//     /// kitchen collection
+//   });
 
 exports.api = functions.https.onRequest(app);
